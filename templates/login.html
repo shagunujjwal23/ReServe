@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | ReServe</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/variables.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/components.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/login.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="background">
+      <span class="blob blob-1"></span>
+      <span class="blob blob-2"></span>
+      <span class="blob blob-3"></span>
+    </div>
+
+    <main class="login-page">
+      <a href="{{ url_for('home') }}" class="back-home">
+        <i class="fa-solid fa-arrow-left"></i>
+        <span>Back to Home</span>
+      </a>
+
+      <section class="login-wrapper">
+        <!-- Logo -->
+
+        <a href="{{ url_for('home') }}" class="logo">
+          <i class="fa-solid fa-leaf"></i>
+
+          <span>ReServe</span>
+        </a>
+
+        <!-- Heading -->
+
+        <h2 class="login-title">Welcome</h2>
+
+        <!-- Subtitle -->
+
+        <p class="subtitle">Sign in to continue your food rescue journey.</p>
+
+        <form id="loginForm">
+          <div class="input-group">
+            <label for="email">Email Address</label>
+            <div class="input-field">
+              <i class="fa-regular fa-envelope"></i>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label for="password">Password</label>
+            <div class="input-field">
+              <i class="fa-solid fa-lock"></i>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+
+              <button
+                type="button"
+                class="toggle-password"
+                data-target="password"
+              >
+                <i class="fa-solid fa-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="login-options">
+            <label class="remember">
+              <input type="checkbox" name="remember" />
+              <span>Remember Me</span>
+            </label>
+
+            <a href="/forgot-password">Forgot Password?</a>
+          </div>
+
+          <button type="submit" class="login-btn">
+            <span>Login</span>
+            <i class="fa-solid fa-arrow-right"></i>
+          </button>
+
+          <div id="successMessage" class="success-message">
+            <i class="fa-solid fa-circle-check"></i>
+            <span></span>
+          </div>
+
+          <div id="errorMessage" class="error-message">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span></span>
+          </div>
+        </form>
+
+        <div class="divider">
+          <span></span>
+          <p>OR</p>
+          <span></span>
+        </div>
+
+        <button type="button" class="google-btn" id="googleLoginBtn">
+          <img
+            src="{{ url_for('static', filename='images/google-icon.svg') }}"
+            alt="Google"
+          />
+          <span>Continue with Google</span>
+        </button>
+
+        <p class="signup-page">
+          New to ReServe?
+          <a href="/signup">
+            Create Account
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </p>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/login.js') }}"></script>
+  </body>
+</html>

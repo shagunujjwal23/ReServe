@@ -1,0 +1,324 @@
+/* ==========================================
+                FOOTER
+========================================== */
+
+.footer{
+    background:#10372d;
+    color:#fff;
+    position:relative;
+    padding:90px 0 30px;
+    overflow:hidden;
+}
+
+.footer::before{
+    content:"";
+    position:absolute;
+    width:350px;
+    height:350px;
+    background:rgba(46,204,113,.08);
+    border-radius:50%;
+    top:-120px;
+    right:-120px;
+    filter:blur(100px);
+}
+
+/* ===============================
+        Footer Grid
+=============================== */
+
+.footer-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr 1.4fr;
+    gap:60px;
+    position:relative;
+    z-index:2;
+}
+
+/* ===============================
+        Brand
+=============================== */
+
+.footer-logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:1.8rem;
+    font-weight:700;
+    color:#fff;
+    text-decoration:none;
+    margin-bottom:15px;
+}
+
+.footer-logo i{
+    color:var(--primary-color);
+}
+
+.footer-tagline{
+    color:var(--primary-color);
+    font-weight:600;
+    margin-bottom:18px;
+}
+
+.footer-description{
+    color:rgba(255,255,255,.75);
+    line-height:1.8;
+    margin-bottom:25px;
+    max-width:320px;
+}
+
+/* ===============================
+        Social Icons
+=============================== */
+
+.footer-social{
+    display:flex;
+    gap:14px;
+}
+
+.footer-social a{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+    background:rgba(255,255,255,.08);
+    color:#fff;
+    text-decoration:none;
+    transition:.3s;
+}
+
+.footer-social a:hover{
+    background:var(--primary-color);
+    transform:translateY(-4px);
+}
+
+/* ===============================
+        Headings
+=============================== */
+
+.footer-column h3{
+    font-size:1.2rem;
+    margin-bottom:22px;
+    position:relative;
+}
+
+.footer-column h3::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-8px;
+    width:45px;
+    height:3px;
+    background:var(--primary-color);
+    border-radius:20px;
+}
+
+/* ===============================
+        Links
+=============================== */
+
+.footer-column ul{
+    list-style:none;
+    padding:0;
+}
+
+.footer-column ul li{
+    margin-bottom:14px;
+}
+
+.footer-column ul li a{
+    text-decoration:none;
+    color:rgba(255,255,255,.75);
+    transition:.3s;
+}
+
+.footer-column ul li a:hover{
+    color:var(--primary-color);
+    padding-left:6px;
+}
+
+/* ===============================
+        Contact
+=============================== */
+
+.footer-contact li{
+    display:flex;
+    align-items:flex-start;
+    gap:12px;
+    color:rgba(255,255,255,.75);
+    line-height:1.6;
+}
+
+.footer-contact i{
+    color:var(--primary-color);
+    margin-top:3px;
+}
+
+/* ===============================
+        Newsletter
+=============================== */
+
+.newsletter{
+    display:flex;
+    margin-top:25px;
+    background:#fff;
+    border-radius:50px;
+    overflow:hidden;
+}
+
+.newsletter input{
+    flex:1;
+    border:none;
+    outline:none;
+    padding:14px 18px;
+    font-size:.95rem;
+}
+
+.newsletter button{
+    border:none;
+    background:var(--primary-color);
+    color:#fff;
+    padding:0 24px;
+    cursor:pointer;
+    font-weight:600;
+    transition:.3s;
+}
+
+.newsletter button:hover{
+    background:#27ae60;
+}
+
+/* ===============================
+        Bottom
+=============================== */
+
+.footer-bottom{
+    margin-top:70px;
+    padding-top:25px;
+    border-top:1px solid rgba(255,255,255,.12);
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:15px;
+
+    position:relative;
+    z-index:2;
+}
+
+.footer-bottom p{
+    color:rgba(255,255,255,.7);
+    font-size:.95rem;
+}
+
+.footer-bottom i{
+    color:#ff5c5c;
+}
+
+/* ===============================
+        Back To Top
+=============================== */
+
+.back-to-top{
+    position:fixed;
+    right:25px;
+    bottom:25px;
+
+    width:50px;
+    height:50px;
+
+    border:none;
+    border-radius:50%;
+
+    background:var(--primary-color);
+    color:#fff;
+
+    font-size:1rem;
+
+    cursor:pointer;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    box-shadow:0 10px 25px rgba(46,204,113,.35);
+
+    transition:.35s;
+
+    opacity:0;
+    visibility:hidden;
+    z-index:999;
+}
+
+.back-to-top.show{
+    opacity:1;
+    visibility:visible;
+}
+
+.back-to-top:hover{
+    transform:translateY(-5px);
+    background:#27ae60;
+}
+
+/* ===============================
+        Responsive
+=============================== */
+
+@media(max-width:992px){
+
+    .footer-grid{
+        grid-template-columns:1fr 1fr;
+        gap:50px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .footer{
+        padding:70px 0 25px;
+    }
+
+    .footer-grid{
+        grid-template-columns:1fr;
+        gap:40px;
+    }
+
+    .footer-bottom{
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .newsletter{
+        flex-direction:column;
+        border-radius:18px;
+    }
+
+    .newsletter input{
+        width:100%;
+    }
+
+    .newsletter button{
+        padding:14px;
+    }
+
+}
+
+@media(max-width:480px){
+
+    .footer-logo{
+        font-size:1.6rem;
+    }
+
+    .footer-social{
+        gap:10px;
+    }
+
+    .footer-social a{
+        width:40px;
+        height:40px;
+    }
+
+}

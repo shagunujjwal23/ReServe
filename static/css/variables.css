@@ -1,0 +1,29 @@
+/* =========================================
+   ReServe Design Variables
+========================================= */
+
+:root {
+
+    /* Colors */
+    --primary-color: #2E7D32;
+    --secondary-color: #4CAF50;
+    --accent-color: #81C784;
+
+    --background-color: #F8FAF8;
+    --card-color: #FFFFFF;
+
+    --text-color: #1F2937;
+    --light-text: #6B7280;
+
+    --border-color: #E5E7EB;
+
+    /* Shadow */
+    --shadow:
+        0 10px 30px rgba(0,0,0,0.08);
+
+    /* Border Radius */
+    --radius: 12px;
+
+    /* Transition */
+    --transition: .3s ease;
+}

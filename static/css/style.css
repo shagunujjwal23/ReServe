@@ -1,0 +1,82 @@
+/* =========================================
+   Import Variables
+========================================= */
+
+@import url("variables.css");
+
+/* =========================================
+   Google Font Reset
+========================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    background:var(--background-color);
+    color:var(--text-color);
+    overflow-x:hidden;
+}
+
+/* =========================================
+   Common Styles
+========================================= */
+
+.container{
+    width:90%;
+    max-width:1300px;
+    margin:auto;
+}
+
+section{
+    padding:90px 0;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+ul{
+    list-style:none;
+}
+
+img{
+    width:100%;
+    display:block;
+}
+
+button{
+    border:none;
+    outline:none;
+    cursor:pointer;
+    font-family:'Poppins',sans-serif;
+}
+
+input,
+textarea,
+select{
+    font-family:'Poppins',sans-serif;
+}
+
+h1,h2,h3,h4,h5,h6{
+    font-weight:700;
+}
+
+p{
+    color:var(--light-text);
+    line-height:1.8;
+}
+
+/* Prevent navbar overlap */
+
+body{
+    padding-top:80px;
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Your Email | ReServe</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/check-email.css') }}">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Background Blobs -->
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+    <div class="blob blob3"></div>
+
+    <div class="email-container">
+
+        <div class="email-wrapper">
+
+            <!-- Back -->
+            <a href="{{ url_for('login') }}" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Login
+            </a>
+
+            <!-- Icon -->
+            <div class="icon-circle">
+                <i class="fa-solid fa-envelope-open-text"></i>
+            </div>
+
+            <!-- Heading -->
+            <h1>Check Your Email</h1>
+
+            <p class="subtitle">
+                We've sent a password reset link to the email address below.
+            </p>
+
+            <!-- Email -->
+            <div class="email-box">
+                <i class="fa-solid fa-envelope"></i>
+                <span id="userEmail">example@email.com</span>
+            </div>
+
+            <!-- Instructions -->
+            <div class="instructions">
+
+                <div class="instruction">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Open the email from <strong>ReServe</strong>.</span>
+                </div>
+
+                <div class="instruction">
+                    <i class="fa-solid fa-link"></i>
+                    <span>Click the password reset link.</span>
+                </div>
+
+                <div class="instruction">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>Create a new secure password.</span>
+                </div>
+
+            </div>
+
+            <!-- Resend Button -->
+            <button id="resendBtn" class="primary-btn">
+
+                <i class="fa-solid fa-paper-plane"></i>
+
+                <span>Resend Email</span>
+
+            </button>
+
+            <!-- Bottom -->
+            <p class="login-text">
+                Didn't receive the email?
+                <a href="{{ url_for('forgot_password') }}">
+                    Try another email
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/check-email.js') }}"></script>
+
+</body>
+</html>

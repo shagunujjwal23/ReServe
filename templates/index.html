@@ -1,0 +1,1204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Home | ReServe</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+    />
+
+    <!-- CSS -->
+    <!-- Main CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
+    <!-- Individual Section CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/hero.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/solutions.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/marketplacehome.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/testimonials.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/faq.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/footer.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/about.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/components.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/navbar.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/variables.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/forms.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/statistics.css') }}"
+    />
+  </head>
+
+  <body>
+    
+    <header class="navbar">
+      <div class="container nav-container">
+        <a href="#" class="logo">
+          <i class="fa-solid fa-leaf"></i>
+          <span>ReServe</span>
+        </a>
+
+        <nav class="nav-links">
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#solutions">Solutions</a>
+          <a href="#marketplace">Marketplace</a>
+          <a href="#contact">Contact</a>
+        </nav>
+
+        <div class="nav-buttons">
+          <a href="/login" class="login-btn">Login</a>
+          <a href="/register" class="signup-btn">Get Started</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- =========================================
+                HERO SECTION
+========================================= -->
+
+    <section class="hero">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <span class="hero-badge">
+            <i class="fas fa-leaf"></i>
+            AI Powered Food Recovery Platform
+          </span>
+
+          <h1>
+            From Surplus
+            <br />
+            to
+            <span>Solution.</span>
+          </h1>
+
+          <p>
+            ReServe is an AI-powered platform that connects restaurants,
+            bakeries, grocery stores, NGOs, and local communities to reduce food
+            waste by making surplus food accessible before it goes to waste.
+          </p>
+
+          <div class="hero-buttons">
+            <a href="#" class="btn btn-primary"> Donate Food </a>
+
+            <a href="#" class="btn btn-secondary"> Explore Marketplace </a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <!-- Background Network -->
+          <div class="hero-network">
+            <div class="network-center">
+              <i class="fas fa-microchip"></i>
+            </div>
+
+            <div class="network-node restaurant">
+              <i class="fas fa-utensils"></i>
+            </div>
+
+            <div class="network-node grocery">
+              <i class="fas fa-store"></i>
+            </div>
+
+            <div class="network-node ngo">
+              <i class="fas fa-hand-holding-heart"></i>
+            </div>
+
+            <div class="network-node community">
+              <i class="fas fa-house"></i>
+            </div>
+
+            <div class="network-node family">
+              <i class="fas fa-people-group"></i>
+            </div>
+          </div>
+
+          <!-- Foreground Illustration -->
+          <div class="hero-image">
+            <img
+              src="{{ url_for('static', filename='images/hero.png') }}"
+              alt="Food Waste Reduction"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+            OUR IMPACT SECTION
+========================================= -->
+
+    <section class="stats-section" id="statistics">
+      <div class="container">
+        <div class="section-heading">
+          <span class="section-badge">
+            <i class="fas fa-chart-line"></i>
+            Our Impact
+          </span>
+
+          <h2>
+            Making a Difference,
+            <br />
+            <span>One Meal at a Time.</span>
+          </h2>
+
+          <p>
+            ReServe connects restaurants, cafés, bakeries, NGOs, and local
+            communities to rescue surplus food before it goes to waste. These
+            demonstration metrics showcase the platform's potential impact.
+          </p>
+        </div>
+
+        <div class="stats-grid">
+          <!-- Card 1 -->
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper">
+              <div class="stat-icon">
+                <i class="fas fa-utensils"></i>
+              </div>
+            </div>
+
+            <h3><span class="counter" data-target="1250">0</span>+</h3>
+
+            <h4>Meals Listed</h4>
+
+            <p>Fresh surplus meals shared through ReServe.</p>
+          </div>
+
+          <!-- Card 2 -->
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper">
+              <div class="stat-icon">
+                <i class="fas fa-leaf"></i>
+              </div>
+            </div>
+
+            <h3><span class="counter" data-target="500">0</span>+</h3>
+
+            <h4>Kg Food Saved</h4>
+
+            <p>Helping reduce unnecessary food waste every day.</p>
+          </div>
+
+          <!-- Card 3 -->
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper">
+              <div class="stat-icon">
+                <i class="fas fa-users"></i>
+              </div>
+            </div>
+
+            <h3><span class="counter" data-target="150">0</span>+</h3>
+
+            <h4>Registered Users</h4>
+
+            <p>A growing community committed to sustainability.</p>
+          </div>
+
+          <!-- Card 4 -->
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper">
+              <div class="stat-icon">
+                <i class="fas fa-hand-holding-heart"></i>
+              </div>
+            </div>
+
+            <h3><span class="counter" data-target="35">0</span>+</h3>
+
+            <h4>Partner NGOs</h4>
+
+            <p>Trusted organizations distributing food to those in need.</p>
+          </div>
+        </div>
+
+        <div class="impact-footer">
+          <p>
+            Every number tells a story of food rescued, communities supported,
+            and waste reduced.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================
+                OUR STORY SECTION
+========================================= -->
+
+    <section class="story-section" id="about">
+      <div class="container">
+        <!-- Heading -->
+
+        <div class="story-heading">
+          <span class="section-badge">
+            <i class="fas fa-seedling"></i>
+            Our Story
+          </span>
+
+          <h2>
+            Fighting Food Waste Through
+            <span>Smart Connections.</span>
+          </h2>
+
+          <p class="story-tagline">
+            Food doesn't belong in landfills.
+            <span>It belongs on someone's plate.</span>
+          </p>
+
+          <p class="story-description">
+            Every day, perfectly edible food is discarded while many people
+            struggle to access nutritious meals. ReServe transforms this
+            challenge into an opportunity by intelligently connecting food
+            donors with NGOs, community kitchens, and nearby users.
+          </p>
+        </div>
+
+        <!-- Journey -->
+
+        <div class="journey">
+          <!-- Step 1 -->
+
+          <div class="journey-card">
+            <div class="journey-icon">🍞</div>
+
+            <h3>Surplus Food</h3>
+
+            <p>
+              Restaurants, cafés and bakeries upload fresh surplus food before
+              it goes to waste.
+            </p>
+          </div>
+
+          <div class="journey-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+
+          <!-- Step 2 -->
+
+          <div class="journey-card">
+            <div class="journey-icon">🤖</div>
+
+            <h3>AI Matching</h3>
+
+            <p>
+              ReServe analyzes freshness, location and availability to find the
+              best recipient.
+            </p>
+          </div>
+
+          <div class="journey-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+
+          <!-- Step 3 -->
+
+          <div class="journey-card">
+            <div class="journey-icon">🚚</div>
+
+            <h3>Pickup</h3>
+
+            <p>
+              NGOs, volunteers or customers reserve the food and arrange pickup
+              or delivery.
+            </p>
+          </div>
+
+          <div class="journey-arrow">
+            <i class="fas fa-arrow-right"></i>
+          </div>
+
+          <!-- Step 4 -->
+
+          <div class="journey-card">
+            <div class="journey-icon">❤️</div>
+
+            <h3>Shared Impact</h3>
+
+            <p>
+              Good food reaches people instead of landfills, creating lasting
+              impact.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bottom Quote -->
+
+        <div class="story-footer">
+          <p>
+            Every rescued meal creates value for people, businesses, and the
+            planet.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!--=========================================
+        AI TECHNOLOGY
+==========================================-->
+
+    <section class="ai-section" id="solutions">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-badge">
+            <i class="fa-solid fa-microchip"></i>
+            <span>AI-Powered Technology</span>
+          </div>
+
+          <h2 class="section-title">
+            How AI Powers
+            <span class="highlight">ReServe</span>
+          </h2>
+
+          <p class="section-description">
+            Artificial Intelligence predicts food freshness, intelligently
+            matches donors with receivers, optimizes pricing, and maximizes food
+            recovery through smart automation.
+          </p>
+        </div>
+
+        <div class="capability-divider">
+          <span>AI Capabilities</span>
+        </div>
+
+        <div class="ai-capabilities">
+          <!-- Card 1 -->
+          <div class="capability-card">
+            <div class="capability-icon freshness">
+              <i class="fa-solid fa-leaf"></i>
+            </div>
+
+            <h3>Freshness Prediction</h3>
+
+            <p>Predicts food freshness before expiry.</p>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="capability-card">
+            <div class="capability-icon matching">
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+
+            <h3>Smart Matching</h3>
+
+            <p>Finds the nearest verified NGOs.</p>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="capability-card">
+            <div class="capability-icon pricing">
+              <i class="fa-solid fa-tags"></i>
+            </div>
+
+            <h3>Dynamic Pricing</h3>
+
+            <p>Suggests fair discount prices.</p>
+          </div>
+
+          <!-- Card 4 -->
+          <div class="capability-card">
+            <div class="capability-icon ngo">
+              <i class="fa-solid fa-handshake"></i>
+            </div>
+
+            <h3>NGO Network</h3>
+
+            <p>Connects trusted food partners.</p>
+          </div>
+
+          <!-- Card 5 -->
+          <div class="capability-card">
+            <div class="capability-icon analytics">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+
+            <h3>Impact Analytics</h3>
+
+            <p>Measures meals and waste saved.</p>
+          </div>
+
+          <!-- Card 6 -->
+          <div class="capability-card">
+            <div class="capability-icon alerts">
+              <i class="fa-solid fa-bell"></i>
+            </div>
+
+            <h3>Smart Alerts</h3>
+
+            <p>Sends real-time expiry reminders.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+            MARKETPLACE PREVIEW
+========================================== -->
+
+    <section class="marketplace" id="marketplace">
+      <div class="container">
+        <!-- Section Header -->
+
+        <div class="section-header">
+          <div class="section-badge">
+            <i class="fa-solid fa-store"></i>
+            <span>Marketplace</span>
+          </div>
+
+          <h2 class="section-title">
+            Fresh Meals
+            <span class="highlight">Available Today.</span>
+          </h2>
+
+          <p class="section-description">
+            Browse verified surplus meals from trusted restaurants, bakeries and
+            community kitchens before they go to waste.
+          </p>
+        </div>
+
+        <!-- Food Cards -->
+
+        <div class="market-grid">
+          <!-- CARD 1 -->
+
+          <div class="food-card">
+            <div class="image-wrapper">
+              <img
+                src="{{ url_for('static', filename='images/foods/pizza.jpg') }}"
+                alt="Veg Pizza"
+              />
+
+              <span class="food-badge ai">
+                <i class="fa-solid fa-robot"></i> AI Recommended</span
+              >
+            </div>
+
+            <div class="food-content">
+              <h3>Veg Pizza Combo</h3>
+
+              <div class="restaurant-row">
+                <p class="restaurant-name">Spice Hub Restaurant</p>
+
+                <span class="rating">
+                  <i class="fa-solid fa-star"></i>
+                  4.8
+                </span>
+              </div>
+
+              <div class="food-info">
+                <span>
+                  <i class="fa-solid fa-location-dot"></i>
+                  2.1 km
+                </span>
+
+                <span>
+                  <i class="fa-solid fa-utensils"></i>
+                  4 Servings
+                </span>
+              </div>
+
+              <div class="price-row">
+                <span class="new-price">₹79</span>
+
+                <span class="old-price">₹149</span>
+              </div>
+
+              <a href="#" class="reserve-btn">
+                Reserve Meal
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 2 -->
+
+          <div class="food-card">
+            <div class="image-wrapper">
+              <img
+                src="{{ url_for('static', filename='images/foods/sandwich.jpg') }}"
+                alt="Sandwich"
+              />
+
+              <span class="food-badge fresh">
+                <i class="fa-solid fa-leaf"></i> Fresh Today
+              </span>
+            </div>
+
+            <div class="food-content">
+              <h3>Grilled Sandwich</h3>
+
+              <div class="restaurant-row">
+                <p class="restaurant-name">Bake House</p>
+
+                <span class="rating">
+                  <i class="fa-solid fa-star"></i>
+                  4.7
+                </span>
+              </div>
+
+              <div class="food-info">
+                <span>
+                  <i class="fa-solid fa-location-dot"></i>
+                  1.0 km
+                </span>
+
+                <span>
+                  <i class="fa-solid fa-utensils"></i>
+                  2 Servings
+                </span>
+              </div>
+
+              <div class="price-row">
+                <span class="free-price">FREE</span>
+              </div>
+
+              <a href="#" class="reserve-btn donation">
+                Claim Free Meal
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 3 -->
+
+          <div class="food-card">
+            <div class="image-wrapper">
+              <img
+                src="{{ url_for('static', filename='images/foods/rice-bowl.jpg') }}"
+                alt="Rice Bowl"
+              />
+
+              <span class="food-badge success"
+                ><i class="fa-solid fa-hand-holding-heart"></i> NGO Choice
+              </span>
+            </div>
+
+            <div class="food-content">
+              <h3>Rice Bowl</h3>
+
+              <div class="restaurant-row">
+                <p class="restaurant-name">Community Kitchen</p>
+
+                <span class="rating">
+                  <i class="fa-solid fa-star"></i>
+                  4.9
+                </span>
+              </div>
+
+              <div class="food-info">
+                <span>
+                  <i class="fa-solid fa-location-dot"></i>
+                  3 km
+                </span>
+
+                <span>
+                  <i class="fa-solid fa-utensils"></i>
+                  8 Servings
+                </span>
+              </div>
+
+              <div class="price-row">
+                <span class="new-price">₹49</span>
+
+                <span class="old-price">₹99</span>
+              </div>
+
+              <a href="#" class="reserve-btn">
+                Reserve Meal
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 4 -->
+
+          <div class="food-card">
+            <div class="image-wrapper">
+              <img
+                src="{{ url_for('static', filename='images/foods/salad.jpg') }}"
+                alt="Fresh Salad"
+              />
+
+              <span class="food-badge fresh"> 🥗 Healthy Choice </span>
+            </div>
+
+            <div class="food-content">
+              <h3>Fresh Salad Bowl</h3>
+
+              <div class="restaurant-row">
+                <p class="restaurant-name">Green Leaf Café</p>
+
+                <span class="rating">
+                  <i class="fa-solid fa-star"></i>
+                  4.9
+                </span>
+              </div>
+
+              <div class="food-info">
+                <span>
+                  <i class="fa-solid fa-location-dot"></i>
+                  1.8 km
+                </span>
+
+                <span>
+                  <i class="fa-solid fa-utensils"></i>
+                  5 Servings
+                </span>
+              </div>
+
+              <div class="price-row">
+                <span class="free-price">FREE</span>
+              </div>
+
+              <a href="#" class="reserve-btn donation">
+                Claim Free Meal
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 5 -->
+
+          <div class="food-card">
+            <div class="image-wrapper">
+              <img
+                src="{{ url_for('static', filename='images/foods/biryani.jpg') }}"
+                alt="Veg Biryani"
+              />
+
+              <span class="food-badge ai">
+                <i class="fa-solid fa-fire"></i> Popular
+              </span>
+            </div>
+
+            <div class="food-content">
+              <h3>Veg Biryani</h3>
+
+              <div class="restaurant-row">
+                <p class="restaurant-name">Royal Kitchen</p>
+
+                <span class="rating">
+                  <i class="fa-solid fa-star"></i>
+                  4.8
+                </span>
+              </div>
+
+              <div class="food-info">
+                <span>
+                  <i class="fa-solid fa-location-dot"></i>
+                  2.6 km
+                </span>
+
+                <span>
+                  <i class="fa-solid fa-utensils"></i>
+                  6 Servings
+                </span>
+              </div>
+
+              <div class="price-row">
+                <span class="new-price">₹89</span>
+
+                <span class="old-price">₹169</span>
+              </div>
+
+              <a href="#" class="reserve-btn">
+                Reserve Meal
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 6 -->
+
+          <div class="food-card">
+            <div class="image-wrapper">
+              <img
+                src="{{ url_for('static', filename='images/foods/bread.jpg') }}"
+                alt="Fresh Bread"
+              />
+
+              <span class="food-badge success">
+                <i class="fa-solid fa-bread-slice"></i> Bakery Special
+              </span>
+            </div>
+
+            <div class="food-content">
+              <h3>Fresh Bread Loaf</h3>
+
+              <div class="restaurant-row">
+                <p class="restaurant-name">Daily Bake</p>
+
+                <span class="rating">
+                  <i class="fa-solid fa-star"></i>
+                  4.6
+                </span>
+              </div>
+
+              <div class="food-info">
+                <span>
+                  <i class="fa-solid fa-location-dot"></i>
+                  900 m
+                </span>
+
+                <span>
+                  <i class="fa-solid fa-utensils"></i>
+                  10 Servings
+                </span>
+              </div>
+
+              <div class="price-row">
+                <span class="new-price">₹25</span>
+
+                <span class="old-price">₹60</span>
+              </div>
+
+              <a href="#" class="reserve-btn">
+                Reserve Meal
+                <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Button -->
+
+        <div class="market-footer">
+          <a href="#" class="view-btn">
+            Explore Full Marketplace
+
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+            TESTIMONIALS
+========================================== -->
+
+    <section class="testimonials" id="testimonials">
+      <div class="container">
+        <!-- Section Header -->
+
+        <div class="section-header">
+          <div class="section-badge">
+            <i class="fa-solid fa-comments"></i>
+            <span>Testimonials</span>
+          </div>
+
+          <h2 class="section-title">
+            What Our
+            <span class="highlight">Community Says.</span>
+          </h2>
+
+          <p class="section-description">
+            Restaurants, NGOs and users are working together to reduce food
+            waste while making fresh meals accessible to everyone.
+          </p>
+        </div>
+
+        <!-- Cards -->
+
+        <div class="testimonial-grid">
+          <!-- Card 1 -->
+
+          <div class="testimonial-card">
+            <div class="stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+
+            <p class="testimonial-text">
+              "ReServe has helped us donate surplus food instead of throwing it
+              away. We now serve more people while reducing waste every single
+              day."
+            </p>
+
+            <div class="testimonial-user">
+              <div class="avatar">PS</div>
+
+              <div>
+                <h4>Priya Sharma</h4>
+
+                <span>Restaurant Owner</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+
+          <div class="testimonial-card">
+            <div class="stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+
+            <p class="testimonial-text">
+              "The platform makes food collection organized and efficient.
+              Families receive fresh meals much faster than before."
+            </p>
+
+            <div class="testimonial-user">
+              <div class="avatar">RV</div>
+
+              <div>
+                <h4>Rahul Verma</h4>
+
+                <span>NGO Volunteer</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+
+          <div class="testimonial-card">
+            <div class="stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+
+            <p class="testimonial-text">
+              "Affordable surplus meals have been really helpful as a student.
+              It's a smart idea that benefits both people and the environment."
+            </p>
+
+            <div class="testimonial-user">
+              <div class="avatar">AS</div>
+
+              <div>
+                <h4>Ananya Singh</h4>
+
+                <span>Student User</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+                FAQ SECTION
+========================================== -->
+
+    <section class="faq-section" id="faq">
+      <div class="container">
+        <!-- Section Header -->
+
+        <div class="section-header">
+          <div class="section-badge">
+            <i class="fa-solid fa-circle-question"></i>
+            <span>Frequently Asked Questions</span>
+          </div>
+
+          <h2 class="section-title">
+            Got Questions?
+            <span class="highlight">We've Got Answers.</span>
+          </h2>
+
+          <p class="section-description">
+            Learn more about how ReServe works, who can participate, and how
+            we're helping reduce food waste through smart food sharing.
+          </p>
+        </div>
+
+        <div class="faq-container">
+          <!-- FAQ 1 -->
+
+          <div class="faq-item active">
+            <button class="faq-question">
+              <span>Who can donate food through ReServe?</span>
+
+              <i class="fa-solid fa-minus"></i>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Restaurants, cafés, bakeries, supermarkets, event organizers and
+                individuals with safe surplus food can donate through ReServe.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ 2 -->
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How does ReServe ensure food safety?</span>
+
+              <i class="fa-solid fa-plus"></i>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Food listings are verified based on freshness, expiry
+                information and donor verification before becoming available on
+                the platform.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ 3 -->
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Who can receive donated food?</span>
+
+              <i class="fa-solid fa-plus"></i>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Verified NGOs, community kitchens, shelters and eligible users
+                can reserve available meals through ReServe.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ 4 -->
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Is ReServe free to use?</span>
+
+              <i class="fa-solid fa-plus"></i>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Yes. Registration is completely free. Donors can list surplus
+                food and NGOs can claim donations without platform charges.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ 5 -->
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>How are food pickups managed?</span>
+
+              <i class="fa-solid fa-plus"></i>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                After a reservation is confirmed, pickup details are shared
+                between the donor and the receiver to ensure smooth collection.
+              </p>
+            </div>
+          </div>
+
+          <!-- FAQ 6 -->
+
+          <div class="faq-item">
+            <button class="faq-question">
+              <span>Can community members buy discounted meals?</span>
+
+              <i class="fa-solid fa-plus"></i>
+            </button>
+
+            <div class="faq-answer">
+              <p>
+                Yes. Community members can explore nearby discounted surplus
+                meals from verified restaurants and bakeries.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================
+                FOOTER
+========================================== -->
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-grid">
+          <!-- Brand -->
+
+          <div class="footer-column">
+            <a href="#" class="footer-logo">
+              <i class="fa-solid fa-leaf"></i>
+
+              <span>ReServe</span>
+            </a>
+
+            <p class="footer-tagline">From Surplus to Solution.</p>
+
+            <p class="footer-description">
+              ReServe connects restaurants, NGOs, and communities to reduce food
+              waste through smart food sharing and sustainable technology.
+            </p>
+
+            <div class="footer-social">
+              <a href="#"><i class="fab fa-facebook-f"></i></a>
+
+              <a href="#"><i class="fab fa-instagram"></i></a>
+
+              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+
+              <a href="#"><i class="fab fa-x-twitter"></i></a>
+            </div>
+          </div>
+
+          <!-- Quick Links -->
+
+          <div class="footer-column">
+            <h3>Quick Links</h3>
+
+            <ul>
+              <li><a href="#hero">Home</a></li>
+
+              <li><a href="#story">About Us</a></li>
+
+              <li><a href="#solutions">Solutions</a></li>
+
+              <li><a href="#marketplace">Marketplace</a></li>
+
+              <li><a href="#faq">FAQ</a></li>
+            </ul>
+          </div>
+
+          <!-- Resources -->
+
+          <div class="footer-column">
+            <h3>Resources</h3>
+
+            <ul>
+              <li><a href="#">Donate Food</a></li>
+
+              <li><a href="#">Become a Partner</a></li>
+
+              <li><a href="#">NGO Registration</a></li>
+
+              <li><a href="#">Privacy Policy</a></li>
+
+              <li><a href="#">Terms & Conditions</a></li>
+            </ul>
+          </div>
+
+          <!-- Contact -->
+
+          <div class="footer-column">
+            <h3>Contact</h3>
+
+            <ul class="footer-contact">
+              <li>
+                <i class="fa-solid fa-envelope"></i>
+                reserve@gmail.com
+              </li>
+
+              <li>
+                <i class="fa-solid fa-phone"></i>
+                +91 98765 43210
+              </li>
+
+              <li>
+                <i class="fa-solid fa-location-dot"></i>
+                Lucknow, Uttar Pradesh
+              </li>
+            </ul>
+            <div class="newsletter-wrapper">
+              <h4>Stay Updated</h4>
+
+              <p>
+                Subscribe to receive updates about food donations, new partners,
+                and community initiatives.
+              </p>
+
+              <div class="newsletter">
+                <input type="email" placeholder="Enter your email address" />
+
+                <button>Subscribe</button>
+              </div>
+              <div class="newsletter-message"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom -->
+
+        <div class="footer-bottom">
+          <p>© 2026 ReServe. All Rights Reserved.</p>
+
+          <p>
+            Designed & Developed for Sustainable Food Sharing
+            <i class="fa-solid fa-heart"></i>
+          </p>
+        </div>
+      </div>
+
+      <!-- Back To Top -->
+
+      <button class="back-to-top">
+        <i class="fa-solid fa-arrow-up"></i>
+      </button>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/faq.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/footer.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/navbar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/statistics.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  </body>
+</html>

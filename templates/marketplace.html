@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Marketplace | ReServe</title>
+
+    <!-- Remix Icons -->
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css"
+    />
+
+    <!-- Google Font -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/sidebar.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/marketplace.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <!-- ==========================================================
+SIDEBAR
+========================================================== -->
+
+      <aside class="sidebar">
+        <div class="logo">
+          <img
+            src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+          />
+
+          <span>ReServe</span>
+        </div>
+
+        <ul class="sidebar-menu">
+          <li>
+            <a href="/dashboard">
+              <i class="ri-dashboard-line"></i>
+
+              <span>Dashboard</span>
+            </a>
+          </li>
+
+          <li>
+            <a class="active" href="/marketplace">
+              <i class="ri-store-2-line"></i>
+
+              <span>Marketplace</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="/create-listing">
+              <i class="ri-add-circle-line"></i>
+
+              <span>Create Listing</span>
+            </a>
+          </li>
+        </ul>
+
+        <div class="sidebar-footer">
+          <div class="user-profile">
+            <div class="avatar">{{ user.name[0] }}</div>
+
+            <div>
+              <h4>{{ user.name }}</h4>
+
+              <span>{{ user.role }}</span>
+            </div>
+          </div>
+
+          <a href="/logout" class="logout-btn">
+            <i class="ri-logout-box-r-line"></i>
+
+            Logout
+          </a>
+        </div>
+      </aside>
+
+      <!-- ==========================================================
+MAIN CONTENT
+========================================================== -->
+
+      <main class="main-content">
+        <!-- ==========================================================
+TOP HEADER
+========================================================== -->
+
+        <header class="page-header">
+          <div>
+            <span class="page-badge">
+              <i class="ri-robot-2-line"></i>
+
+              AI Marketplace
+            </span>
+
+            <h1>Marketplace</h1>
+
+            <p>
+              Discover nearby surplus food, reduce waste, and help protect the
+              environment.
+            </p>
+          </div>
+
+          <div class="header-actions">
+            <button class="notification-btn">
+              <i class="ri-notification-3-line"></i>
+            </button>
+
+            <a href="/create-listing" class="primary-btn">
+              <i class="ri-add-line"></i>
+
+              Create Listing
+            </a>
+          </div>
+        </header>
+
+        <!-- ==========================================================
+HERO
+========================================================== -->
+
+        <section class="marketplace-hero">
+          <div class="hero-content">
+            <span class="hero-badge">
+              <i class="ri-sparkling-line"></i>
+
+              AI Powered Food Marketplace
+            </span>
+
+            <h2>
+              Rescue Food.
+
+              <span>Save Money.</span>
+
+              Save the Planet.
+            </h2>
+
+            <p>
+              Browse AI-ranked surplus food from nearby restaurants, bakeries,
+              grocery stores and community kitchens. Every rescued meal reduces
+              food waste and carbon emissions.
+            </p>
+          </div>
+
+          <div class="hero-illustration">
+            <img
+              src="{{ url_for('static', filename='images/marketplace-hero.png') }}"
+              alt="Marketplace"
+            />
+          </div>
+        </section>
+
+        <!-- ==========================================================
+SEARCH & FILTERS
+========================================================== -->
+
+        <section class="marketplace-toolbar">
+          <div class="search-box">
+            <i class="ri-search-line"></i>
+
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Search food, restaurant or category..."
+            />
+          </div>
+
+          <div class="toolbar-filters">
+            <select id="categoryFilter">
+              <option value="">All Categories</option>
+
+              <option value="Meals">Meals</option>
+
+              <option value="Bakery">Bakery</option>
+
+              <option value="Snacks">Snacks</option>
+
+              <option value="Fruits">Fruits</option>
+
+              <option value="Vegetables">Vegetables</option>
+
+              <option value="Dairy">Dairy</option>
+            </select>
+
+            <select id="foodTypeFilter">
+              <option value="">Food Type</option>
+
+              <option value="Veg">Veg</option>
+
+              <option value="Non-Veg">Non-Veg</option>
+
+              <option value="Vegan">Vegan</option>
+            </select>
+
+            <select id="sortFilter">
+              <option value="latest">Latest</option>
+
+              <option value="freshness">Freshness</option>
+
+              <option value="discount">Highest Discount</option>
+
+              <option value="priceLow">Price Low → High</option>
+
+              <option value="priceHigh">Price High → Low</option>
+            </select>
+
+            <button id="refreshListings" class="refresh-btn">
+              <i class="ri-refresh-line"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- ==========================================================
+QUICK STATS
+========================================================== -->
+
+        <section class="market-stats">
+          <div class="market-stat-card">
+            <i class="ri-store-2-line"></i>
+
+            <h3 id="activePartners">0</h3>
+
+            <p>Active Partners</p>
+          </div>
+
+          <div class="market-stat-card">
+            <i class="ri-restaurant-line"></i>
+
+            <h3 id="availableMeals">0</h3>
+
+            <p>Meals Available</p>
+          </div>
+
+          <div class="market-stat-card">
+            <i class="ri-leaf-line"></i>
+
+            <h3 id="co2Saved">0 kg</h3>
+
+            <p>Carbon Saved</p>
+          </div>
+
+          <div class="market-stat-card">
+            <i class="ri-robot-2-line"></i>
+
+            <h3 id="avgScore">0%</h3>
+
+            <p>Average AI Score</p>
+          </div>
+        </section>
+
+        <!-- ==========================================================
+AI INSIGHT
+========================================================== -->
+
+        <section class="ai-banner">
+          <div class="ai-banner-icon">
+            <i class="ri-robot-2-line"></i>
+          </div>
+
+          <div class="ai-banner-content">
+            <span class="section-tag"> AI MARKET INSIGHT </span>
+
+            <h3>Today's Smart Recommendation</h3>
+
+            <p id="aiInsight">
+              AI is analysing nearby listings to recommend the best recovery
+              opportunities.
+            </p>
+          </div>
+
+          <div class="ai-banner-score">
+            <span> Recovery Rate </span>
+
+            <h2 id="recoveryRate">0%</h2>
+          </div>
+        </section>
+
+        <!-- ==========================================================
+MARKETPLACE CONTENT
+========================================================== -->
+
+        <section class="marketplace-content">
+          <!-- ===================================== -->
+          <!-- LEFT SIDE -->
+          <!-- ===================================== -->
+
+          <div class="listings-section">
+            <div class="section-header">
+              <div>
+                <span class="section-tag">
+                  <i class="ri-fire-line"></i>
+
+                  Featured Listings
+                </span>
+
+                <h2>Fresh Food Near You</h2>
+
+                <p>AI-ranked surplus food available for rescue today.</p>
+              </div>
+
+              <button class="refresh-btn" id="refreshBtn">
+                <i class="ri-refresh-line"></i>
+
+                Refresh
+              </button>
+            </div>
+
+            <!-- Loading -->
+
+            <div class="listing-grid loading-grid" id="loadingGrid">
+              <div class="listing-skeleton"></div>
+              <div class="listing-skeleton"></div>
+              <div class="listing-skeleton"></div>
+              <div class="listing-skeleton"></div>
+              <div class="listing-skeleton"></div>
+              <div class="listing-skeleton"></div>
+            </div>
+
+            <!-- Dynamic Listings -->
+
+            <div class="listing-grid" id="listingGrid">
+              <!-- marketplace.js will generate cards -->
+            </div>
+
+            <!-- Empty State -->
+
+            <div class="empty-state hidden" id="emptyState">
+              <div class="empty-icon">
+                <i class="ri-restaurant-line"></i>
+              </div>
+
+              <h2>No Listings Found</h2>
+
+              <p>Try changing your filters or create a new listing.</p>
+
+              <a href="/create-listing" class="primary-btn">
+                <i class="ri-add-line"></i>
+
+                Create Listing
+              </a>
+            </div>
+          </div>
+
+          <!-- ===================================== -->
+          <!-- RIGHT SIDEBAR -->
+          <!-- ===================================== -->
+
+          <aside class="market-sidebar">
+            <!-- Today's AI -->
+
+            <div class="sidebar-card">
+              <span class="section-tag"> AI INSIGHT </span>
+
+              <h3>Today's Recommendation</h3>
+
+              <p id="todayInsight">
+                AI is continuously analysing demand, freshness and recovery
+                potential.
+              </p>
+            </div>
+
+            <!-- Impact -->
+
+            <div class="sidebar-card">
+              <span class="section-tag"> TODAY'S IMPACT </span>
+
+              <div class="impact-list">
+                <div class="impact-item">
+                  <span>Meals Saved</span>
+
+                  <strong id="todayMeals"> 0 </strong>
+                </div>
+
+                <div class="impact-item">
+                  <span>CO₂ Saved</span>
+
+                  <strong id="todayCarbon"> 0 kg </strong>
+                </div>
+
+                <div class="impact-item">
+                  <span>Listings</span>
+
+                  <strong id="todayListings"> 0 </strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- AI Quality -->
+
+            <div class="sidebar-card">
+              <span class="section-tag"> AI QUALITY </span>
+
+              <div class="quality-ring">
+                <div>
+                  <h2 id="qualityScore">96%</h2>
+
+                  <span> Average Quality </span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <!-- ==========================================================
+PAGINATION
+========================================================== -->
+
+        <section class="pagination-section">
+          <button class="page-btn">
+            <i class="ri-arrow-left-s-line"></i>
+          </button>
+
+          <button class="page-btn active">1</button>
+
+          <button class="page-btn">2</button>
+
+          <button class="page-btn">3</button>
+
+          <button class="page-btn">
+            <i class="ri-arrow-right-s-line"></i>
+          </button>
+        </section>
+
+        <!-- ==========================================================
+FOOTER
+========================================================== -->
+
+        <footer class="market-footer">
+          <div class="footer-content">
+            <div>
+              <h3>ReServe</h3>
+
+              <p>
+                From Surplus to Solution. Connecting restaurants, bakeries,
+                grocery stores and communities to reduce food waste through AI.
+              </p>
+            </div>
+
+            <div>
+              <h4>Marketplace</h4>
+
+              <ul>
+                <li><a href="#">Browse Listings</a></li>
+
+                <li><a href="#">Popular Restaurants</a></li>
+
+                <li><a href="#">Top Rated</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4>Support</h4>
+
+              <ul>
+                <li><a href="#">Help Center</a></li>
+
+                <li><a href="#">Privacy Policy</a></li>
+
+                <li><a href="#">Terms</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            © 2026 ReServe • From Surplus to Solution
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+  </body>
+</html>

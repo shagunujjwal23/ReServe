@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Dashboard | ReServe</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Dashboard CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <!-- ========================================= -->
+      <!-- Sidebar -->
+      <!-- ========================================= -->
+
+      <aside class="sidebar">
+        <!-- Brand -->
+        <div class="sidebar-brand">
+          <div class="logo-wrapper">
+            <img
+               src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe Logo"
+            />
+          </div>
+
+          <div class="brand-content">
+            <h2>ReServe</h2>
+            <p>Food Rescue Platform</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+          <a href="#" class="nav-item active">
+            <i class="ri-home-5-line"></i>
+            <span>Overview</span>
+          </a>
+
+          <a href="/create-listing">
+            <i class="ri-restaurant-line"></i>
+            <span>My Listings</span>
+          </a>
+
+          <a href="/marketplace">
+            <i class="ri-store-2-line"></i>
+            <span>Marketplace</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-file-list-3-line"></i>
+            <span>Requests</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-box-3-line"></i>
+            <span>Pickups</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-robot-2-line"></i>
+            <span>AI Insights</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-bar-chart-box-line"></i>
+            <span>Analytics</span>
+          </a>
+        </nav>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+          <a href="#">
+            <i class="ri-logout-box-r-line"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- ========================================= -->
+      <!-- Main Content -->
+      <!-- ========================================= -->
+
+      <div class="main-content">
+        <main class="content-wrapper">
+          <!-- ==========================================================
+          TOPBAR
+      =========================================================== -->
+
+          <header class="topbar">
+            <!-- Search -->
+
+            <div class="search-container">
+              <i class="ri-search-line"></i>
+
+              <input type="text" placeholder="Search food, NGOs, orders..." />
+
+              <kbd>Ctrl + K</kbd>
+            </div>
+
+            <!-- Right Side -->
+
+            <div class="topbar-actions">
+              <!-- Theme -->
+
+              <button class="icon-btn" title="Theme">
+                <i class="ri-moon-line"></i>
+              </button>
+
+              <!-- Messages -->
+
+              <button class="icon-btn" title="Messages">
+                <i class="ri-message-3-line"></i>
+
+                <span class="badge">2</span>
+              </button>
+
+              <!-- Notifications -->
+
+              <button class="icon-btn" title="Notifications">
+                <i class="ri-notification-3-line"></i>
+
+                <span class="badge">5</span>
+              </button>
+
+              <!-- Profile -->
+
+              <button class="profile" type="button">
+                <img
+                  src="{{ url_for('static', filename='images/avatars/default.png') }}"
+                  alt="Profile"
+                />
+
+                <div class="profile-info">
+                  <h4>{{ user.name }}</h4>
+
+                  <p>{{ user.role }}</p>
+                </div>
+
+                <i class="ri-arrow-down-s-line"></i>
+              </button>
+            </div>
+          </header>
+
+          <!-- ==========================================================
+     HERO SECTION
+=========================================================== -->
+
+          <section class="hero">
+            <!-- Left Content -->
+
+            <div class="hero-left">
+              <div class="hero-badge">
+                <i class="ri-sun-line"></i>
+                <span>Good Afternoon</span>
+              </div>
+
+              <h2>
+                Welcome back,
+                <span>{{ user.name }}</span>! 👋
+              </h2>
+
+              <p>
+                Every meal you rescue brings hope to someone. Here's what's
+                happening today.
+              </p>
+
+              <div class="hero-buttons">
+                <a href="#" class="primary-btn">
+                  <i class="ri-add-line"></i>
+                  <span>Add Food Listing</span>
+                </a>
+
+                <a href="#" class="secondary-btn">
+                  <i class="ri-bar-chart-box-line"></i>
+                  <span>View Analytics</span>
+                </a>
+              </div>
+            </div>
+
+            <!-- Center Illustration -->
+
+            <div class="hero-center">
+              <img
+                src="{{ url_for('static', filename='images/hero/food-rescue.png') }}"
+                alt="Food Rescue Illustration"
+              />
+            </div>
+          </section>
+
+          <!-- ==========================================================
+     STATISTICS
+=========================================================== -->
+
+          <section class="stats-section">
+            <div class="stats-grid">
+              <!-- Card 1 -->
+
+              <div class="stat-card">
+                <div class="stat-main">
+                  <div class="stat-icon meals">
+                    <i class="ri-restaurant-2-line"></i>
+                  </div>
+
+                  <div class="stat-content">
+                    <span class="stat-title">Meals Rescued</span>
+
+                    <h3>1,284</h3>
+
+                    <div class="stat-trend positive">
+                      <i class="ri-arrow-up-line"></i>
+                      <span>18% this month</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stat-graph">
+                  <canvas id="mealChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Card 2 -->
+
+              <div class="stat-card">
+                <div class="stat-main">
+                  <div class="stat-icon food">
+                    <i class="ri-leaf-line"></i>
+                  </div>
+
+                  <div class="stat-content">
+                    <span class="stat-title">Food Saved</span>
+
+                    <h3>365 kg</h3>
+
+                    <div class="stat-trend positive">
+                      <i class="ri-arrow-up-line"></i>
+                      <span>Today +21 kg</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stat-graph">
+                  <canvas id="foodChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Card 3 -->
+
+              <div class="stat-card">
+                <div class="stat-main">
+                  <div class="stat-icon people">
+                    <i class="ri-group-line"></i>
+                  </div>
+
+                  <div class="stat-content">
+                    <span class="stat-title">People Served</span>
+
+                    <h3>892</h3>
+
+                    <div class="stat-trend positive">
+                      <i class="ri-arrow-up-line"></i>
+                      <span>Today +34</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stat-graph">
+                  <canvas id="peopleChart"></canvas>
+                </div>
+              </div>
+
+              <!-- Card 4 -->
+
+              <div class="stat-card">
+                <div class="stat-main">
+                  <div class="stat-icon carbon">
+                    <i class="ri-earth-line"></i>
+                  </div>
+
+                  <div class="stat-content">
+                    <span class="stat-title">CO₂ Prevented</span>
+
+                    <h3>740 kg</h3>
+
+                    <div class="stat-trend positive">
+                      <i class="ri-arrow-up-line"></i>
+                      <span>+12% this month</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stat-graph">
+                  <canvas id="carbonChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==========================================================
+     IMPACT OVERVIEW & AI ASSISTANT
+=========================================================== -->
+
+          <section class="dashboard-grid">
+            <!-- ==========================================================
+       IMPACT OVERVIEW
+  =========================================================== -->
+
+            <div class="dashboard-card impact-card">
+              <!-- Header -->
+              <div class="card-header">
+                <div class="card-header-content">
+                  <span class="card-label">
+                    <i class="ri-bar-chart-box-line"></i>
+                    Analytics
+                  </span>
+
+                  <div class="impact-title-row">
+                    <h2>Impact Overview</h2>
+
+                    <div class="impact-actions">
+                      <div class="growth-badge positive">
+                        <i class="ri-arrow-up-line"></i>
+                        +18.4%
+                      </div>
+
+                      <div class="time-filter" id="filterToggle">
+                        <i class="ri-calendar-line"></i>
+
+                        <span id="selectedFilter">This Week</span>
+
+                        <i class="ri-arrow-down-s-line arrow"></i>
+
+                        <div class="filter-dropdown" id="filterDropdown">
+                          <button class="filter-option" data-value="today">
+                            Today
+                          </button>
+
+                          <button
+                            class="filter-option active"
+                            data-value="week"
+                          >
+                            This Week
+                          </button>
+
+                          <button class="filter-option" data-value="month">
+                            This Month
+                          </button>
+
+                          <button class="filter-option" data-value="year">
+                            This Year
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p>Monitor your donation trends with real-time insights.</p>
+                </div>
+              </div>
+              <!-- Donation Trend -->
+
+              <div class="chart-section">
+                <div class="line-chart-card">
+                  <div class="chart-header">
+                    <div>
+                      <h3>Donation Trend</h3>
+                      <span>Last 7 Days</span>
+                    </div>
+
+                    <h2>1,248</h2>
+                  </div>
+
+                  <canvas id="impactChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==========================================================
+       AI ASSISTANT
+  =========================================================== -->
+
+            <div class="dashboard-card ai-card">
+              <div class="card-header">
+                <div>
+                  <span class="card-label">
+                    <i class="ri-robot-2-line"></i>
+                    AI Assistant
+                  </span>
+
+                  <p class="ai-subtitle">Today's Recommendations</p>
+                </div>
+              </div>
+
+              <div class="ai-content">
+                <div class="ai-greeting">
+                  <h3>
+                    Good Afternoon,
+                    <span>{{ user.name }}</span> 👋
+                  </h3>
+                </div>
+
+                <div class="ai-list">
+                  <!-- Recommendation 1 -->
+
+                  <div class="ai-item">
+                    <div class="ai-icon">
+                      <i class="ri-time-line"></i>
+                    </div>
+
+                    <div>
+                      <p>
+                        Donations posted before
+                        <strong>5:30 PM</strong>
+                        usually receive faster pickup requests.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Recommendation 2 -->
+
+                  <div class="ai-item">
+                    <div class="ai-icon">
+                      <i class="ri-map-pin-line"></i>
+                    </div>
+
+                    <div>
+                      <p>
+                        NGOs near
+                        <strong>Gomti Nagar</strong>
+                        are actively looking for cooked meals today.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Recommendation 3 -->
+
+                  <div class="ai-item">
+                    <div class="ai-icon">
+                      <i class="ri-alarm-warning-line"></i>
+                    </div>
+
+                    <div>
+                      <p>
+                        <strong>4 active listings</strong>
+                        are nearing their expiry time.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Recommendation 4 -->
+
+                  <div class="ai-item">
+                    <div class="ai-icon">
+                      <i class="ri-line-chart-line"></i>
+                    </div>
+
+                    <div>
+                      <p>
+                        Your current listings have a
+                        <strong>92% predicted pickup success rate</strong>
+                        based on demand, distance and expiry time.
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Recommendation 5 -->
+                </div>
+
+                <button class="primary-btn ai-btn">
+                  View All Recommendations
+
+                  <i class="ri-arrow-right-line"></i>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===========================
+     Active Listings
+=========================== -->
+          <section class="active-listings">
+            <div class="section-header">
+              <div>
+                <h2>Active Listings</h2>
+                <p>Your latest surplus food listings.</p>
+              </div>
+
+              <a href="manage-listings.html" class="view-all-btn">
+                Manage Listings
+              </a>
+            </div>
+
+            <div class="listing-grid">
+              <!-- Listing Card -->
+              <a href="#" class="listing-card">
+                <div class="listing-image">
+                  <img
+                    src="{{ url_for('static', filename='images/foods/meal.jpg') }}"
+                    alt="Veg Meal Boxes"
+                    loading="lazy"
+                  />
+                </div>
+
+                <div class="listing-content">
+                  <div class="listing-title">
+                    <h3>Veg Meal Boxes</h3>
+                    <span class="food-type veg" title="Vegetarian"></span>
+                  </div>
+
+                  <div class="listing-info">
+                    <div class="info-row">
+                      <span>Remaining</span>
+                      <strong>18 / 50 Meals</strong>
+                    </div>
+
+                    <div class="info-row">
+                      <span>Accepted</span>
+                      <strong>32 Meals</strong>
+                    </div>
+
+                    <div class="info-row">
+                      <span>Available Until</span>
+                      <strong>Today • 6:00 PM</strong>
+                    </div>
+                  </div>
+                </div>
+              </a>
+
+              <!-- Listing Card -->
+              <a href="#" class="listing-card">
+                <div class="listing-image">
+                  <img
+                    src="{{ url_for('static', filename='images/foods/bread.jpg') }}"
+                    alt="Bread Packets"
+                    loading="lazy"
+                  />
+                </div>
+
+                <div class="listing-content">
+                  <div class="listing-title">
+                    <h3>Bread Packets</h3>
+                    <span class="food-type veg" title="Vegetarian"></span>
+                  </div>
+
+                  <div class="listing-info">
+                    <div class="info-row">
+                      <span>Remaining</span>
+                      <strong>12 / 25 Packs</strong>
+                    </div>
+
+                    <div class="info-row">
+                      <span>Accepted</span>
+                      <strong>13 Packs</strong>
+                    </div>
+
+                    <div class="info-row">
+                      <span>Available Until</span>
+                      <strong>Today • 2:30 PM</strong>
+                    </div>
+                  </div>
+                </div>
+              </a>
+
+              <!-- Listing Card -->
+              <a href="#" class="listing-card">
+                <div class="listing-image">
+                  <img
+                    src="{{ url_for('static', filename='images/foods/milk.jpg') }}"
+                    alt="Milk Bottles"
+                    loading="lazy"
+                  />
+                </div>
+
+                <div class="listing-content">
+                  <div class="listing-title">
+                    <h3>Milk Bottles</h3>
+                    <span class="food-type veg" title="Vegetarian"></span>
+                  </div>
+
+                  <div class="listing-info">
+                    <div class="info-row">
+                      <span>Remaining</span>
+                      <strong>8 / 20 Bottles</strong>
+                    </div>
+
+                    <div class="info-row">
+                      <span>Accepted</span>
+                      <strong>12 Bottles</strong>
+                    </div>
+
+                    <div class="info-row">
+                      <span>Available Until</span>
+                      <strong>Today • 12:00 PM</strong>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  </body>
+</html>

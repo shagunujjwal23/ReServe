@@ -1,0 +1,155 @@
+/* =========================================
+   Navbar
+========================================= */
+
+.navbar{
+    width:100%;
+    position:fixed;
+    top:0;
+    left:0;
+    background:#ffffff;
+    box-shadow:0 2px 15px rgba(0,0,0,.08);
+    z-index:1000;
+}
+
+.nav-container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    height:80px;
+}
+
+/* =========================================
+   Logo
+========================================= */
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    font-size:28px;
+    font-weight:700;
+    color:var(--primary-color);
+}
+
+.logo i{
+    font-size:30px;
+}
+
+/* =========================================
+   Navigation Links
+========================================= */
+
+.nav-links{
+    display:flex;
+    align-items:center;
+    gap:35px;
+}
+
+.nav-links a{
+    font-size:16px;
+    font-weight:500;
+    color:var(--text-color);
+    transition:var(--transition);
+    position:relative;
+}
+
+.nav-links a:hover{
+    color:var(--primary-color);
+}
+
+/* Underline Animation */
+
+.nav-links a::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    bottom:-6px;
+
+    width:0;
+    height:2px;
+
+    background:var(--primary-color);
+
+    transition:var(--transition);
+
+}
+
+.nav-links a:hover::after{
+
+    width:100%;
+
+}
+
+/* =========================================
+   Buttons
+========================================= */
+
+.nav-buttons{
+    display:flex;
+    gap:15px;
+}
+
+.login-btn{
+
+    padding:10px 22px;
+
+    border:2px solid var(--primary-color);
+
+    border-radius:50px;
+
+    color:var(--primary-color);
+
+    font-weight:600;
+
+    transition:var(--transition);
+
+}
+
+.login-btn:hover{
+
+    background:var(--primary-color);
+
+    color:#ffffff;
+
+}
+
+.signup-btn{
+
+    padding:10px 24px;
+
+    border-radius:50px;
+
+    background:var(--primary-color);
+
+    color:#ffffff;
+
+    font-weight:600;
+
+    transition:var(--transition);
+
+}
+
+.signup-btn:hover{
+
+    background:var(--secondary-color);
+
+}
+
+/* =========================================
+   Responsive Placeholder
+========================================= */
+
+@media(max-width:992px){
+
+    .nav-links{
+
+        display:none;
+
+    }
+
+}

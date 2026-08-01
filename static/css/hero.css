@@ -1,0 +1,370 @@
+/* =========================================
+   Hero Section
+========================================= */
+
+.hero{
+    min-height: calc(100vh - 80px);
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg,#F8FAF8 0%,#ECFDF3 100%);
+}
+
+.hero-container{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:60px;
+}
+
+/* =========================================
+   Left Side
+========================================= */
+
+.hero-content{
+    flex:1;
+}
+
+.hero-badge{
+
+    display:inline-block;
+
+    padding:10px 20px;
+
+    background:#E8F5E9;
+
+    color:var(--primary-color);
+
+    border-radius:50px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    margin-bottom:25px;
+
+}
+
+.hero-content h1{
+
+    font-size:64px;
+
+    line-height:1.2;
+
+    margin-bottom:25px;
+
+}
+
+.hero-content h1 span{
+
+    color:var(--primary-color);
+
+}
+
+.hero-content p{
+
+    font-size:18px;
+
+    max-width:620px;
+
+    margin-bottom:40px;
+
+}
+
+/* =========================================
+   Buttons
+========================================= */
+
+.hero-buttons{
+
+    display:flex;
+
+    gap:20px;
+
+}
+
+.primary-btn{
+
+    padding:15px 34px;
+
+    background:var(--primary-color);
+
+    color:white;
+
+    border-radius:50px;
+
+    font-weight:600;
+
+    transition:var(--transition);
+
+}
+
+.primary-btn:hover{
+
+    background:var(--secondary-color);
+
+    transform:translateY(-3px);
+
+}
+
+.secondary-btn{
+
+    padding:15px 34px;
+
+    border:2px solid var(--primary-color);
+
+    color:var(--primary-color);
+
+    border-radius:50px;
+
+    font-weight:600;
+
+    transition:var(--transition);
+
+}
+
+.secondary-btn:hover{
+
+    background:var(--primary-color);
+
+    color:white;
+
+}
+
+/* =========================================
+   Right Side
+========================================= */
+
+.hero-image{
+
+    flex:1;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+.hero-image img{
+
+    width:100%;
+    max-width:550px;
+
+}
+
+/* =========================================
+   HERO VISUAL
+========================================= */
+
+.hero-visual{
+    position:relative;
+    width:100%;
+    max-width:650px;
+    height:600px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* =========================================
+   HERO IMAGE
+========================================= */
+
+.hero-image{
+    position:relative;
+    z-index:5;
+}
+
+.hero-image img{
+    width:100%;
+    max-width:430px;
+    animation:floatImage 6s ease-in-out infinite;
+}
+
+/* =========================================
+   NETWORK
+========================================= */
+
+.hero-network{
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:2;
+
+}
+
+/* =========================================
+   AI CENTER
+========================================= */
+
+.network-center{
+
+    position:absolute;
+
+    top:50%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    width:90px;
+    height:90px;
+
+    border-radius:50%;
+
+    background:linear-gradient(135deg,#2ecc71,#27ae60);
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    color:#fff;
+
+    font-size:2rem;
+
+    box-shadow:
+        0 0 0 12px rgba(46,204,113,.08),
+        0 0 50px rgba(46,204,113,.35);
+
+    z-index:3;
+}
+
+/* =========================================
+   NODES
+========================================= */
+
+.network-node{
+
+    position:absolute;
+
+    width:70px;
+    height:70px;
+
+    border-radius:50%;
+
+    background:#fff;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    color:var(--primary-color);
+
+    font-size:1.4rem;
+
+    box-shadow:0 12px 35px rgba(0,0,0,.08);
+
+    transition:.3s;
+}
+
+.network-node span{
+
+    position:absolute;
+
+    top:85px;
+
+    font-size:.85rem;
+
+    font-weight:600;
+
+    color:#374151;
+
+    white-space:nowrap;
+
+}
+
+/* =========================================
+   NODE POSITIONS
+========================================= */
+
+.restaurant{
+    top:40px;
+    left:50%;
+    transform:translateX(-50%);
+}
+
+.grocery{
+    top:180px;
+    left:20px;
+}
+
+.ngo{
+    top:180px;
+    right:20px;
+}
+
+.community{
+    bottom:40px;
+    left:120px;
+}
+
+.family{
+    bottom:40px;
+    right:120px;
+}
+
+.network-line{
+
+    position:absolute;
+
+    height:2px;
+
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(46,204,113,.5),
+        transparent
+    );
+
+    transform-origin:left center;
+
+}
+
+.line1{
+    width:150px;
+    top:120px;
+    left:50%;
+    transform:rotate(90deg);
+}
+
+.line2{
+    width:180px;
+    top:245px;
+    left:145px;
+    transform:rotate(25deg);
+}
+
+.line3{
+    width:180px;
+    top:245px;
+    right:145px;
+    transform:rotate(-25deg);
+}
+
+.line4{
+    width:160px;
+    bottom:145px;
+    left:185px;
+    transform:rotate(-25deg);
+}
+
+.line5{
+    width:160px;
+    bottom:145px;
+    right:185px;
+    transform:rotate(25deg);
+}
+
+@keyframes floatImage{
+
+    0%,100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-15px);
+    }
+
+}

@@ -1,0 +1,1188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Create Listing | ReServe</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Shared Dashboard CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+    />
+
+    <!-- Page CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/create-listing.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <!-- ================================= -->
+      <!-- SIDEBAR -->
+      <!-- ================================= -->
+
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="logo-wrapper">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe Logo"
+            />
+          </div>
+
+          <div class="brand-content">
+            <h2>ReServe</h2>
+            <p>Food Rescue Platform</p>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav">
+          <a href="/dashboard">
+            <i class="ri-home-5-line"></i>
+            <span>Overview</span>
+          </a>
+
+          <a href="/create-listing" class="active">
+            <i class="ri-restaurant-line"></i>
+            <span>My Listings</span>
+          </a>
+
+          <a href="/marketplace">
+            <i class="ri-store-2-line"></i>
+            <span>Marketplace</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-file-list-3-line"></i>
+            <span>Requests</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-box-3-line"></i>
+            <span>Pickups</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-robot-2-line"></i>
+            <span>AI Insights</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-bar-chart-box-line"></i>
+            <span>Analytics</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-footer">
+          <a href="#">
+            <i class="ri-logout-box-r-line"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- ================================= -->
+      <!-- MAIN CONTENT -->
+      <!-- ================================= -->
+
+      <div class="main-content">
+        <main class="content-wrapper">
+          <div class="create-listing-container">
+            <section id="stepOne">
+              <!-- ================================= -->
+              <!-- PAGE HEADER -->
+              <!-- ================================= -->
+
+              <div class="page-header">
+                <div>
+                  <h1>Create New Listing</h1>
+
+                  <p>
+                    Add your surplus food and let AI analyze it before
+                    publishing to the marketplace.
+                  </p>
+                </div>
+
+                <div class="ai-status waiting">
+                  <i class="ri-robot-2-line"></i>
+
+                  <div>
+                    <span class="status-label"> AI Status </span>
+
+                    <strong> Waiting for Listing </strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Draft Notification -->
+
+              <div id="draftNotification" class="draft-notification hidden">
+                <div class="draft-notification-content">
+                  <i class="ri-draft-line"></i>
+
+                  <span>You have a saved draft.</span>
+                </div>
+
+                <div class="draft-notification-actions">
+                  <button type="button" id="restoreDraftBtn" class="link-btn">
+                    Restore
+                  </button>
+
+                  <button
+                    type="button"
+                    id="discardDraftBtn"
+                    class="link-btn danger"
+                  >
+                    Discard
+                  </button>
+                </div>
+              </div>
+
+              <!-- ================================= -->
+              <!-- STEPPER -->
+              <!-- ================================= -->
+
+              <section class="progress-section">
+                <div class="progress-steps">
+                  <div class="step active">
+                    <div class="step-number">1</div>
+
+                    <div class="step-content">
+                      <h4>Create Listing</h4>
+
+                      <span>Add Food Details</span>
+                    </div>
+                  </div>
+
+                  <div class="step-line active"></div>
+
+                  <div class="step">
+                    <div class="step-number">2</div>
+
+                    <div class="step-content">
+                      <h4>AI Review</h4>
+
+                      <span>Analysis & Pricing</span>
+                    </div>
+                  </div>
+
+                  <div class="step-line"></div>
+
+                  <div class="step">
+                    <div class="step-number">3</div>
+
+                    <div class="step-content">
+                      <h4>Published</h4>
+
+                      <span>Live Marketplace</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- ================================= -->
+              <!-- FORM -->
+              <!-- ================================= -->
+
+              <form class="listing-form-wrapper" id="createListingForm">
+                <!-- ================================= -->
+                <!-- SECTION 01 -->
+                <!-- ================================= -->
+
+                <section class="form-card">
+                  <div class="card-header">
+                    <div class="section-content">
+                      <div class="section-heading">
+                        <h2>
+                          <i class="ri-restaurant-line"></i>
+                          Food Information
+                        </h2>
+
+                        <span class="completion-badge"> 0/4 Complete </span>
+                      </div>
+
+                      <p>Add the basic details of your food listing.</p>
+                    </div>
+                  </div>
+
+                  <div class="form-grid">
+                    <!-- Food Name -->
+                    <div class="form-group">
+                      <label>
+                        Food Name
+                        <span>*</span>
+                      </label>
+
+                      <input
+                        type="text"
+                        id="foodName"
+                        name="foodName"
+                        placeholder="Veg Meal Box"
+                        required
+                      />
+
+                      <small class="field-helper">
+                        Use a clear name customers will recognize.
+                      </small>
+                    </div>
+
+                    <!-- Food Category -->
+                    <div class="form-group">
+                      <label>
+                        Food Category
+                        <span>*</span>
+                      </label>
+
+                      <select id="category" name="category" required>
+                        <option value="" selected disabled>
+                          Select Category
+                        </option>
+                        <option>Meals</option>
+                        <option>Bakery</option>
+                        <option>Beverages</option>
+                        <option>Fruits</option>
+                        <option>Vegetables</option>
+                        <option>Dairy</option>
+                        <option>Other</option>
+                      </select>
+                    </div>
+
+                    <!-- Other Category -->
+                    <div class="form-group" id="otherCategoryGroup" hidden>
+                      <label>
+                        Specify Category
+                        <span>*</span>
+                      </label>
+
+                      <input
+                        type="text"
+                        id="otherCategory"
+                        name="otherCategory"
+                        placeholder="Enter Category"
+                      />
+                    </div>
+
+                    <!-- Dietary Preference -->
+                    <div class="form-group">
+                      <label> Dietary Preference </label>
+
+                      <select id="foodType" name="foodType">
+                        <option value="" selected disabled>
+                          Select Preference
+                        </option>
+                        <option>Vegetarian</option>
+                        <option>Non-Vegetarian</option>
+                        <option>Vegan</option>
+                      </select>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group full-width">
+                      <div class="label-row">
+                        <label>Description</label>
+                        <span class="char-counter">0 / 300</span>
+                      </div>
+
+                      <textarea
+                        id="description"
+                        maxlength="300"
+                        rows="6"
+                        placeholder="Describe the food, ingredients, portion size, allergens or any additional information that can help buyers understand your listing."
+                      ></textarea>
+
+                      <small class="field-helper">
+                        💡 Mention ingredients, allergens or special notes to
+                        improve your listing quality.
+                      </small>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- ================================= -->
+                <!-- SECTION 02 -->
+                <!-- Availability -->
+                <!-- ================================= -->
+
+                <section class="form-card">
+                  <div class="card-header">
+                    <div class="section-content">
+                      <h2>
+                        <i class="ri-archive-line"></i>
+                        Availability
+                      </h2>
+
+                      <p>Set quantity, pricing and availability details.</p>
+                    </div>
+                  </div>
+
+                  <div class="form-grid">
+                    <!-- Listing Type -->
+
+                    <div class="form-group">
+                      <label>
+                        Listing Type
+                        <span>*</span>
+                      </label>
+
+                      <select id="listingType" name="listingType" required>
+                        <option value="" selected disabled>
+                          Select Listing Type
+                        </option>
+                        <option value="sell">Sell</option>
+                        <option value="donate">Donate</option>
+                      </select>
+
+                      <small class="field-helper">
+                        Choose whether you want to sell or donate this food.
+                      </small>
+                    </div>
+
+                    <!-- Quantity -->
+
+                    <div class="form-group">
+                      <label>
+                        Quantity
+                        <span>*</span>
+                      </label>
+
+                      <input
+                        type="number"
+                        id="quantity"
+                        name="quantity"
+                        min="1"
+                        placeholder="50"
+                        required
+                      />
+
+                      <small class="field-helper">
+                        Enter the approximate quantity available.
+                      </small>
+                    </div>
+
+                    <!-- Unit -->
+
+                    <div class="form-group">
+                      <label>
+                        Unit
+                        <span>*</span>
+                      </label>
+
+                      <select id="unit" name="unit" required>
+                        <option value="" selected disabled>Select Unit</option>
+                        <option>Meals</option>
+                        <option>Pieces</option>
+                        <option>Packets</option>
+                        <option>Boxes</option>
+                        <option>Kg</option>
+                        <option>Litres</option>
+                        <option>Other</option>
+                      </select>
+                    </div>
+
+                    <!-- Other Unit -->
+
+                    <div class="form-group" id="otherUnitGroup" hidden>
+                      <label>
+                        Specify Unit
+                        <span>*</span>
+                      </label>
+
+                      <input
+                        type="text"
+                        id="otherUnit"
+                        name="otherUnit"
+                        placeholder="Enter Unit"
+                      />
+                    </div>
+
+                    <!-- Original Price -->
+
+                    <div class="form-group" id="originalPriceGroup">
+                      <label>Original Price (₹)</label>
+
+                      <input
+                        type="number"
+                        id="originalPrice"
+                        name="originalPrice"
+                        min="0"
+                        placeholder="₹300"
+                      />
+
+                      <small class="field-helper">
+                        Optional. Enter the regular selling price.
+                      </small>
+                    </div>
+
+                    <!-- Selling Price -->
+
+                    <div class="form-group" id="sellingPriceGroup">
+                      <label>Selling Price (₹)</label>
+
+                      <input
+                        type="number"
+                        id="price"
+                        name="price"
+                        min="0"
+                        placeholder="₹120"
+                      />
+
+                      <small class="field-helper">
+                        Price customers will pay for this listing.
+                      </small>
+                    </div>
+
+                    <!-- Expiry Information -->
+
+                    <div class="form-group full-width">
+                      <label>Expiry Information</label>
+
+                      <div class="checkbox-field">
+                        <input
+                          type="checkbox"
+                          id="hasExpiry"
+                          name="hasExpiry"
+                        />
+
+                        <label for="hasExpiry">
+                          This food has a printed expiry date.
+                        </label>
+                      </div>
+
+                      <small class="field-helper">
+                        Leave unchecked for freshly prepared food.
+                      </small>
+                    </div>
+
+                    <!-- Preparation Time -->
+
+                    <div class="form-group" id="preparationGroup">
+                      <label>
+                        Preparation Time
+                        <span>*</span>
+                      </label>
+
+                      <input
+                        type="datetime-local"
+                        id="preparationTime"
+                        name="preparationTime"
+                      />
+
+                      <small class="field-helper">
+                        When was this food prepared?
+                      </small>
+                    </div>
+
+                    <!-- Expiry Date -->
+
+                    <div class="form-group" id="expiryGroup" hidden>
+                      <label>
+                        Expiry Date & Time
+                        <span>*</span>
+                      </label>
+
+                      <input
+                        type="datetime-local"
+                        id="expiryDate"
+                        name="expiryDate"
+                      />
+
+                      <small class="field-helper">
+                        Enter the expiry date printed on the package.
+                      </small>
+                    </div>
+
+                    <!-- Available Until -->
+
+                    <div class="form-group" id="availableUntilGroup">
+                      <label>
+                        Available Until
+                        <span>*</span>
+                      </label>
+
+                      <input
+                        type="datetime-local"
+                        id="availableUntil"
+                        name="availableUntil"
+                      />
+
+                      <small class="field-helper">
+                        Select the latest time this food can be picked up.
+                      </small>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- ================================= -->
+                <!-- SECTION 03 -->
+                <!-- Pickup & Media -->
+                <!-- ================================= -->
+
+                <section class="form-card">
+                  <div class="card-header">
+                    <div class="section-content">
+                      <h2>
+                        <i class="ri-map-pin-line"></i>
+
+                        Pickup Details
+                      </h2>
+
+                      <p>Add your pickup location and upload a food image.</p>
+                    </div>
+                  </div>
+
+                  <div class="form-grid">
+                    <!-- Pickup Address -->
+
+                    <div class="form-group full-width">
+                      <label>
+                        Pickup Address
+
+                        <span>*</span>
+                      </label>
+
+                      <textarea
+                        id="pickupAddress"
+                        name="pickupAddress"
+                        rows="4"
+                        placeholder="Enter complete pickup address with nearby landmark."
+                        required
+                      ></textarea>
+
+                      <small class="field-helper">
+                        Include a nearby landmark for easier pickup.
+                      </small>
+                    </div>
+
+                    <div class="form-group full-width">
+                      <label>
+                        Food Image
+                        <span>*</span>
+                      </label>
+
+                      <div class="upload-area" id="uploadArea">
+                        <input
+                          type="file"
+                          id="foodImage"
+                          accept="image/png,image/jpeg,image/webp"
+                          required
+                        />
+
+                        <!-- Upload Content -->
+
+                        <div class="upload-content" id="uploadContent">
+                          <div class="upload-icon">
+                            <i class="ri-image-add-line"></i>
+                          </div>
+
+                          <h3>Upload Food Photo</h3>
+
+                          <p>
+                            Drag & Drop or
+                            <span>Browse Files</span>
+                          </p>
+
+                          <small>
+                            JPG • PNG • WEBP
+                            <br />
+                            Maximum File Size: 5 MB
+                          </small>
+                        </div>
+
+                        <!-- Preview -->
+
+                        <img
+                          id="previewImage"
+                          class="preview-image"
+                          src=""
+                          alt="Food Preview"
+                        />
+
+                        <div class="image-overlay hidden" id="imageOverlay">
+                          <button
+                            type="button"
+                            id="changeImageBtn"
+                            class="icon-btn"
+                            title="Change Image"
+                          >
+                            <i class="ri-camera-line"></i>
+                          </button>
+
+                          <button
+                            type="button"
+                            id="removeImageBtn"
+                            class="icon-btn remove-btn"
+                            title="Remove Image"
+                          >
+                            <i class="ri-delete-bin-6-line"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- ================================= -->
+                <!-- AI READINESS -->
+                <!-- ================================= -->
+
+                <section class="readiness-card">
+                  <div class="readiness-header">
+                    <div>
+                      <h3>
+                        <i class="ri-robot-2-line"></i>
+
+                        Listing Insights
+                      </h3>
+
+                      <p>
+                        Complete the required information before sending your
+                        listing for AI analysis.
+                      </p>
+                    </div>
+
+                    <div class="readiness-score">
+                      <span id="readinessScore"> 0% </span>
+
+                      <small> Ready </small>
+                    </div>
+                  </div>
+
+                  <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                  </div>
+
+                  <div class="ai-placeholder">
+                    <i class="ri-robot-2-line"></i>
+
+                    <h4>Your listing hasn't been analyzed yet</h4>
+
+                    <p>
+                      Fill in the required fields to unlock AI recommendations,
+                      pricing suggestions, food quality score and recovery
+                      insights.
+                    </p>
+                  </div>
+
+                  <div class="checklist">
+                    <div class="check-item pending" id="foodNameCheck">
+                      <i class="ri-checkbox-circle-line"></i>
+
+                      <span>Food Name</span>
+                    </div>
+
+                    <div class="check-item pending" id="categoryCheck">
+                      <i class="ri-checkbox-circle-line"></i>
+
+                      <span>Category</span>
+                    </div>
+
+                    <div class="check-item pending" id="quantityCheck">
+                      <i class="ri-checkbox-circle-line"></i>
+
+                      <span>Quantity</span>
+                    </div>
+
+                    <div class="check-item pending" id="prepCheck">
+                      <i class="ri-checkbox-circle-line"></i>
+
+                      <span>Preparation Time</span>
+                    </div>
+
+                    <div class="check-item pending" id="expiryCheck">
+                      <i class="ri-checkbox-circle-line"></i>
+
+                      <span>Expiry Date</span>
+                    </div>
+
+                    <div class="check-item pending" id="pickupCheck">
+                      <i class="ri-checkbox-circle-line"></i>
+
+                      <span>Pickup Window</span>
+                    </div>
+
+                    <div class="check-item pending" id="imageCheck">
+                      <i class="ri-checkbox-circle-line"></i>
+
+                      <span>Food Image</span>
+                    </div>
+                  </div>
+                </section>
+
+                <!-- ================================= -->
+                <!-- ACTION BAR -->
+                <!-- ================================= -->
+
+                <div class="action-bar">
+                  <div class="draft-status" id="draftStatus">
+                    <div class="draft-icon">
+                      <i class="ri-time-line"></i>
+                    </div>
+
+                    <div class="draft-content">
+                      <span class="draft-title">Unsaved Changes</span>
+                      <small class="draft-time">
+                        Changes haven't been saved yet
+                      </small>
+                    </div>
+                  </div>
+
+                  <div class="action-buttons">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      id="saveDraftBtn"
+                    >
+                      Save Draft
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-primary"
+                      id="analyzeWithAI"
+                    >
+                      Analyze with AI
+                      <i class="ri-arrow-right-line"></i>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </section>
+
+            <!-- ================================= -->
+            <!-- STEP 2 - AI REVIEW -->
+            <!-- ================================= -->
+
+            <section id="stepTwo" hidden>
+              <!-- ================================= -->
+              <!-- AI LOADING SCREEN -->
+              <!-- ================================= -->
+
+              <div class="ai-loading-screen" id="aiLoadingScreen">
+                <div class="loading-logo">
+                  <div class="loading-ring"></div>
+                  <i class="ri-robot-2-line"></i>
+                </div>
+
+                <h2>Analyzing Your Listing</h2>
+
+                <p id="loadingMessage">Reading food details...</p>
+
+                <div class="loading-progress">
+                  <div class="loading-progress-fill" id="loadingProgress"></div>
+                </div>
+
+                <span id="loadingPercent">0%</span>
+              </div>
+
+              <!-- ================================= -->
+              <!-- AI REVIEW PAGE -->
+              <!-- ================================= -->
+
+              <div class="ai-review-page">
+                <!-- ================================= -->
+                <!-- TOP BAR -->
+                <!-- ================================= -->
+
+                <div class="review-topbar">
+                  <div class="review-progress">
+                    <div class="progress-step completed">
+                      <span>✓</span>
+                      <p>Details</p>
+                    </div>
+
+                    <div class="progress-line active"></div>
+
+                    <div class="progress-step active">
+                      <span>2</span>
+                      <p>AI Review</p>
+                    </div>
+
+                    <div class="progress-line"></div>
+
+                    <div class="progress-step">
+                      <span>3</span>
+                      <p>Publish</p>
+                    </div>
+                  </div>
+
+                  <div class="powered-ai">
+                    <i class="ri-sparkling-2-fill"></i>
+                    <span>Powered by ReServe Intelligence</span>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- HERO -->
+                <!-- ================================= -->
+
+                <div class="review-hero">
+                  <!-- LEFT -->
+
+                  <div class="hero-content">
+                    <div class="hero-badge">
+                      <span class="badge-dot"></span>
+                      AI REVIEW COMPLETE
+                    </div>
+
+                    <h1>Your Listing Is Ready</h1>
+
+                    <p>
+                      Our AI has analyzed your listing using freshness, food
+                      safety, pricing, recovery potential and listing quality.
+                      Your food is now optimized for maximum recovery and
+                      marketplace visibility.
+                    </p>
+                  </div>
+
+                  <!-- RIGHT -->
+
+                  <div class="listing-preview-card">
+                    <div class="listing-preview-header">
+                      <h3>Listing Preview</h3>
+
+                      <span class="preview-status"> Ready </span>
+                    </div>
+
+                    <div class="listing-preview-image">
+                      <img id="previewListingImage" src="" alt="Food Preview" />
+
+                      <div class="image-placeholder">
+                        <i class="ri-image-2-line"></i>
+                      </div>
+                    </div>
+
+                    <div class="listing-preview-content">
+                      <h4 id="previewFoodName">Food Name</h4>
+
+                      <p id="previewCategory">Category</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- ROW 1 -->
+                <!-- ================================= -->
+
+                <div class="review-row">
+                  <!-- LEFT : CONFIDENCE CARD -->
+                  <div class="confidence-card">
+                    <div class="confidence-ring-card">
+                      <div class="confidence-ring">
+                        <div class="confidence-value">
+                          <h2 id="confidenceScore">96%</h2>
+                          <span>AI Confidence</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="confidence-details">
+                      <div class="confidence-item">
+                        <span>Recovery Probability</span>
+                        <h3 id="recoveryProbability">96%</h3>
+                      </div>
+
+                      <div class="confidence-item">
+                        <span>Pickup Estimate</span>
+                        <h3 id="pickupEstimate">45 min</h3>
+                      </div>
+
+                      <div class="confidence-item">
+                        <span>Priority</span>
+
+                        <div class="priority-badge high" id="priorityBadge">
+                          HIGH
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- RIGHT : AI SUMMARY -->
+
+                  <div class="ai-summary-card">
+                    <div class="summary-header">
+                      <div>
+                        <span class="section-tag"> AI SUMMARY </span>
+
+                        <h2>Analysis Highlights</h2>
+                      </div>
+
+                      <div class="overall-score">
+                        <span>Overall</span>
+
+                        <h2 id="overallScore">94%</h2>
+                      </div>
+                    </div>
+
+                    <div class="summary-list">
+                      <div class="summary-item">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>Excellent freshness detected</span>
+                      </div>
+
+                      <div class="summary-item">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>Food is safe for recovery</span>
+                      </div>
+
+                      <div class="summary-item">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>High recovery potential</span>
+                      </div>
+
+                      <div class="summary-item">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>Smart pricing optimized</span>
+                      </div>
+                    </div>
+
+                    <div class="priority-meter">
+                      <div class="priority-track">
+                        <div class="priority-fill high" id="priorityFill">
+                          <span class="priority-glow"></span>
+                        </div>
+                      </div>
+
+                      <div class="priority-labels">
+                        <span>Low</span>
+                        <span>Medium</span>
+                        <span>High</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- ROW 2 -->
+                <!-- ================================= -->
+
+                <div class="review-row">
+                  <!-- LEFT : METRICS -->
+                  <!-- ================================= -->
+                  <!-- METRICS -->
+                  <!-- ================================= -->
+
+                  <div class="metrics-grid">
+                    <div class="metric-card">
+                      <div class="metric-icon quality">
+                        <i class="ri-award-line"></i>
+                      </div>
+
+                      <span>Food Quality</span>
+
+                      <h3 id="qualityScore">94%</h3>
+                    </div>
+
+                    <div class="metric-card">
+                      <div class="metric-icon safety">
+                        <i class="ri-shield-check-line"></i>
+                      </div>
+
+                      <span>Safety</span>
+
+                      <h3 id="safetyStatus">Safe</h3>
+                    </div>
+
+                    <div class="metric-card">
+                      <div class="metric-icon meals">
+                        <i class="ri-restaurant-line"></i>
+                      </div>
+
+                      <span>Meals Saved</span>
+
+                      <h3 id="mealCount">12</h3>
+                    </div>
+
+                    <div class="metric-card">
+                      <div class="metric-icon carbon">
+                        <i class="ri-leaf-line"></i>
+                      </div>
+
+                      <span>CO₂ Saved</span>
+
+                      <h3 id="carbonSaved">3.8 kg</h3>
+                    </div>
+                  </div>
+
+                  <!-- ================================= -->
+                  <!-- RIGHT : AI RECOMMENDATION -->
+                  <!-- ================================= -->
+
+                  <div class="recommendation-card">
+                    <div class="card-top">
+                      <div class="card-title">
+                        <div class="robot-icon">
+                          <i class="ri-robot-2-line"></i>
+                        </div>
+
+                        <div>
+                          <span class="section-tag"> AI RECOMMENDATION </span>
+
+                          <h2>ReServe Intelligence</h2>
+                        </div>
+                      </div>
+
+                      <div class="analysis-status">
+                        <span class="status-dot"></span>
+
+                        Complete
+                      </div>
+                    </div>
+
+                    <div class="recommendation-content">
+                      <p id="aiRecommendation">
+                        AI recommendation will appear here after analysis.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- ROW 3 -->
+                <!-- ================================= -->
+
+                <div class="review-row">
+                  <!-- LEFT : SMART PRICING -->
+                  <!-- ================================= -->
+                  <!-- SMART PRICING -->
+                  <!-- ================================= -->
+
+                  <div class="smart-pricing-card" id="smartPricingCard">
+                    <div class="pricing-header">
+                      <div>
+                        <span class="section-tag">SMART PRICING</span>
+                        <h3>AI Suggested Price</h3>
+                      </div>
+
+                      <div class="pricing-badge" id="pricingBadge">
+                        AI Optimized
+                      </div>
+                    </div>
+
+                    <div class="pricing-grid">
+                      <div class="price-card">
+                        <span>Original</span>
+                        <h2 id="originalPriceAI">₹500</h2>
+                      </div>
+
+                      <div class="price-divider">
+                        <i class="ri-arrow-right-line"></i>
+                      </div>
+
+                      <div class="price-card suggested">
+                        <span>Suggested</span>
+                        <h2 id="suggestedPriceAI">₹250</h2>
+                      </div>
+                    </div>
+
+                    <div class="discount-pill-large" id="discountPercent">
+                      50% OFF
+                    </div>
+
+                    <p class="pricing-message" id="pricingMessage">
+                      Best price for quick recovery.
+                    </p>
+                  </div>
+
+                  <!-- ================================= -->
+                  <!-- RIGHT : AI INSIGHTS -->
+                  <!-- ================================= -->
+
+                  <div class="ai-insights-card">
+                    <div class="insights-header">
+                      <span class="section-tag"> WHY THIS SCORE? </span>
+
+                      <h2>AI Insights</h2>
+                    </div>
+
+                    <div class="insights-grid">
+                      <div class="insight-box">
+                        <i class="ri-time-line"></i>
+                        <span>Freshness</span>
+                      </div>
+
+                      <div class="insight-box">
+                        <i class="ri-shield-check-line"></i>
+                        <span>Food Safety</span>
+                      </div>
+
+                      <div class="insight-box">
+                        <i class="ri-image-line"></i>
+                        <span>Image Quality</span>
+                      </div>
+
+                      <div class="insight-box">
+                        <i class="ri-file-list-3-line"></i>
+                        <span>Description</span>
+                      </div>
+
+                      <div class="insight-box">
+                        <i class="ri-map-pin-line"></i>
+                        <span>Pickup Window</span>
+                      </div>
+
+                      <div class="insight-box">
+                        <i class="ri-checkbox-circle-line"></i>
+                        <span>Listing Quality</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- ACTION BAR -->
+                <!-- ================================= -->
+
+                <div class="ai-action-bar">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="backToEditBtn"
+                  >
+                    <i class="ri-arrow-left-line"></i>
+
+                    Back to Edit
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="publishListingBtn"
+                  >
+                    Publish Listing
+
+                    <i class="ri-send-plane-fill"></i>
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <!-- ================================= -->
+            <!-- STEP 3 -->
+            <!-- ================================= -->
+
+            <section id="stepThree" hidden></section>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/create-listing.js') }}"></script>
+  </body>
+</html>
