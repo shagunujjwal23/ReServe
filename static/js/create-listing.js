@@ -989,8 +989,24 @@ document.addEventListener("DOMContentLoaded", () => {
     maximumDiscount: 0.6,
   });
   const AI_WEIGHTS = Object.freeze({
-    recovery: { freshness: 0.4, pricing: 0.25, pickup: 0.2, completeness: 0.15 },
-    overall: { freshness: 0.2, quality: 0.2, completeness: 0.15, safety: 0.1, image: 0.05, description: 0.05, pricing: 0.1, pickup: 0.05, recovery: 0.05, confidence: 0.05 },
+    recovery: {
+      freshness: 0.4,
+      pricing: 0.25,
+      pickup: 0.2,
+      completeness: 0.15,
+    },
+    overall: {
+      freshness: 0.2,
+      quality: 0.2,
+      completeness: 0.15,
+      safety: 0.1,
+      image: 0.05,
+      description: 0.05,
+      pricing: 0.1,
+      pickup: 0.05,
+      recovery: 0.05,
+      confidence: 0.05,
+    },
   });
   const clampScore = (value) =>
     Math.max(0, Math.min(AI_LIMITS.max, Math.round(Number(value) || 0)));
@@ -1008,13 +1024,20 @@ document.addEventListener("DOMContentLoaded", () => {
         : freshness >= AI_LIMITS.good
           ? "Consume Today"
           : freshness >= 55
-          ? "Consume Soon"
-          : freshness >= 40
-            ? "Needs Review"
-            : "Unsafe";
+            ? "Consume Soon"
+            : freshness >= 40
+              ? "Needs Review"
+              : "Unsafe";
   const getDescriptionScore = (text) => Math.min(AI_LIMITS.max, text.length);
   const getImageScore = (hasImage) => (hasImage ? AI_LIMITS.max : 20);
-  const getStatusColor = (score) => score >= AI_LIMITS.excellent ? "#22c55e" : score >= AI_LIMITS.good ? "#3b82f6" : score >= AI_LIMITS.fair ? "#f59e0b" : "#ef4444";
+  const getStatusColor = (score) =>
+    score >= AI_LIMITS.excellent
+      ? "#22c55e"
+      : score >= AI_LIMITS.good
+        ? "#3b82f6"
+        : score >= AI_LIMITS.fair
+          ? "#f59e0b"
+          : "#ef4444";
 
   function calculateCompleteness(data) {
     const hasFoodTiming = Boolean(data.expiryDate || data.preparationTime);
@@ -1034,13 +1057,55 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function calculatePickupWindow(data, freshness) {
     const hours = hoursUntil(data.availableUntil);
-    const windowScore = hours === null ? 40 : hours <= 0 ? 20 : hours <= 1 ? 55 : hours <= 2 ? 70 : hours <= 12 ? 82 : 92;
-    const urgency = clampScore((AI_LIMITS.max - freshness) * 0.65 + (AI_LIMITS.max - windowScore) * 0.35);
-    if (hours !== null && hours <= 0.5) return { score: windowScore, urgency, estimate: "Within 20 - 30 min", status: "Immediate" };
-    if (hours !== null && hours <= 1) return { score: windowScore, urgency, estimate: "Within 1 hour", status: "Immediate" };
-    if (hours !== null && hours <= 2) return { score: windowScore, urgency, estimate: "Within 2 hours", status: "Scheduled" };
-    if (hours !== null && hours <= 12) return { score: windowScore, urgency, estimate: "Pickup today", status: "Scheduled" };
-    return { score: windowScore, urgency, estimate: "Tomorrow morning", status: "Flexible" };
+    const windowScore =
+      hours === null
+        ? 40
+        : hours <= 0
+          ? 20
+          : hours <= 1
+            ? 55
+            : hours <= 2
+              ? 70
+              : hours <= 12
+                ? 82
+                : 92;
+    const urgency = clampScore(
+      (AI_LIMITS.max - freshness) * 0.65 + (AI_LIMITS.max - windowScore) * 0.35,
+    );
+    if (hours !== null && hours <= 0.5)
+      return {
+        score: windowScore,
+        urgency,
+        estimate: "Within 20 - 30 min",
+        status: "Immediate",
+      };
+    if (hours !== null && hours <= 1)
+      return {
+        score: windowScore,
+        urgency,
+        estimate: "Within 1 hour",
+        status: "Immediate",
+      };
+    if (hours !== null && hours <= 2)
+      return {
+        score: windowScore,
+        urgency,
+        estimate: "Within 2 hours",
+        status: "Scheduled",
+      };
+    if (hours !== null && hours <= 12)
+      return {
+        score: windowScore,
+        urgency,
+        estimate: "Pickup today",
+        status: "Scheduled",
+      };
+    return {
+      score: windowScore,
+      urgency,
+      estimate: "Tomorrow morning",
+      status: "Flexible",
+    };
   }
 
   function generateAnalysis() {
@@ -1064,10 +1129,24 @@ document.addEventListener("DOMContentLoaded", () => {
   function calculateFreshness(data) {
     const hours = hoursUntil(data.expiryDate || data.availableUntil);
     const preparedHoursAgo = hoursUntil(data.preparationTime);
-    const remainingScore = hours === null ? 72 : hours <= 0 ? 20 : hours <= 2 ? 48 : hours <= 6 ? 66 : hours <= 12 ? 80 : hours <= 24 ? 90 : 96;
-    const preparationPenalty = preparedHoursAgo !== null && preparedHoursAgo < 0
-      ? Math.min(18, Math.abs(preparedHoursAgo) * 0.75)
-      : 0;
+    const remainingScore =
+      hours === null
+        ? 72
+        : hours <= 0
+          ? 20
+          : hours <= 2
+            ? 48
+            : hours <= 6
+              ? 66
+              : hours <= 12
+                ? 80
+                : hours <= 24
+                  ? 90
+                  : 96;
+    const preparationPenalty =
+      preparedHoursAgo !== null && preparedHoursAgo < 0
+        ? Math.min(18, Math.abs(preparedHoursAgo) * 0.75)
+        : 0;
     return clampScore(remainingScore - preparationPenalty);
   }
 
@@ -1075,17 +1154,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const descriptionScore = getDescriptionScore(data.description);
     const imageScore = getImageScore(data.hasImage);
     const pickupScore = data.pickupAddress.length >= 10 ? 100 : 55;
-    const categoryScore = /packaged|grocery/i.test(data.category) ? 92 : /bakery|meal|prepared/i.test(data.category) ? 86 : 80;
+    const categoryScore = /packaged|grocery/i.test(data.category)
+      ? 92
+      : /bakery|meal|prepared/i.test(data.category)
+        ? 86
+        : 80;
     const foodTypeScore = /packaged/i.test(data.foodType) ? 95 : 85;
     return clampScore(
-      freshness * 0.35 + descriptionScore * 0.2 + imageScore * 0.2 + pickupScore * 0.05 + categoryScore * 0.1 + foodTypeScore * 0.1,
+      freshness * 0.35 +
+        descriptionScore * 0.2 +
+        imageScore * 0.2 +
+        pickupScore * 0.05 +
+        categoryScore * 0.1 +
+        foodTypeScore * 0.1,
     );
   }
 
   function calculateConfidence(data, quality, freshness, pickup) {
     const completeness = calculateCompleteness(data) * AI_LIMITS.max;
-    const pricingDetail = data.listingType === "donate" || data.originalPrice > 0 ? AI_LIMITS.max : 40;
-    return clampScore(freshness * 0.2 + quality * 0.25 + completeness * 0.25 + pickup.score * 0.15 + pricingDetail * 0.15);
+    const pricingDetail =
+      data.listingType === "donate" || data.originalPrice > 0
+        ? AI_LIMITS.max
+        : 40;
+    return clampScore(
+      freshness * 0.2 +
+        quality * 0.25 +
+        completeness * 0.25 +
+        pickup.score * 0.15 +
+        pricingDetail * 0.15,
+    );
   }
 
   function calculateMeals(quantityValue, unitValue, categoryValue) {
@@ -1098,7 +1195,11 @@ document.addEventListener("DOMContentLoaded", () => {
         : unitName.includes("piece")
           ? quantityNumber * 0.5
           : quantityNumber;
-    const categoryFactor = /beverage|drink/i.test(categoryValue) ? 0.5 : /bakery|dessert/i.test(categoryValue) ? 1.15 : 1;
+    const categoryFactor = /beverage|drink/i.test(categoryValue)
+      ? 0.5
+      : /bakery|dessert/i.test(categoryValue)
+        ? 1.15
+        : 1;
     return Math.max(1, Math.round(baseMeals * categoryFactor));
   }
 
@@ -1111,37 +1212,81 @@ document.addEventListener("DOMContentLoaded", () => {
     return Number((meals * AI_LIMITS.carbonPerMealKg * multiplier).toFixed(1));
   }
 
-  function calculateSuggestedPrice(original, freshness, quality, recoveryEstimate, confidence, pickup, categoryValue, quantityValue, listingTypeValue) {
+  function calculateSuggestedPrice(
+    original,
+    freshness,
+    quality,
+    recoveryEstimate,
+    confidence,
+    pickup,
+    categoryValue,
+    quantityValue,
+    listingTypeValue,
+  ) {
     const price = Math.max(0, Number(original) || 0);
     if (!price || listingTypeValue === "donate") return 0;
-    const urgency = Math.max(AI_LIMITS.max - freshness, pickup.urgency) / AI_LIMITS.max;
+    const urgency =
+      Math.max(AI_LIMITS.max - freshness, pickup.urgency) / AI_LIMITS.max;
     const confidenceGap = (AI_LIMITS.max - confidence) / AI_LIMITS.max;
     const qualityGap = (AI_LIMITS.max - quality) / AI_LIMITS.max;
     const recoveryGap = (AI_LIMITS.max - recoveryEstimate) / AI_LIMITS.max;
-    const categoryAdjustment = /bakery|dessert/i.test(categoryValue) ? 0.06 : /packaged|grocery/i.test(categoryValue) ? -0.04 : 0;
+    const categoryAdjustment = /bakery|dessert/i.test(categoryValue)
+      ? 0.06
+      : /packaged|grocery/i.test(categoryValue)
+        ? -0.04
+        : 0;
     const quantityAdjustment = Number(quantityValue) >= 8 ? 0.04 : 0;
-    const discount = Math.min(AI_LIMITS.maximumDiscount, Math.max(AI_LIMITS.minimumDiscount, AI_LIMITS.minimumDiscount + urgency * 0.3 + qualityGap * 0.12 + recoveryGap * 0.1 + confidenceGap * 0.08 + categoryAdjustment + quantityAdjustment));
+    const discount = Math.min(
+      AI_LIMITS.maximumDiscount,
+      Math.max(
+        AI_LIMITS.minimumDiscount,
+        AI_LIMITS.minimumDiscount +
+          urgency * 0.3 +
+          qualityGap * 0.12 +
+          recoveryGap * 0.1 +
+          confidenceGap * 0.08 +
+          categoryAdjustment +
+          quantityAdjustment,
+      ),
+    );
     return Math.max(1, Math.round(price * (1 - discount)));
   }
 
-  function calculatePriority(freshness, meals, pickupUrgency, recovery) {
-    if (freshness < AI_LIMITS.fair || pickupUrgency >= 90) return "CRITICAL";
-    if (recovery >= AI_LIMITS.excellent) return "LOW";
-    if (recovery >= AI_LIMITS.good) return "MEDIUM";
-    return recovery >= 55 || meals >= 6 ? "HIGH" : "CRITICAL";
+  function calculatePriority(freshness, pickupUrgency, recovery, confidence) {
+    if (
+      recovery >= AI_LIMITS.excellent &&
+      confidence >= AI_LIMITS.good &&
+      freshness >= AI_LIMITS.good &&
+      pickupUrgency < 82
+    )
+      return "LOW";
+    if (recovery >= AI_LIMITS.good && confidence >= AI_LIMITS.fair)
+      return "MEDIUM";
+    if (recovery >= AI_LIMITS.fair && freshness >= 40) return "HIGH";
+    return "CRITICAL";
   }
 
   function generateRecommendation(analysis) {
     const actions = [];
     if (analysis.hero.status === "Ready") actions.push("✓ Publish today");
-    else if (analysis.priority === "CRITICAL") actions.push("✓ Schedule immediate pickup");
-    else if (analysis.descriptionLength < 60) actions.push("✓ Improve description");
+    else if (analysis.priority === "CRITICAL")
+      actions.push("✓ Schedule immediate pickup");
+    else if (analysis.descriptionLength < 60)
+      actions.push("✓ Improve description");
     else actions.push("✓ Review listing before publishing");
 
-    if (analysis.listingType === "sell" && analysis.pricingScore < AI_LIMITS.good)
+    if (
+      analysis.listingType === "sell" &&
+      analysis.pricingScore < AI_LIMITS.good
+    )
       actions.push(`✓ Suggested price: ₹${analysis.suggestedPrice}`);
-    if (analysis.pickup.status !== "Flexible") actions.push(`✓ Pickup: ${analysis.pickup.status}`);
-    if (analysis.descriptionLength < 60 && !actions.includes("✓ Improve description")) actions.push("✓ Improve description");
+    if (analysis.pickup.status !== "Flexible")
+      actions.push(`✓ Pickup: ${analysis.pickup.status}`);
+    if (
+      analysis.descriptionLength < 60 &&
+      !actions.includes("✓ Improve description")
+    )
+      actions.push("✓ Improve description");
 
     return `Recommended Actions\n${actions.join("\n")}\n\nRecovery Chance\n${analysis.recovery}%\n\nLast analyzed: Just now`;
   }
@@ -1174,58 +1319,71 @@ document.addEventListener("DOMContentLoaded", () => {
             ((data.originalPrice - suggested) / data.originalPrice) * 100,
           )
         : 0;
-    const pricingScore = data.originalPrice > 0
-      ? clampScore(100 - Math.abs(discount - 28) * 2.2)
-      : data.listingType === "donate"
-        ? 100
-        : 55;
+    const pricingScore =
+      data.originalPrice > 0
+        ? clampScore(100 - Math.abs(discount - 28) * 2.2)
+        : data.listingType === "donate"
+          ? 100
+          : 55;
     const recovery = clampScore(
       freshness * AI_WEIGHTS.recovery.freshness +
         pricingScore * AI_WEIGHTS.recovery.pricing +
         pickup.score * AI_WEIGHTS.recovery.pickup +
         completeness * AI_WEIGHTS.recovery.completeness,
     );
-    const priority = calculatePriority(freshness, meals, pickup.urgency, recovery);
+    const priority = calculatePriority(
+      freshness,
+      pickup.urgency,
+      recovery,
+      confidence,
+    );
     const safety = safetyFor(freshness);
-    const safetyScore = safety === "Unsafe" ? 25 : safety === "Needs Review" ? 45 : freshness;
+    const safetyScore =
+      safety === "Unsafe" ? 25 : safety === "Needs Review" ? 45 : freshness;
     const overall = clampScore(
       freshness * AI_WEIGHTS.overall.freshness +
         quality * AI_WEIGHTS.overall.quality +
         completeness * AI_WEIGHTS.overall.completeness +
         safetyScore * AI_WEIGHTS.overall.safety +
         getImageScore(data.hasImage) * AI_WEIGHTS.overall.image +
-        getDescriptionScore(data.description) * AI_WEIGHTS.overall.description,
+        getDescriptionScore(data.description) * AI_WEIGHTS.overall.description +
+        pricingScore * AI_WEIGHTS.overall.pricing +
+        pickup.score * AI_WEIGHTS.overall.pickup +
+        recovery * AI_WEIGHTS.overall.recovery +
+        confidence * AI_WEIGHTS.overall.confidence,
     );
     const badge =
       data.listingType === "donate"
         ? "Community Donation"
         : freshness < AI_LIMITS.fair
-        ? "Urgent Clearance"
-        : discount >= 45
-          ? "Quick Recovery"
-        : discount >= 30
-          ? "Recommended"
-          : discount >= 15
-            ? "Competitive"
-            : "Premium";
-    const pricingMessage = data.listingType === "donate"
-      ? "Donation listing removes the price barrier."
-      : badge === "Urgent Clearance" || badge === "Quick Recovery"
-        ? "Urgent pricing applied for faster recovery."
-        : badge === "Competitive"
-          ? "Good market value for nearby recipients."
-          : badge === "Recommended"
-            ? "Balanced pricing for better visibility."
-            : "Maintaining product value.";
-    const pricingTone = badge === "Urgent Clearance" ? "critical" : badge === "Quick Recovery" ? "high" : badge === "Recommended" ? "medium" : "low";
+          ? "Urgent Clearance"
+          : discount >= 45
+            ? "Quick Recovery"
+            : discount >= 30
+              ? "Optimized"
+              : discount >= 15
+                ? "Competitive"
+                : "Competitive";
+    const pricingMessage =
+      data.listingType === "donate"
+        ? "Donation listing removes the price barrier."
+        : badge === "Urgent Clearance" || badge === "Quick Recovery"
+          ? "Urgent pricing applied for faster recovery."
+          : badge === "Competitive"
+            ? "Good market value for nearby recipients."
+            : badge === "Optimized"
+              ? "Price is optimized for recovery and visibility."
+              : "Price is already competitive for nearby recipients.";
+    const pricingTone =
+      badge === "Urgent Clearance"
+        ? "critical"
+        : badge === "Quick Recovery"
+          ? "high"
+          : badge === "Optimized"
+            ? "medium"
+            : "low";
     const hero =
-      (freshness < AI_LIMITS.fair || pickup.urgency >= 90 || safety === "Needs Review" || safety === "Unsafe")
-        ? {
-            title: "High Priority Recovery",
-            description: "Food should be collected immediately to protect quality and maximize recovery.",
-            status: "Immediate Action",
-          }
-        : overall >= AI_LIMITS.excellent
+      overall >= AI_LIMITS.excellent && recovery >= AI_LIMITS.excellent
         ? {
             title: "Listing Ready",
             description:
@@ -1234,31 +1392,47 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         : overall >= AI_LIMITS.good
           ? {
-              title: "Minor Improvements Recommended",
+              title: "Almost Ready",
               description:
-                "Your listing has solid recovery potential. A few details can help it convert faster.",
-              status: "Review Suggested",
+                "Small improvements can increase recovery and marketplace visibility.",
+              status: "Minor Improvements",
             }
-          : overall >= 55
+          : overall >= 55 &&
+              recovery >= AI_LIMITS.fair &&
+              priority !== "CRITICAL"
             ? {
-                title: "Needs Attention",
-                description: "A few improvements to freshness, pickup, or listing details will increase recovery potential.",
-              status: "Needs Attention",
-            }
-          : {
-              title: "Improve Before Publishing",
-              description:
-                "Address the highlighted food, pricing, and pickup details before offering this listing to the community.",
-              status: "Needs Attention",
-            };
+                title: "Improve Before Publishing",
+                description:
+                  "Improve pricing, food details, or pickup information before publishing.",
+                status: "Needs Attention",
+              }
+            : {
+                title: "High Priority Recovery",
+                description:
+                  "Food should be recovered quickly to maximize quality and reduce waste.",
+                status: "Immediate Action",
+              };
     const summary = [];
-    if (completeness >= AI_LIMITS.excellent) summary.push("Listing contains complete information.");
-    if (data.hasImage) summary.push("Image quality improves buyer confidence.");
-    if (data.description.length < 60) summary.push("Description could better explain quantity and condition.");
-    if (pickup.score >= AI_LIMITS.good) summary.push("Pickup window supports high recovery.");
-    if (freshness < AI_LIMITS.good) summary.push("Food freshness will decrease soon.");
-    if (safety === "Needs Review" || safety === "Unsafe") summary.push("Food requires additional safety review.");
-    if (!summary.length) summary.push("Listing is ready for publishing.");
+    summary.push(
+      freshness >= AI_LIMITS.good
+        ? "Food is suitable for recovery."
+        : "Freshness is time-sensitive.",
+    );
+    summary.push(
+      safety === "Excellent" || safety === "Good"
+        ? "Food safety supports recovery."
+        : "Food safety needs review before publishing.",
+    );
+    summary.push(
+      pricingScore >= AI_LIMITS.good
+        ? "Smart pricing has been optimized."
+        : "Pricing can improve recovery speed.",
+    );
+    summary.push(
+      recovery >= AI_LIMITS.good
+        ? "Recovery potential is high."
+        : "Recovery potential needs attention.",
+    );
     const priorityMeta = {
       LOW: { label: "Low Priority", tone: "#94a3b8" },
       MEDIUM: { label: "Moderate Priority", tone: "#3b82f6" },
@@ -1271,8 +1445,7 @@ document.addEventListener("DOMContentLoaded", () => {
       confidence: {
         score: confidence,
         recovery,
-        pickupEstimate:
-          pickup.estimate,
+        pickupEstimate: pickup.estimate,
         priority,
         priorityLabel: priorityMeta.label,
         priorityTone: priorityMeta.tone,
@@ -1292,7 +1465,14 @@ document.addEventListener("DOMContentLoaded", () => {
         {
           icon: "ri-time-line",
           title: "Freshness",
-          status: freshness >= AI_LIMITS.excellent ? "Excellent" : freshness >= AI_LIMITS.good ? "Good" : freshness >= AI_LIMITS.fair ? "Time Sensitive" : "Critical",
+          status:
+            freshness >= AI_LIMITS.excellent
+              ? "Excellent"
+              : freshness >= AI_LIMITS.good
+                ? "Good"
+                : freshness >= AI_LIMITS.fair
+                  ? "Consume Soon"
+                  : "Critical",
           score: freshness,
           color: getStatusColor(freshness),
         },
@@ -1306,14 +1486,24 @@ document.addEventListener("DOMContentLoaded", () => {
         {
           icon: "ri-image-line",
           title: "Image Quality",
-          status: data.hasImage && quality >= AI_LIMITS.good ? "Excellent" : data.hasImage ? "Good" : "Needs Improvement",
+          status:
+            data.hasImage && quality >= AI_LIMITS.good
+              ? "Excellent"
+              : data.hasImage
+                ? "Good"
+                : "Needs Improvement",
           score: data.hasImage ? 100 : 0,
           color: getStatusColor(data.hasImage ? quality : 20),
         },
         {
           icon: "ri-file-list-3-line",
           title: "Description",
-          status: data.description.length >= 60 ? "Strong" : data.description.length >= 35 ? "Average" : "Needs Improvement",
+          status:
+            data.description.length >= 60
+              ? "Strong"
+              : data.description.length >= 35
+                ? "Average"
+                : "Needs Improvement",
           score: Math.min(100, data.description.length),
           color: getStatusColor(Math.min(100, data.description.length)),
         },
@@ -1332,18 +1522,16 @@ document.addEventListener("DOMContentLoaded", () => {
           color: getStatusColor(confidence),
         },
       ],
-      recommendation: generateRecommendation(
+      recommendation: generateRecommendation({
+        hero,
         priority,
-        freshness,
-        suggested,
-        confidence,
-        meals,
-        data.originalPrice,
-        pickup,
+        listingType: data.listingType,
         pricingScore,
-        data.description.length,
-        data.listingType,
-      ),
+        suggestedPrice: suggested,
+        pickup,
+        descriptionLength: data.description.length,
+        recovery,
+      }),
       overall,
     };
   }
@@ -1353,13 +1541,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const duration = 800;
     const precision = Number.isInteger(target) ? 0 : 1;
     const startTime = performance.now();
-    if (element._valueAnimationFrame) cancelAnimationFrame(element._valueAnimationFrame);
+    if (element._valueAnimationFrame)
+      cancelAnimationFrame(element._valueAnimationFrame);
 
     const renderValue = (time) => {
       const progress = Math.min((time - startTime) / duration, 1);
       const value = target * (1 - (1 - progress) ** 3);
       element.textContent = `${prefix}${value.toFixed(precision)}${suffix}`;
-      if (progress < 1) element._valueAnimationFrame = requestAnimationFrame(renderValue);
+      if (progress < 1)
+        element._valueAnimationFrame = requestAnimationFrame(renderValue);
     };
     element._valueAnimationFrame = requestAnimationFrame(renderValue);
   }
@@ -1367,12 +1557,14 @@ document.addEventListener("DOMContentLoaded", () => {
   function animateRecoveryProgress(element, value, color) {
     const target = clampScore(value);
     const startTime = performance.now();
-    if (element._progressAnimationFrame) cancelAnimationFrame(element._progressAnimationFrame);
+    if (element._progressAnimationFrame)
+      cancelAnimationFrame(element._progressAnimationFrame);
     element.style.background = color;
     const renderProgress = (time) => {
       const progress = Math.min((time - startTime) / 800, 1);
       element.style.width = `${target * (1 - (1 - progress) ** 3)}%`;
-      if (progress < 1) element._progressAnimationFrame = requestAnimationFrame(renderProgress);
+      if (progress < 1)
+        element._progressAnimationFrame = requestAnimationFrame(renderProgress);
     };
     element._progressAnimationFrame = requestAnimationFrame(renderProgress);
   }
@@ -1416,7 +1608,14 @@ document.addEventListener("DOMContentLoaded", () => {
     discountPercent.hidden = result.pricing.original <= 0;
     pricingBadge.textContent = result.pricing.badge;
     pricingMessage.textContent = result.pricing.message;
-    const pricingTone = result.pricing.tone === "critical" ? "#ef4444" : result.pricing.tone === "high" ? "#f59e0b" : result.pricing.tone === "medium" ? "#3b82f6" : "#22c55e";
+    const pricingTone =
+      result.pricing.tone === "critical"
+        ? "#ef4444"
+        : result.pricing.tone === "high"
+          ? "#f59e0b"
+          : result.pricing.tone === "medium"
+            ? "#3b82f6"
+            : "#22c55e";
     pricingBadge.style.color = pricingTone;
     pricingBadge.style.borderColor = pricingTone;
     discountPercent.style.color = pricingTone;
@@ -1429,15 +1628,30 @@ document.addEventListener("DOMContentLoaded", () => {
       heroContent.querySelector("p").textContent = result.hero.description;
       const heroBadge = heroContent.querySelector(".hero-badge");
       if (heroBadge) heroBadge.lastChild.textContent = ` ${result.hero.status}`;
-      [heroBadge, heroContent.querySelector("h1"), heroContent.querySelector("p")].filter(Boolean).forEach((element, index) => {
-        element.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 360, delay: index * 70, easing: "ease-out" });
-      });
+      [
+        heroBadge,
+        heroContent.querySelector("h1"),
+        heroContent.querySelector("p"),
+      ]
+        .filter(Boolean)
+        .forEach((element, index) => {
+          element.animate(
+            [
+              { opacity: 0, transform: "translateY(8px)" },
+              { opacity: 1, transform: "translateY(0)" },
+            ],
+            { duration: 360, delay: index * 70, easing: "ease-out" },
+          );
+        });
     }
     const previewStatus = document.querySelector(".preview-status");
     if (previewStatus) previewStatus.textContent = result.hero.status;
     document.querySelectorAll(".review-row").forEach((row, index) => {
       row.animate(
-        [{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "translateY(0)" }],
+        [
+          { opacity: 0, transform: "translateY(10px)" },
+          { opacity: 1, transform: "translateY(0)" },
+        ],
         { duration: 420, delay: index * 80, easing: "ease-out", fill: "both" },
       );
     });
@@ -1479,19 +1693,35 @@ document.addEventListener("DOMContentLoaded", () => {
             document.createTextNode(insight.status),
           );
           box.append(icon, text);
-          box.animate([{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 320, delay: index * 45, easing: "ease-out", fill: "both" });
+          box.animate(
+            [
+              { opacity: 0, transform: "translateY(8px)" },
+              { opacity: 1, transform: "translateY(0)" },
+            ],
+            {
+              duration: 320,
+              delay: index * 45,
+              easing: "ease-out",
+              fill: "both",
+            },
+          );
           return box;
         }),
       );
     }
 
     priorityFill.classList.remove("high");
-    const progressColor = result.confidence.recovery >= AI_LIMITS.good
-      ? "linear-gradient(90deg, #22c55e, #16a34a)"
-      : result.confidence.recovery >= AI_LIMITS.fair
-        ? "linear-gradient(90deg, #3b82f6, #6366f1)"
-        : "linear-gradient(90deg, #f59e0b, #f97316)";
-    animateRecoveryProgress(priorityFill, result.confidence.recovery, progressColor);
+    const progressColor =
+      result.confidence.recovery >= AI_LIMITS.good
+        ? "linear-gradient(90deg, #22c55e, #16a34a)"
+        : result.confidence.recovery >= AI_LIMITS.fair
+          ? "linear-gradient(90deg, #3b82f6, #6366f1)"
+          : "linear-gradient(90deg, #f59e0b, #f97316)";
+    animateRecoveryProgress(
+      priorityFill,
+      result.confidence.recovery,
+      progressColor,
+    );
     priorityFill.style.boxShadow = `0 0 14px ${result.confidence.recovery >= AI_LIMITS.good ? "rgba(34, 197, 94, 0.45)" : result.confidence.recovery >= AI_LIMITS.fair ? "rgba(59, 130, 246, 0.4)" : "rgba(249, 115, 22, 0.35)"}`;
     const ring = document.querySelector(".confidence-ring");
     if (ring) {
@@ -1508,13 +1738,23 @@ document.addEventListener("DOMContentLoaded", () => {
       if (ring._analysisFrame) cancelAnimationFrame(ring._analysisFrame);
       if (ring._glowAnimation) ring._glowAnimation.cancel();
       ring.style.transition = "box-shadow 280ms ease, filter 280ms ease";
-      ring.style.boxShadow = score > AI_LIMITS.fair
-        ? `0 0 24px ${color}80, 0 0 44px ${color}45`
-        : "none";
-      ring.style.filter = score > AI_LIMITS.fair ? "saturate(1.1)" : "none";
-      if (score >= AI_LIMITS.good) {
+      const glow =
+        score >= 90
+          ? `0 0 28px ${color}a0, 0 0 52px ${color}55`
+          : score >= 80
+            ? `0 0 22px ${color}80, 0 0 38px ${color}40`
+            : score >= 70
+              ? `0 0 14px ${color}60, 0 0 24px ${color}25`
+              : "none";
+      ring.style.boxShadow = glow;
+      ring.style.filter = score >= 70 ? "saturate(1.1)" : "none";
+      if (score >= 80) {
         ring._glowAnimation = ring.animate(
-          [{ transform: "scale(1)", boxShadow: `0 0 18px ${color}65` }, { transform: "scale(1.025)", boxShadow: `0 0 34px ${color}95` }, { transform: "scale(1)", boxShadow: `0 0 24px ${color}80` }],
+          [
+            { transform: "scale(1)", boxShadow: glow },
+            { transform: "scale(1.018)", boxShadow: `0 0 32px ${color}95` },
+            { transform: "scale(1)", boxShadow: glow },
+          ],
           { duration: 1100, easing: "ease-in-out" },
         );
       }
@@ -1523,7 +1763,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const progress = Math.min((time - startTime) / 800, 1);
         const degrees = target * (1 - (1 - progress) ** 3);
         ring.style.background = `conic-gradient(${color} ${degrees}deg, rgba(255, 255, 255, 0.08) ${degrees}deg)`;
-        if (progress < 1) ring._analysisFrame = requestAnimationFrame(renderRing);
+        if (progress < 1)
+          ring._analysisFrame = requestAnimationFrame(renderRing);
       };
       ring._analysisFrame = requestAnimationFrame(renderRing);
     }
@@ -1561,6 +1802,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     }
+  }
+
+  let reviewRefreshTimer;
+  function refreshReviewFromChanges() {
+    if (!aiResult || !stepTwo || stepTwo.hidden) return;
+    clearTimeout(reviewRefreshTimer);
+    reviewRefreshTimer = setTimeout(() => {
+      aiResult = generateAnalysis();
+      updateDashboard(aiResult);
+    }, 260);
   }
 
   /* ==========================================================
@@ -1644,6 +1895,28 @@ document.addEventListener("DOMContentLoaded", () => {
   foodName.addEventListener("input", updatePreviewCard);
 
   category.addEventListener("change", updatePreviewCard);
+
+  [
+    foodName,
+    category,
+    foodType,
+    description,
+    listingType,
+    quantity,
+    unit,
+    otherUnit,
+    originalPrice,
+    sellingPrice,
+    preparationTime,
+    expiryDate,
+    availableUntil,
+    pickupAddress,
+    foodImage,
+    hasExpiry,
+  ].forEach((field) => {
+    if (field) field.addEventListener("input", refreshReviewFromChanges);
+    if (field) field.addEventListener("change", refreshReviewFromChanges);
+  });
 
   /* ==========================================================
     EVENTS
