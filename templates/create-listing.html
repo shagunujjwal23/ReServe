@@ -1174,10 +1174,335 @@
             </section>
 
             <!-- ================================= -->
-            <!-- STEP 3 -->
+            <!-- STEP 3 - PUBLISH -->
             <!-- ================================= -->
 
-            <section id="stepThree" hidden></section>
+            <section id="stepThree" hidden>
+              <div class="publish-page">
+                <!-- ================================= -->
+                <!-- TOP BAR -->
+                <!-- ================================= -->
+
+                <div class="review-topbar">
+                  <div class="review-progress">
+                    <div class="progress-step completed">
+                      <span>✓</span>
+                      <p>Details</p>
+                    </div>
+
+                    <div class="progress-line active"></div>
+
+                    <div class="progress-step completed">
+                      <span>✓</span>
+                      <p>AI Review</p>
+                    </div>
+
+                    <div class="progress-line active"></div>
+
+                    <div class="progress-step active">
+                      <span>3</span>
+                      <p>Publish</p>
+                    </div>
+                  </div>
+
+                  <div class="powered-ai">
+                    <i class="ri-sparkling-2-fill"></i>
+                    <span>Powered by ReServe Intelligence</span>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- HERO -->
+                <!-- ================================= -->
+
+                <div class="publish-hero">
+                  <div class="hero-content">
+                    <div class="hero-badge success">
+                      <span class="badge-dot"></span>
+                      AI VERIFIED
+                    </div>
+
+                    <h1>Ready to Publish</h1>
+
+                    <p>
+                      Your listing has successfully passed AI verification and
+                      is ready to go live. Nearby families, NGOs and community
+                      kitchens will be able to discover it immediately after
+                      publishing.
+                    </p>
+
+                    <div class="hero-highlights">
+                      <div class="highlight-pill">
+                        <i class="ri-shield-check-line"></i>
+                        AI Verified
+                      </div>
+
+                      <div class="highlight-pill">
+                        <i class="ri-flashlight-line"></i>
+                        High Recovery
+                      </div>
+
+                      <div class="highlight-pill">
+                        <i class="ri-earth-line"></i>
+                        Eco Friendly
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Listing Preview -->
+
+                  <div class="listing-preview-card">
+                    <div class="listing-preview-header">
+                      <h3>Listing Preview</h3>
+
+                      <span class="preview-status"> Ready </span>
+                    </div>
+
+                    <div class="listing-preview-image">
+                      <img id="publishPreviewImage" src="" alt="Food Preview" />
+
+                      <div class="image-placeholder">
+                        <i class="ri-image-2-line"></i>
+                      </div>
+                    </div>
+
+                    <div class="listing-preview-content">
+                      <h4 id="publishFoodName">Food Name</h4>
+
+                      <p id="publishCategory">Category</p>
+
+                      <div class="preview-meta">
+                        <span id="publishPrice"> ₹-- </span>
+
+                        <span id="publishMeals"> -- Meals </span>
+
+                        <span id="publishPickup"> Pickup Today </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- ROW 1 -->
+                <!-- ================================= -->
+
+                <div class="review-row">
+                  <!-- Checklist -->
+
+                  <div class="publish-checklist-card">
+                    <span class="section-tag"> FINAL CHECKLIST </span>
+
+                    <h2>Everything Looks Good</h2>
+
+                    <div class="publish-checklist">
+                      <div class="check-item completed">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>Food Details Verified</span>
+                      </div>
+
+                      <div class="check-item completed">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>AI Analysis Completed</span>
+                      </div>
+
+                      <div class="check-item completed">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>Smart Pricing Applied</span>
+                      </div>
+
+                      <div class="check-item completed">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>Pickup Window Confirmed</span>
+                      </div>
+
+                      <div class="check-item completed">
+                        <i class="ri-checkbox-circle-fill"></i>
+                        <span>Ready for Marketplace</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Visibility -->
+
+                  <div class="visibility-card">
+                    <span class="section-tag"> MARKETPLACE VISIBILITY </span>
+
+                    <h2>Who Can Discover This Listing?</h2>
+
+                    <div class="visibility-grid">
+                      <div class="visibility-item">
+                        <i class="ri-community-line"></i>
+                        <span>Nearby Families</span>
+                      </div>
+
+                      <div class="visibility-item">
+                        <i class="ri-hospital-line"></i>
+                        <span>Verified NGOs</span>
+                      </div>
+
+                      <div class="visibility-item">
+                        <i class="ri-restaurant-line"></i>
+                        <span>Community Kitchens</span>
+                      </div>
+
+                      <div class="visibility-item">
+                        <i class="ri-map-pin-line"></i>
+                        <span>Within 5 km Radius</span>
+                      </div>
+                    </div>
+
+                    <div class="estimated-reach">
+                      <span>Estimated Reach</span>
+
+                      <h3 id="estimatedReach">Calculating...</h3>
+                    </div>
+
+                    <p class="visibility-note">
+                      Your listing will become visible immediately after
+                      publishing.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- ROW 2 -->
+                <!-- ================================= -->
+
+                <div class="review-row">
+                  <!-- Impact -->
+
+                  <div class="impact-summary-card">
+                    <span class="section-tag"> COMMUNITY IMPACT </span>
+
+                    <h2>Expected Contribution</h2>
+
+                    <div class="metrics-grid">
+                      <div class="metric-card">
+                        <div class="metric-icon meals">
+                          <i class="ri-restaurant-line"></i>
+                        </div>
+
+                        <span>Meals Saved</span>
+
+                        <h3 id="publishMealsSaved">--</h3>
+                      </div>
+
+                      <div class="metric-card">
+                        <div class="metric-icon carbon">
+                          <i class="ri-leaf-line"></i>
+                        </div>
+
+                        <span>CO₂ Saved</span>
+
+                        <h3 id="publishCarbonSaved">--</h3>
+                      </div>
+
+                      <div class="metric-card">
+                        <div class="metric-icon quality">
+                          <i class="ri-recycle-line"></i>
+                        </div>
+
+                        <span>Recovery Chance</span>
+
+                        <h3 id="publishRecovery">--</h3>
+                      </div>
+
+                      <div class="metric-card">
+                        <div class="metric-icon safety">
+                          <i class="ri-heart-pulse-line"></i>
+                        </div>
+
+                        <span>Food Waste Prevented</span>
+
+                        <h3 id="publishWaste">--</h3>
+                      </div>
+                    </div>
+
+                    <p class="impact-note">
+                      Every successful pickup helps reduce food waste and
+                      supports your local community.
+                    </p>
+                  </div>
+
+                  <!-- Publish Settings -->
+
+                  <div class="publish-settings-card">
+                    <span class="section-tag"> PUBLISH SETTINGS </span>
+
+                    <h2>Publishing Preferences</h2>
+
+                    <div class="publish-options">
+                      <label class="setting-option">
+                        <input type="checkbox" id="notifyNearby" checked />
+                        <span>Notify nearby recipients</span>
+                      </label>
+
+                      <label class="setting-option">
+                        <input type="checkbox" id="showLocation" checked />
+                        <span>Show approximate pickup location</span>
+                      </label>
+
+                      <label class="setting-option">
+                        <input type="checkbox" id="allowNGO" checked />
+                        <span>Allow NGOs to request immediately</span>
+                      </label>
+
+                      <label class="setting-option">
+                        <input type="checkbox" checked />
+                        <span>Highlight as Fresh Listing</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- FINAL CONFIRMATION -->
+                <!-- ================================= -->
+
+                <div class="publish-confirmation-card">
+                  <div class="confirmation-icon">
+                    <i class="ri-information-line"></i>
+                  </div>
+
+                  <div>
+                    <h3>Ready to Publish</h3>
+
+                    <p>
+                      Once published, your listing will instantly become
+                      available to nearby families, NGOs and community kitchens.
+                      You can edit, pause or remove it later from
+                      <strong>My Listings</strong>.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- ================================= -->
+                <!-- ACTION BAR -->
+                <!-- ================================= -->
+
+                <div class="ai-action-bar">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    id="backToReviewBtn"
+                  >
+                    <i class="ri-arrow-left-line"></i>
+
+                    Back to Review
+                  </button>
+
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="finalPublishBtn"
+                  >
+                    <i class="ri-rocket-2-fill"></i>
+
+                    Publish to Marketplace
+                  </button>
+                </div>
+              </div>
+            </section>
           </div>
         </main>
       </div>
