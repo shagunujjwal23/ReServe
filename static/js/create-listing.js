@@ -41,6 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const expiryDate = document.getElementById("expiryDate");
   const availableUntil = document.getElementById("availableUntil");
 
+  const city = document.getElementById("city");
+  const landmark = document.getElementById("landmark");
+  const pickupInstructions = document.getElementById("pickupInstructions");
+
   const preparationGroup = document.getElementById("preparationGroup");
   const expiryGroup = document.getElementById("expiryGroup");
   const availableUntilGroup = document.getElementById("availableUntilGroup");
@@ -88,6 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const stepOne = document.getElementById("stepOne");
   const stepTwo = document.getElementById("stepTwo");
+  const stepThree = document.getElementById("stepThree");
 
   const aiLoadingScreen = document.getElementById("aiLoadingScreen");
 
@@ -97,6 +102,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const backToEditBtn = document.getElementById("backToEditBtn");
   const publishListingBtn = document.getElementById("publishListingBtn");
+
+  /* =====================================================
+   PUBLISH PAGE
+===================================================== */
+
+  const backToReviewBtn = document.getElementById("backToReviewBtn");
+  const finalPublishBtn = document.getElementById("finalPublishBtn");
 
   /* Dashboard */
 
@@ -125,6 +137,34 @@ document.addEventListener("DOMContentLoaded", () => {
   const previewFoodName = document.getElementById("previewFoodName");
   const previewCategory = document.getElementById("previewCategory");
   const previewListingImage = document.getElementById("previewListingImage");
+
+  /* =====================================================
+   PUBLISH PAGE ELEMENTS
+===================================================== */
+
+  // Listing Preview
+  const publishPreviewImage = document.getElementById("publishPreviewImage");
+  const publishFoodName = document.getElementById("publishFoodName");
+  const publishCategory = document.getElementById("publishCategory");
+  const publishPrice = document.getElementById("publishPrice");
+  const publishMeals = document.getElementById("publishMeals");
+  const publishPickup = document.getElementById("publishPickup");
+
+  // Community Impact
+  const publishMealsSaved = document.getElementById("publishMealsSaved");
+  const publishCarbonSaved = document.getElementById("publishCarbonSaved");
+  const publishRecovery = document.getElementById("publishRecovery");
+  const publishWaste = document.getElementById("publishWaste");
+
+  // Visibility
+  const estimatedReach = document.getElementById("estimatedReach");
+
+  const publishActionInfo = document.getElementById("publishActionInfo");
+
+  const previewImage = document.getElementById("previewImage");
+  const imageOverlay = document.getElementById("imageOverlay");
+  const changeImageBtn = document.getElementById("changeImageBtn");
+  const removeImageBtn = document.getElementById("removeImageBtn");
 
   /* =====================================================
    AI ANALYSIS STATE
@@ -164,31 +204,39 @@ document.addEventListener("DOMContentLoaded", () => {
    Category
 ------------------------- */
 
-  function toggleOtherCategory() {
-    if (category.value === "Other") {
-      show(otherCategoryGroup);
-      otherCategory.required = true;
-    } else {
-      hide(otherCategoryGroup);
-      otherCategory.required = false;
-      otherCategory.value = "";
-    }
+function toggleOtherCategory() {
+  if (category.value === "Other") {
+    show(otherCategoryGroup);
+
+    otherCategory.disabled = false;
+    otherCategory.required = true;
+  } else {
+    hide(otherCategoryGroup);
+
+    otherCategory.value = "";
+    otherCategory.required = false;
+    otherCategory.disabled = true;
   }
+}
 
   /* -------------------------
    Unit
 ------------------------- */
 
-  function toggleOtherUnit() {
-    if (unit.value === "Other") {
-      show(otherUnitGroup);
-      otherUnit.required = true;
-    } else {
-      hide(otherUnitGroup);
-      otherUnit.required = false;
-      otherUnit.value = "";
-    }
+function toggleOtherUnit() {
+  if (unit.value === "Other") {
+    show(otherUnitGroup);
+
+    otherUnit.disabled = false;
+    otherUnit.required = true;
+  } else {
+    hide(otherUnitGroup);
+
+    otherUnit.value = "";
+    otherUnit.required = false;
+    otherUnit.disabled = true;
   }
+}
 
   /* -------------------------
    Listing Type
@@ -474,11 +522,15 @@ document.addEventListener("DOMContentLoaded", () => {
       expiryDate.value,
       availableUntil.value,
       pickupAddress.value.trim(),
-      foodImage.files.length,
-    ].some((value) => value);
+      city.value,
+      landmark.value,
+      pickupInstructions.value,
+      foodImage.files.length > 0,
+    ].some(Boolean);
 
     if (!hasData) {
-      draftStatus.textContent = "Nothing to save.";
+      updateDraftStatus("No Draft", "Nothing to save", "ri-file-add-line");
+
       return;
     }
 
@@ -499,33 +551,25 @@ document.addEventListener("DOMContentLoaded", () => {
       expiryDate: expiryDate.value,
       availableUntil: availableUntil.value,
       pickupAddress: pickupAddress.value,
+      city: city.value,
+      landmark: landmark.value,
+      pickupInstructions: pickupInstructions.value,
     };
 
     localStorage.setItem("reserveListingDraft", JSON.stringify(draft));
 
+    draftSaved = true;
+
+    draftNotification.classList.remove("hidden");
+
     updateDraftStatus(
-      "✓ Saved just now",
-
-      "Saving completed",
-
+      "Draft Saved",
+      `Last saved at ${new Date().toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      })}`,
       "ri-checkbox-circle-fill",
     );
-
-    setTimeout(() => {
-      const time = new Date().toLocaleTimeString([], {
-        hour: "numeric",
-
-        minute: "2-digit",
-      });
-
-      updateDraftStatus(
-        "Draft Saved",
-
-        `Last saved at ${time}`,
-
-        "ri-checkbox-circle-fill",
-      );
-    }, 2000);
   }
 
   function loadDraft() {
@@ -536,36 +580,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const draft = JSON.parse(savedDraft);
 
     foodName.value = draft.foodName || "";
-
     category.value = draft.category || "";
-
     otherCategory.value = draft.otherCategory || "";
-
     foodType.value = draft.foodType || "";
-
     description.value = draft.description || "";
-
     listingType.value = draft.listingType || "donate";
-
     quantity.value = draft.quantity || "";
-
     unit.value = draft.unit || "";
-
     otherUnit.value = draft.otherUnit || "";
-
     originalPrice.value = draft.originalPrice || "";
-
     sellingPrice.value = draft.sellingPrice || "";
-
     hasExpiry.checked = draft.hasExpiry || false;
-
     preparationTime.value = draft.preparationTime || "";
-
     expiryDate.value = draft.expiryDate || "";
-
     availableUntil.value = draft.availableUntil || "";
-
     pickupAddress.value = draft.pickupAddress || "";
+    city.value = draft.city || "";
+    landmark.value = draft.landmark || "";
+    pickupInstructions.value = draft.pickupInstructions || "";
 
     toggleOtherCategory();
     toggleOtherUnit();
@@ -577,12 +609,45 @@ document.addEventListener("DOMContentLoaded", () => {
     updateReadiness();
   }
 
+  let draftSaved = false;
+
   function markDraftUnsaved() {
+    const hasData = [
+      foodName.value.trim(),
+      category.value,
+      otherCategory.value.trim(),
+      foodType.value,
+      description.value.trim(),
+      quantity.value,
+      unit.value,
+      otherUnit.value.trim(),
+      originalPrice.value,
+      sellingPrice.value,
+      preparationTime.value,
+      expiryDate.value,
+      availableUntil.value,
+      pickupAddress.value.trim(),
+      city.value.trim(),
+      landmark.value.trim(),
+      pickupInstructions.value,
+      foodImage.files.length,
+    ].some(Boolean);
+
+    if (!hasData) {
+      updateDraftStatus(
+        "No Draft",
+        "Start creating a new listing",
+        "ri-file-add-line",
+      );
+      draftSaved = false;
+      return;
+    }
+
+    draftSaved = false;
+
     updateDraftStatus(
       "Unsaved Changes",
-
       "Changes haven't been saved yet",
-
       "ri-time-line",
     );
   }
@@ -739,6 +804,10 @@ document.addEventListener("DOMContentLoaded", () => {
       invalidate(pickupAddress, "Address should be at least 10 characters.");
     }
 
+    if (city.value === "") {
+      invalidate(city, "Please enter your city.");
+    }
+
     /* -------------------------
        Image
     ------------------------- */
@@ -778,10 +847,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
       "ri-draft-line",
     );
+    draftSaved = true;
   });
 
   discardDraftBtn.addEventListener("click", () => {
     localStorage.removeItem("reserveListingDraft");
+
+    draftSaved = false;
+
+    form.reset();
+
+    city.value = "";
+    landmark.value = "";
+    pickupInstructions.value = "";
+
+    foodImage.value = "";
+
+    previewImage.src = "";
+
+    previewImage.classList.remove("show");
+
+    uploadContent.style.display = "flex";
+
+    imageOverlay.classList.add("hidden");
+
+    toggleOtherCategory();
+    toggleOtherUnit();
+    toggleListingType();
+    toggleExpiryFields();
+
+    updateCharacterCounter();
+    updateCompletionBadge();
+    updateReadiness();
+    updatePreviewCard();
 
     draftNotification.classList.add("hidden");
 
@@ -831,7 +929,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   if (publishListingBtn) {
-    publishListingBtn.addEventListener("click", publishListing);
+    publishListingBtn.addEventListener("click", showPublishPage);
+
+    if (backToReviewBtn) {
+      backToReviewBtn.addEventListener("click", () => {
+        stepThree.hidden = true;
+        stepTwo.hidden = false;
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      });
+    }
+  }
+
+  if (finalPublishBtn) {
+    finalPublishBtn.addEventListener("click", publishListing);
   }
 
   /* =====================================================
@@ -843,12 +957,12 @@ document.addEventListener("DOMContentLoaded", () => {
 ===================================================== */
   async function startAIAnalysis() {
     analyzeBtn.disabled = true;
-
     analyzeBtn.innerHTML =
       '<i class="ri-loader-4-line ri-spin"></i> Analyzing...';
 
-    // Validate form
     if (!validateForm()) {
+      analyzeBtn.disabled = false;
+      analyzeBtn.innerHTML = '<i class="ri-brain-line"></i> Analyze with AI';
       return;
     }
 
@@ -890,25 +1004,152 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function showPublishPage() {
+    populatePublishPage();
+
+    stepTwo.hidden = true;
+
+    stepThree.hidden = false;
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  }
+
+  /* =====================================================
+   POPULATE PUBLISH PAGE
+===================================================== */
+
+  function populatePublishPage() {
+    // Listing Preview
+    publishFoodName.textContent = foodName.value || "Food Name";
+
+    publishCategory.textContent =
+      category.value === "Other" ? otherCategory.value : category.value;
+
+    // Price
+    if (listingType.value === "sell") {
+      publishPrice.textContent = "₹" + (sellingPrice.value || "0");
+    } else {
+      publishPrice.textContent = "Donation";
+    }
+
+    // Meals
+    if (aiResult) {
+      publishMeals.textContent = `${aiResult.metrics.meals} Meals`;
+
+      publishMealsSaved.textContent = aiResult.metrics.meals;
+
+      publishCarbonSaved.textContent = `${aiResult.metrics.carbon} kg`;
+
+      publishRecovery.textContent = `${aiResult.confidence.recovery}%`;
+
+      publishWaste.textContent = `${aiResult.metrics.meals} Meals`;
+
+      estimatedReach.textContent = `${Math.max(aiResult.metrics.meals * 4, 25)}+ People`;
+
+      publishPickup.textContent = aiResult.confidence.pickupEstimate;
+    }
+
+    // Image
+    if (previewImage.src && previewImage.src !== window.location.href) {
+      publishPreviewImage.src = previewImage.src;
+
+      publishPreviewImage.style.display = "block";
+
+      const placeholder =
+        publishPreviewImage.parentElement.querySelector(".image-placeholder");
+
+      if (placeholder) {
+        placeholder.style.display = "none";
+      }
+    }
+  }
+
+  /* =====================================================
+   FINAL PUBLISH
+===================================================== */
+
   function publishListing() {
-    if (publishListingBtn.disabled) return;
-    localStorage.removeItem("reserveListingDraft");
+    if (finalPublishBtn.dataset.state === "published") return;
 
-    publishListingBtn.disabled = true;
+    finalPublishBtn.disabled = true;
+    backToReviewBtn.disabled = true;
 
-    publishListingBtn.innerHTML =
+    finalPublishBtn.innerHTML =
       '<i class="ri-loader-4-line ri-spin"></i> Publishing...';
 
     setTimeout(() => {
-      publishListingBtn.innerHTML =
-        '<i class="ri-checkbox-circle-fill"></i> Published Successfully';
+      // Remove draft
+      localStorage.removeItem("reserveListingDraft");
+      draftSaved = false;
 
-      publishListingBtn.style.background = "#16a34a";
+      // Current time
+      const now = new Date();
 
+      const time = now.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+
+      const date = now.toLocaleDateString([], {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+      });
+
+      /* ----------------------------------
+       HERO
+    ----------------------------------- */
+
+      publishHeroBadge.innerHTML =
+        '<span class="publish-badge-dot"></span> LIVE ON MARKETPLACE';
+
+      publishHeroTitle.textContent = "Listing Published Successfully";
+
+      publishHeroDescription.textContent = `"${foodName.value}" is now available for nearby recipients. You can manage, edit or pause this listing anytime from My Listings.`;
+
+      publishPreviewStatus.textContent = "LIVE";
+
+      /* ----------------------------------
+       Confirmation
+    ----------------------------------- */
+
+      confirmationTitle.textContent = "Successfully Published";
+
+      confirmationDescription.innerHTML = `Your listing has been published successfully and is now visible to nearby families, NGOs and community kitchens. You can manage or update it anytime from <strong>My Listings</strong>.`;
+
+      publishTime.hidden = false;
+      publishTime.innerHTML = `Published: <strong>${date} • ${time}</strong>`;
+
+      /* ----------------------------------
+       Action Info
+    ----------------------------------- */
+
+      publishActionInfo.innerHTML =
+        '<i class="ri-checkbox-circle-fill"></i> Listing is now live';
+      console.log("Action info updated");
+
+      /* ----------------------------------
+       Buttons
+    ----------------------------------- */
+
+      finalPublishBtn.innerHTML =
+        '<i class="ri-checkbox-circle-fill"></i> Published';
+
+      finalPublishBtn.style.background = "#16a34a";
+
+      backToReviewBtn.innerHTML =
+        '<i class="ri-arrow-left-line"></i> View AI Review';
+
+      // Show success for 3 seconds, then reset the page
       setTimeout(() => {
-        window.location.href = "/marketplace";
-      }, 1200);
-    }, 1500);
+        resetCreateListing();
+      }, 3000);
+    }, 1800);
+
+    finalPublishBtn.dataset.state = "published";
   }
 
   /* =====================================================
@@ -1049,6 +1290,9 @@ document.addEventListener("DOMContentLoaded", () => {
       hasFoodTiming,
       data.availableUntil,
       data.pickupAddress.length >= 10,
+      data.city,
+      data.landmark,
+      data.pickupInstructions,
       data.hasImage,
       data.listingType,
     ];
@@ -1123,6 +1367,9 @@ document.addEventListener("DOMContentLoaded", () => {
       pickupAddress: pickupAddress.value.trim(),
       hasImage: foodImage.files.length > 0,
       listingType: listingType.value,
+      city: city.value,
+      landmark: landmark.value,
+      pickupInstructions: pickupInstructions.value,
     });
   }
 
@@ -1814,6 +2061,82 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 260);
   }
 
+  function resetCreateListing() {
+    // Clear form
+    form.reset();
+
+    foodImage.value = "";
+
+    previewImage.src = "";
+
+    previewImage.classList.remove("show");
+
+    uploadContent.style.display = "flex";
+
+    imageOverlay.classList.add("hidden");
+
+    // Remove draft
+    localStorage.removeItem("reserveListingDraft");
+    draftNotification.classList.add("hidden");
+    draftSaved = false;
+    aiResult = null;
+
+    // Return to Create Listing page
+    stepThree.hidden = true;
+    stepTwo.hidden = true;
+    stepOne.hidden = false;
+
+    // Reset buttons
+    finalPublishBtn.disabled = false;
+    backToReviewBtn.disabled = false;
+
+    finalPublishBtn.innerHTML =
+      '<i class="ri-rocket-2-fill"></i> Publish to Marketplace';
+
+    finalPublishBtn.style.background = "";
+
+    backToReviewBtn.innerHTML =
+      '<i class="ri-arrow-left-line"></i> Back to Review';
+
+    // Reset upload preview
+    foodImage.value = "";
+
+    previewImage.src = "";
+    previewImage.classList.remove("show");
+
+    publishPreviewImage.src = "";
+    publishPreviewImage.style.display = "none";
+
+    uploadContent.style.display = "flex";
+
+    imageOverlay.classList.add("hidden");
+
+    // Reset dynamic UI
+    toggleOtherCategory();
+    toggleOtherUnit();
+    toggleListingType();
+    toggleExpiryFields();
+
+    updateCharacterCounter();
+    updateCompletionBadge();
+    updateReadiness();
+    updatePreviewCard();
+
+    updateDraftStatus(
+      "No Draft",
+      "Start creating a new listing",
+      "ri-file-add-line",
+    );
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    finalPublishBtn.dataset.state = "";
+  }
+
+  aiResult = null;
+
   /* ==========================================================
    READINESS EVENTS
 ========================================================== */
@@ -1896,6 +2219,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   category.addEventListener("change", updatePreviewCard);
 
+  city.addEventListener("change", markDraftUnsaved);
+  landmark.addEventListener("input", markDraftUnsaved);
+  pickupInstructions.addEventListener("change", markDraftUnsaved);
+
+  city.addEventListener("change", updateReadiness);
+  landmark.addEventListener("input", updateReadiness);
+  pickupInstructions.addEventListener("change", updateReadiness);
+
+  city.addEventListener("change", refreshReviewFromChanges);
+  landmark.addEventListener("input", refreshReviewFromChanges);
+  pickupInstructions.addEventListener("change", refreshReviewFromChanges);
+
   [
     foodName,
     category,
@@ -1911,6 +2246,9 @@ document.addEventListener("DOMContentLoaded", () => {
     expiryDate,
     availableUntil,
     pickupAddress,
+    city,
+    landmark,
+    pickupInstructions,
     foodImage,
     hasExpiry,
   ].forEach((field) => {
@@ -1924,6 +2262,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (localStorage.getItem("reserveListingDraft")) {
     draftNotification.classList.remove("hidden");
+
+    updateDraftStatus(
+      "Draft Available",
+      "Restore your previous draft",
+      "ri-draft-line",
+    );
   } else {
     toggleOtherCategory();
     toggleOtherUnit();
@@ -1934,6 +2278,10 @@ document.addEventListener("DOMContentLoaded", () => {
     updateReadiness();
     updatePreviewCard();
 
-    draftStatus.textContent = "No Draft";
+    updateDraftStatus(
+      "No Draft",
+      "Start creating a new listing",
+      "ri-file-add-line",
+    );
   }
 });

@@ -275,8 +275,8 @@
                       <input
                         type="text"
                         id="otherCategory"
-                        name="otherCategory"
-                        placeholder="Enter Category"
+                        placeholder="Specify category"
+                        disabled
                       />
                     </div>
 
@@ -408,8 +408,8 @@
                       <input
                         type="text"
                         id="otherUnit"
-                        name="otherUnit"
-                        placeholder="Enter Unit"
+                        placeholder="Specify unit"
+                        disabled
                       />
                     </div>
 
@@ -569,6 +569,51 @@
                       <small class="field-helper">
                         Include a nearby landmark for easier pickup.
                       </small>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="city">
+                        City <span class="required">*</span>
+                      </label>
+
+                      <div class="input-wrapper">
+
+                        <input
+                          type="text"
+                          id="city"
+                          placeholder="e.g., Lucknow"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="landmark"> Nearby Landmark </label>
+
+                      <div class="input-wrapper">
+
+                        <input
+                          type="text"
+                          id="landmark"
+                          placeholder="e.g., Opposite Phoenix Mall"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="form-group">
+                      <label for="pickupInstructions">
+                        Pickup Instructions
+                      </label>
+
+                      <div class="textarea-wrapper">
+
+                        <textarea
+                          id="pickupInstructions"
+                          rows="4"
+                          maxlength="250"
+                          placeholder="Provide any special instructions for pickup (optional)."
+                        ></textarea>
+                      </div>
                     </div>
 
                     <div class="form-group full-width">
@@ -1183,29 +1228,29 @@
                 <!-- TOP BAR -->
                 <!-- ================================= -->
 
-                <div class="review-topbar">
-                  <div class="review-progress">
-                    <div class="progress-step completed">
+                <div class="publish-topbar">
+                  <div class="publish-progress">
+                    <div class="publish-progress-step completed">
                       <span>✓</span>
                       <p>Details</p>
                     </div>
 
-                    <div class="progress-line active"></div>
+                    <div class="publish-progress-line active"></div>
 
-                    <div class="progress-step completed">
+                    <div class="publish-progress-step completed">
                       <span>✓</span>
                       <p>AI Review</p>
                     </div>
 
-                    <div class="progress-line active"></div>
+                    <div class="publish-progress-line active"></div>
 
-                    <div class="progress-step active">
+                    <div class="publish-progress-step active">
                       <span>3</span>
                       <p>Publish</p>
                     </div>
                   </div>
 
-                  <div class="powered-ai">
+                  <div class="publish-powered-ai">
                     <i class="ri-sparkling-2-fill"></i>
                     <span>Powered by ReServe Intelligence</span>
                   </div>
@@ -1216,62 +1261,70 @@
                 <!-- ================================= -->
 
                 <div class="publish-hero">
-                  <div class="hero-content">
-                    <div class="hero-badge success">
-                      <span class="badge-dot"></span>
+                  <div class="publish-hero-content">
+                    <div
+                      class="publish-hero-badge success"
+                      id="publishHeroBadge"
+                    >
+                      <span class="publish-badge-dot"></span>
                       AI VERIFIED
                     </div>
 
-                    <h1>Ready to Publish</h1>
+                    <h1 id="publishHeroTitle">Ready to Publish</h1>
 
-                    <p>
+                    <p id="publishHeroDescription">
                       Your listing has successfully passed AI verification and
                       is ready to go live. Nearby families, NGOs and community
                       kitchens will be able to discover it immediately after
                       publishing.
                     </p>
 
-                    <div class="hero-highlights">
-                      <div class="highlight-pill">
+                    <div class="publish-hero-highlights">
+                      <div class="publish-highlight-pill">
                         <i class="ri-shield-check-line"></i>
                         AI Verified
                       </div>
 
-                      <div class="highlight-pill">
+                      <div class="publish-highlight-pill">
                         <i class="ri-flashlight-line"></i>
                         High Recovery
                       </div>
 
-                      <div class="highlight-pill">
+                      <div class="publish-highlight-pill">
                         <i class="ri-earth-line"></i>
                         Eco Friendly
                       </div>
                     </div>
                   </div>
 
-                  <!-- Listing Preview -->
+                  <!-- Preview -->
 
-                  <div class="listing-preview-card">
-                    <div class="listing-preview-header">
+                  <div class="publish-preview-card">
+                    <div class="publish-preview-header">
                       <h3>Listing Preview</h3>
 
-                      <span class="preview-status"> Ready </span>
+                      <span
+                        class="publish-preview-status"
+                        id="publishPreviewStatus"
+                      >
+                        Ready
+                      </span>
                     </div>
 
-                    <div class="listing-preview-image">
+                    <div class="publish-preview-image">
                       <img id="publishPreviewImage" src="" alt="Food Preview" />
 
-                      <div class="image-placeholder">
+                      <div class="publish-image-placeholder">
                         <i class="ri-image-2-line"></i>
                       </div>
                     </div>
 
-                    <div class="listing-preview-content">
+                    <div class="publish-preview-content">
                       <h4 id="publishFoodName">Food Name</h4>
 
                       <p id="publishCategory">Category</p>
 
-                      <div class="preview-meta">
+                      <div class="publish-preview-meta">
                         <span id="publishPrice"> ₹-- </span>
 
                         <span id="publishMeals"> -- Meals </span>
@@ -1286,9 +1339,7 @@
                 <!-- ROW 1 -->
                 <!-- ================================= -->
 
-                <div class="review-row">
-                  <!-- Checklist -->
-
+                <div class="publish-row">
                   <div class="publish-checklist-card">
                     <span class="section-tag"> FINAL CHECKLIST </span>
 
@@ -1322,42 +1373,40 @@
                     </div>
                   </div>
 
-                  <!-- Visibility -->
-
-                  <div class="visibility-card">
+                  <div class="publish-visibility-card">
                     <span class="section-tag"> MARKETPLACE VISIBILITY </span>
 
                     <h2>Who Can Discover This Listing?</h2>
 
-                    <div class="visibility-grid">
-                      <div class="visibility-item">
+                    <div class="publish-visibility-grid">
+                      <div class="publish-visibility-item">
                         <i class="ri-community-line"></i>
                         <span>Nearby Families</span>
                       </div>
 
-                      <div class="visibility-item">
+                      <div class="publish-visibility-item">
                         <i class="ri-hospital-line"></i>
                         <span>Verified NGOs</span>
                       </div>
 
-                      <div class="visibility-item">
+                      <div class="publish-visibility-item">
                         <i class="ri-restaurant-line"></i>
                         <span>Community Kitchens</span>
                       </div>
 
-                      <div class="visibility-item">
+                      <div class="publish-visibility-item">
                         <i class="ri-map-pin-line"></i>
                         <span>Within 5 km Radius</span>
                       </div>
                     </div>
 
-                    <div class="estimated-reach">
+                    <div class="publish-estimated-reach">
                       <span>Estimated Reach</span>
 
                       <h3 id="estimatedReach">Calculating...</h3>
                     </div>
 
-                    <p class="visibility-note">
+                    <p class="publish-visibility-note">
                       Your listing will become visible immediately after
                       publishing.
                     </p>
@@ -1368,17 +1417,15 @@
                 <!-- ROW 2 -->
                 <!-- ================================= -->
 
-                <div class="review-row">
-                  <!-- Impact -->
-
-                  <div class="impact-summary-card">
+                <div class="publish-row">
+                  <div class="publish-impact-card">
                     <span class="section-tag"> COMMUNITY IMPACT </span>
 
                     <h2>Expected Contribution</h2>
 
-                    <div class="metrics-grid">
-                      <div class="metric-card">
-                        <div class="metric-icon meals">
+                    <div class="publish-metrics-grid">
+                      <div class="publish-metric-card">
+                        <div class="publish-metric-icon meals">
                           <i class="ri-restaurant-line"></i>
                         </div>
 
@@ -1387,8 +1434,8 @@
                         <h3 id="publishMealsSaved">--</h3>
                       </div>
 
-                      <div class="metric-card">
-                        <div class="metric-icon carbon">
+                      <div class="publish-metric-card">
+                        <div class="publish-metric-icon carbon">
                           <i class="ri-leaf-line"></i>
                         </div>
 
@@ -1397,8 +1444,8 @@
                         <h3 id="publishCarbonSaved">--</h3>
                       </div>
 
-                      <div class="metric-card">
-                        <div class="metric-icon quality">
+                      <div class="publish-metric-card">
+                        <div class="publish-metric-icon quality">
                           <i class="ri-recycle-line"></i>
                         </div>
 
@@ -1407,8 +1454,8 @@
                         <h3 id="publishRecovery">--</h3>
                       </div>
 
-                      <div class="metric-card">
-                        <div class="metric-icon safety">
+                      <div class="publish-metric-card">
+                        <div class="publish-metric-icon safety">
                           <i class="ri-heart-pulse-line"></i>
                         </div>
 
@@ -1418,13 +1465,11 @@
                       </div>
                     </div>
 
-                    <p class="impact-note">
+                    <p class="publish-impact-note">
                       Every successful pickup helps reduce food waste and
                       supports your local community.
                     </p>
                   </div>
-
-                  <!-- Publish Settings -->
 
                   <div class="publish-settings-card">
                     <span class="section-tag"> PUBLISH SETTINGS </span>
@@ -1456,23 +1501,28 @@
                 </div>
 
                 <!-- ================================= -->
-                <!-- FINAL CONFIRMATION -->
+                <!-- CONFIRMATION -->
                 <!-- ================================= -->
 
                 <div class="publish-confirmation-card">
-                  <div class="confirmation-icon">
+                  <div class="publish-confirmation-icon">
                     <i class="ri-information-line"></i>
                   </div>
 
                   <div>
-                    <h3>Ready to Publish</h3>
+                    <h3 id="confirmationTitle">Ready to Publish</h3>
 
-                    <p>
+                    <p id="confirmationDescription">
                       Once published, your listing will instantly become
                       available to nearby families, NGOs and community kitchens.
                       You can edit, pause or remove it later from
                       <strong>My Listings</strong>.
                     </p>
+
+                    <div class="publish-time" id="publishTime" hidden>
+                      Published:
+                      <strong>Today • 10:30 PM</strong>
+                    </div>
                   </div>
                 </div>
 
@@ -1480,14 +1530,16 @@
                 <!-- ACTION BAR -->
                 <!-- ================================= -->
 
-                <div class="ai-action-bar">
+                <div class="publish-action-bar">
+                  <div class="publish-action-info" id="publishActionInfo">
+                    Ready to publish your listing.
+                  </div>
                   <button
                     type="button"
                     class="btn btn-secondary"
                     id="backToReviewBtn"
                   >
                     <i class="ri-arrow-left-line"></i>
-
                     Back to Review
                   </button>
 
@@ -1497,7 +1549,6 @@
                     id="finalPublishBtn"
                   >
                     <i class="ri-rocket-2-fill"></i>
-
                     Publish to Marketplace
                   </button>
                 </div>
