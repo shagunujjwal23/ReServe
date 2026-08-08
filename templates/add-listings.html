@@ -27,7 +27,7 @@
     <!-- Page CSS -->
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/create-listing.css') }}"
+      href="{{ url_for('static', filename='css/add-listings.css') }}"
     />
   </head>
 
@@ -55,17 +55,17 @@
         <nav class="sidebar-nav">
           <a href="/dashboard">
             <i class="ri-home-5-line"></i>
-            <span>Overview</span>
+            <span>Dashboard</span>
           </a>
 
-          <a href="/create-listing" class="active">
+          <a href="/add-listings" class="active">
             <i class="ri-restaurant-line"></i>
-            <span>My Listings</span>
+            <span>Add Listings</span>
           </a>
 
-          <a href="/marketplace">
+          <a href="/my-listings">
             <i class="ri-store-2-line"></i>
-            <span>Marketplace</span>
+            <span>My Listings</span>
           </a>
 
           <a href="#">
@@ -1559,6 +1559,6 @@
       </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/create-listing.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/add-listings.js') }}"></script>
   </body>
 </html>

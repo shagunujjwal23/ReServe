@@ -1,0 +1,409 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>My Listings | ReServe</title>
+
+    <!-- Remix Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css"
+    />
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/sidebar.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/my-listings.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <!-- ======================================================
+           SIDEBAR
+      ======================================================= -->
+
+      <aside class="sidebar">
+        <!-- Brand -->
+        <div class="sidebar-brand">
+          <div class="logo-wrapper">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe Logo"
+            />
+          </div>
+
+          <div class="brand-content">
+            <h2>ReServe</h2>
+            <p>Food Rescue Platform</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+          <a href="/dashboard">
+            <i class="ri-home-5-line"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="/add-listings">
+            <i class="ri-restaurant-line"></i>
+            <span>Add Listings</span>
+          </a>
+
+          <a href="/my-listings" class="active">
+            <i class="ri-store-2-line"></i>
+            <span>My Listings</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-file-list-3-line"></i>
+            <span>Requests</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-box-3-line"></i>
+            <span>Pickups</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-robot-2-line"></i>
+            <span>AI Insights</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-bar-chart-box-line"></i>
+            <span>Analytics</span>
+          </a>
+        </nav>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+          <a href="/logout">
+            <i class="ri-logout-box-r-line"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- ======================================================
+           MAIN CONTENT
+      ======================================================= -->
+
+      <div class="main-content">
+        <main class="content-wrapper">
+          <!-- ==================================================
+               TOPBAR
+          =================================================== -->
+
+          <header class="topbar">
+            <div class="topbar-right">
+              <!-- Notification -->
+              <button class="icon-btn" id="notificationBtn" type="button">
+                <i class="ri-notification-3-line"></i>
+
+                <span id="notificationCount" class="badge"> 3 </span>
+              </button>
+
+              <!-- Profile -->
+              <button class="profile" type="button">
+                <img
+                  src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
+                  alt="Profile"
+                />
+
+                <div>
+                  <h4>{{ user.name if user.name else 'Spice Bistro' }}</h4>
+
+                  <p>{{ user.role if user.role else 'Restaurant Owner' }}</p>
+                </div>
+
+                <i class="ri-arrow-down-s-line"></i>
+              </button>
+            </div>
+          </header>
+
+          <!-- ==================================================
+               BREADCRUMB
+          =================================================== -->
+
+          <div class="breadcrumb">
+            <a href="/dashboard"> Dashboard </a>
+
+            <i class="ri-arrow-right-s-line"></i>
+
+            <span> My Listings </span>
+          </div>
+
+          <!-- ==================================================
+               PAGE HEADER
+          =================================================== -->
+
+          <section class="page-header">
+            <div class="page-heading">
+              <h1>My Listings</h1>
+
+              <p>
+                Manage, monitor and update all your food listings from one
+                place.
+              </p>
+            </div>
+
+            <a href="/add-listings" class="primary-btn">
+              <i class="ri-add-line"></i>
+              Create Listing
+            </a>
+          </section>
+
+          <!-- ==================================================
+               FILTER TOOLBAR
+          =================================================== -->
+
+          <section class="filter-toolbar">
+            <!-- Search -->
+            <div class="search-filter">
+              <i class="ri-search-line"></i>
+
+              <input
+                id="listingSearch"
+                type="text"
+                placeholder="Search your listings..."
+              />
+            </div>
+
+            <!-- Status -->
+            <div class="filter-select">
+              <i class="ri-flag-line"></i>
+
+              <select id="statusFilter">
+                <option value="" disabled selected>Status</option>
+
+                <option value="Active">Available</option>
+
+                <option value="Reserved">Reserved</option>
+
+                <option value="Completed">Completed</option>
+
+                <option value="Expired">Expired</option>
+
+                <option value="Cancelled">Cancelled</option>
+
+                <option value="Paused">Paused</option>
+              </select>
+            </div>
+
+            <!-- Category -->
+            <div class="filter-select">
+              <i class="ri-folder-line"></i>
+
+              <select id="categoryFilter">
+                <option value="" disabled selected>Categories</option>
+              </select>
+            </div>
+
+            <!-- Listing Type -->
+            <div class="filter-select">
+              <i class="ri-price-tag-3-line"></i>
+
+              <select id="listingTypeFilter">
+                <option value="" disabled selected>Types</option>
+
+                <option value="sell">For Sale</option>
+
+                <option value="donation">Donation</option>
+              </select>
+            </div>
+
+            <!-- Sort -->
+            <div class="filter-select">
+              <i class="ri-sort-desc"></i>
+
+              <select id="sortBy">
+                <option value="" disabled selected>Sort By</option>
+                <option value="newest">Newest First</option>
+
+                <option value="oldest">Oldest First</option>
+
+                <option value="priceLow">Price: Low to High</option>
+
+                <option value="priceHigh">Price: High to Low</option>
+
+                <option value="expiry">Expiring Soon</option>
+              </select>
+            </div>
+
+            <!-- Clear -->
+            <button id="clearFilters" class="secondary-btn" type="button">
+              <i class="ri-filter-off-line"></i>
+              Clear
+            </button>
+          </section>
+
+          <!-- ==================================================
+               LISTINGS SECTION
+          =================================================== -->
+
+          <section class="listings-section">
+            <!-- ==================================================
+                 LISTINGS GRID
+            =================================================== -->
+
+            <div class="listings-grid" id="listingsContainer">
+              <!-- JavaScript inserts cards here -->
+            </div>
+
+            <!-- ==================================================
+                 EMPTY STATE
+            =================================================== -->
+
+            <section class="empty-state hidden" id="emptyState">
+              <div class="empty-icon">
+                <i class="ri-inbox-2-line"></i>
+              </div>
+
+              <h2>No Listings Found</h2>
+
+              <p>
+                No listings match your current filters. Try changing your search
+                or create a new listing.
+              </p>
+
+              <a href="/add-listings" class="primary-btn">
+                <i class="ri-add-line"></i>
+                Create Listing
+              </a>
+            </section>
+
+            <!-- ==================================================
+                 LOADING STATE
+            =================================================== -->
+
+            <section class="loading-state hidden" id="loadingState">
+              <div class="loader"></div>
+
+              <p>Loading your listings...</p>
+            </section>
+          </section>
+
+          <!-- ==================================================
+               LISTING CARD TEMPLATE
+          =================================================== -->
+
+          <template id="listingTemplate">
+            <article class="listing-card" data-id="">
+              <!-- ==================================================
+                   IMAGE
+              =================================================== -->
+
+              <div class="listing-image-wrapper">
+                <img
+                  class="food-image"
+                  src="/static/images/food-placeholder.jpg"
+                  alt="Food Image"
+                />
+
+                <!-- Status -->
+                <span class="status-badge"> Available </span>
+              </div>
+
+              <!-- ==================================================
+                   CARD CONTENT
+              =================================================== -->
+
+              <div class="listing-card-body">
+                <!-- Food Title -->
+                <h3 class="food-name">Food Name</h3>
+
+                <!-- ==================================================
+                     PICKUP
+                =================================================== -->
+
+                <div class="card-info-grid">
+                  <div class="card-info-row">
+                    <i class="ri-calendar-line"></i>
+
+                    <span class="pickup-time"> Today, 6:00 PM </span>
+                  </div>
+                </div>
+
+                <!-- ==================================================
+                     QUANTITY
+                =================================================== -->
+
+                <div class="card-info-row quantity-row">
+                  <i class="ri-group-line"></i>
+
+                  <span class="quantity"> 10 Portions </span>
+                </div>
+
+                <!-- ==================================================
+                     PRICE + VIEW
+                =================================================== -->
+
+                <div class="listing-card-footer">
+                  <!-- Price -->
+                  <div class="price-section">
+                    <span class="current-price"> ₹0 </span>
+
+                    <span class="old-price"> ₹0 </span>
+                  </div>
+
+                  <!-- View Details -->
+                  <button type="button" class="card-btn view-btn">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </article>
+          </template>
+
+          <!-- ==================================================
+               PAGINATION
+          =================================================== -->
+
+          <section class="pagination-wrapper">
+            <div class="pagination-info">
+              Showing
+
+              <strong id="pageStart"> 0 </strong>
+
+              to
+
+              <strong id="pageEnd"> 0 </strong>
+
+              of
+
+              <strong id="totalRecords"> 0 </strong>
+
+              listings
+            </div>
+
+            <nav id="pagination" class="pagination"></nav>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         JAVASCRIPT
+    ========================================================= -->
+
+    <script src="{{ url_for('static', filename='js/my-listings.js') }}"></script>
+  </body>
+</html>

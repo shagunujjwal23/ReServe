@@ -204,39 +204,39 @@ document.addEventListener("DOMContentLoaded", () => {
    Category
 ------------------------- */
 
-function toggleOtherCategory() {
-  if (category.value === "Other") {
-    show(otherCategoryGroup);
+  function toggleOtherCategory() {
+    if (category.value === "Other") {
+      show(otherCategoryGroup);
 
-    otherCategory.disabled = false;
-    otherCategory.required = true;
-  } else {
-    hide(otherCategoryGroup);
+      otherCategory.disabled = false;
+      otherCategory.required = true;
+    } else {
+      hide(otherCategoryGroup);
 
-    otherCategory.value = "";
-    otherCategory.required = false;
-    otherCategory.disabled = true;
+      otherCategory.value = "";
+      otherCategory.required = false;
+      otherCategory.disabled = true;
+    }
   }
-}
 
   /* -------------------------
    Unit
 ------------------------- */
 
-function toggleOtherUnit() {
-  if (unit.value === "Other") {
-    show(otherUnitGroup);
+  function toggleOtherUnit() {
+    if (unit.value === "Other") {
+      show(otherUnitGroup);
 
-    otherUnit.disabled = false;
-    otherUnit.required = true;
-  } else {
-    hide(otherUnitGroup);
+      otherUnit.disabled = false;
+      otherUnit.required = true;
+    } else {
+      hide(otherUnitGroup);
 
-    otherUnit.value = "";
-    otherUnit.required = false;
-    otherUnit.disabled = true;
+      otherUnit.value = "";
+      otherUnit.required = false;
+      otherUnit.disabled = true;
+    }
   }
-}
 
   /* -------------------------
    Listing Type
@@ -1068,11 +1068,111 @@ function toggleOtherUnit() {
   }
 
   /* =====================================================
+   BACKEND PUBLISH HELPERS
+===================================================== */
+
+  async function uploadListingImage() {
+    const file = foodImage.files[0];
+
+    if (!file) {
+      throw new Error("Food image is required.");
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch("/api/upload-image", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Unable to upload the food image.");
+    }
+
+    return data.image_url;
+  }
+
+  function buildListingPayload(imageUrl) {
+    const selectedCategory =
+      category.value === "Other" ? otherCategory.value.trim() : category.value;
+
+    const selectedUnit =
+      unit.value === "Other" ? otherUnit.value.trim() : unit.value;
+
+    const isDonation = listingType.value === "donate";
+
+    const addressParts = [
+      pickupAddress.value.trim(),
+      landmark.value.trim(),
+      city.value.trim(),
+    ].filter(Boolean);
+
+    const freshnessScore =
+      aiResult?.insights?.find((item) => item.title === "Freshness")?.score ||
+      0;
+
+    const recoveryProbability = aiResult?.confidence?.recovery || 0;
+
+    const carbonSaved = aiResult?.metrics?.carbon || 0;
+
+    const aiRecommendation = aiResult?.recommendation || "";
+
+    return {
+      food_title: foodName.value.trim(),
+
+      category: selectedCategory,
+
+      food_type: foodType.value,
+
+      listing_type: listingType.value,
+
+      quantity: Number(quantity.value),
+
+      unit: selectedUnit,
+
+      original_price: isDonation ? 0 : Number(originalPrice.value || 0),
+
+      discounted_price: isDonation ? 0 : Number(sellingPrice.value || 0),
+
+      expiry_date: hasExpiry.checked ? expiryDate.value : availableUntil.value,
+
+      pickup_start: new Date().toISOString(),
+
+      pickup_end: availableUntil.value,
+
+      address: addressParts.join(", "),
+
+      city: city.value.trim(),
+
+      landmark: landmark.value.trim(),
+
+      pickup_instructions: pickupInstructions.value.trim(),
+
+      description: description.value.trim(),
+
+      image: imageUrl,
+
+      freshness_score: freshnessScore,
+
+      recovery_probability: recoveryProbability,
+
+      carbon_saved: carbonSaved,
+
+      ai_recommendation: aiRecommendation,
+    };
+  }
+
+  /* =====================================================
    FINAL PUBLISH
 ===================================================== */
 
-  function publishListing() {
-    if (finalPublishBtn.dataset.state === "published") return;
+  async function publishListing() {
+    if (finalPublishBtn.dataset.state === "published") {
+      return;
+    }
 
     finalPublishBtn.disabled = true;
     backToReviewBtn.disabled = true;
@@ -1080,12 +1180,74 @@ function toggleOtherUnit() {
     finalPublishBtn.innerHTML =
       '<i class="ri-loader-4-line ri-spin"></i> Publishing...';
 
-    setTimeout(() => {
-      // Remove draft
+    try {
+      /* =================================================
+       1. Make sure AI analysis exists
+    ================================================= */
+
+      if (!aiResult) {
+        aiResult = generateAnalysis();
+        updateDashboard(aiResult);
+      }
+
+      /* =================================================
+       2. Upload image
+    ================================================= */
+
+      finalPublishBtn.innerHTML =
+        '<i class="ri-loader-4-line ri-spin"></i> Uploading Image...';
+
+      const imageUrl = await uploadListingImage();
+
+      /* =================================================
+       3. Build listing payload
+    ================================================= */
+
+      const listingData = buildListingPayload(imageUrl);
+
+      console.log("Listing payload:", listingData);
+
+      /* =================================================
+       4. Save listing to Flask + MongoDB
+    ================================================= */
+
+      finalPublishBtn.innerHTML =
+        '<i class="ri-loader-4-line ri-spin"></i> Saving Listing...';
+
+      const response = await fetch("/api/listings", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify(listingData),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.missing_fields
+            ? `${data.message}\nMissing: ${data.missing_fields.join(", ")}`
+            : data.message || "Unable to publish the listing.",
+        );
+      }
+
+      console.log("Listing created:", data);
+
+      /* =================================================
+       5. Remove saved draft
+    ================================================= */
+
       localStorage.removeItem("reserveListingDraft");
+
       draftSaved = false;
 
-      // Current time
+      /* =================================================
+       6. Show success UI
+    ================================================= */
+
       const now = new Date();
 
       const time = now.toLocaleTimeString([], {
@@ -1099,12 +1261,8 @@ function toggleOtherUnit() {
         year: "numeric",
       });
 
-      /* ----------------------------------
-       HERO
-    ----------------------------------- */
-
       publishHeroBadge.innerHTML =
-        '<span class="publish-badge-dot"></span> LIVE ON MARKETPLACE';
+        '<span class="publish-badge-dot"></span> LIVE ON LISTINGS';
 
       publishHeroTitle.textContent = "Listing Published Successfully";
 
@@ -1112,28 +1270,21 @@ function toggleOtherUnit() {
 
       publishPreviewStatus.textContent = "LIVE";
 
-      /* ----------------------------------
-       Confirmation
-    ----------------------------------- */
-
       confirmationTitle.textContent = "Successfully Published";
 
-      confirmationDescription.innerHTML = `Your listing has been published successfully and is now visible to nearby families, NGOs and community kitchens. You can manage or update it anytime from <strong>My Listings</strong>.`;
+      confirmationDescription.innerHTML =
+        "Your listing has been published successfully and is now visible to nearby families, NGOs and community kitchens. You can manage or update it anytime from <strong>My Listings</strong>.";
 
       publishTime.hidden = false;
-      publishTime.innerHTML = `Published: <strong>${date} • ${time}</strong>`;
 
-      /* ----------------------------------
-       Action Info
-    ----------------------------------- */
+      publishTime.innerHTML = `Published: <strong>${date} • ${time}</strong>`;
 
       publishActionInfo.innerHTML =
         '<i class="ri-checkbox-circle-fill"></i> Listing is now live';
-      console.log("Action info updated");
 
-      /* ----------------------------------
-       Buttons
-    ----------------------------------- */
+      /* =================================================
+       7. Change publish button
+    ================================================= */
 
       finalPublishBtn.innerHTML =
         '<i class="ri-checkbox-circle-fill"></i> Published';
@@ -1143,13 +1294,28 @@ function toggleOtherUnit() {
       backToReviewBtn.innerHTML =
         '<i class="ri-arrow-left-line"></i> View AI Review';
 
-      // Show success for 3 seconds, then reset the page
+      finalPublishBtn.dataset.state = "published";
+
+      /* =================================================
+       8. Reset after success
+    ================================================= */
+
       setTimeout(() => {
         resetCreateListing();
       }, 3000);
-    }, 1800);
+    } catch (error) {
+      console.error("Publish listing error:", error);
 
-    finalPublishBtn.dataset.state = "published";
+      alert(
+        error.message || "Unable to publish the listing. Please try again.",
+      );
+
+      finalPublishBtn.disabled = false;
+      backToReviewBtn.disabled = false;
+
+      finalPublishBtn.innerHTML =
+        '<i class="ri-rocket-2-fill"></i> Publish to Listings';
+    }
   }
 
   /* =====================================================
@@ -2091,7 +2257,7 @@ function toggleOtherUnit() {
     backToReviewBtn.disabled = false;
 
     finalPublishBtn.innerHTML =
-      '<i class="ri-rocket-2-fill"></i> Publish to Marketplace';
+      '<i class="ri-rocket-2-fill"></i> Publish to Listings';
 
     finalPublishBtn.style.background = "";
 

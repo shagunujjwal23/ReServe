@@ -114,18 +114,18 @@ def dashboard():
         user=user
     )
 
-@app.route("/create-listing")
+@app.route("/add-listings")
 @login_required
-def createlisting():
-    return render_template("create-listing.html")
+def addlistings():
+    return render_template("add-listings.html")
 
 # -----------------------------
-# MARKETPLACE
+# MY LISTINGS
 # -----------------------------
 
-@app.route("/marketplace")
+@app.route("/my-listings")
 @login_required
-def marketplace():
+def mylistings():
 
     session_user_id = session.get("user_id")
 
@@ -155,7 +155,51 @@ def marketplace():
     }
 
     return render_template(
-        "marketplace.html",
+        "my-listings.html",
+        user=user,
+    )
+
+# ==========================================================
+# VIEW LISTING
+# ==========================================================
+
+@app.route("/view-listing")
+@login_required
+def viewlisting():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    user = {
+        "name": user_record["full_name"],
+        "role": user_record["role"],
+    }
+
+    return render_template(
+        "view-listing.html",
         user=user,
     )
 

@@ -1,0 +1,1312 @@
+/* ==========================================================
+   ReServe - My Listings
+========================================================== */
+
+/* ==========================================================
+   API Configuration
+========================================================== */
+
+const MY_LISTINGS_API = "/api/listings/my";
+
+/* ==========================================================
+   Global State
+========================================================== */
+
+let listings = [];
+let filteredListings = [];
+
+let currentPage = 1;
+const listingsPerPage = 6;
+
+let selectedListing = null;
+
+/* ==========================================================
+   DOM Elements
+========================================================== */
+
+/* Listings */
+
+const listingsContainer = document.getElementById("listingsContainer");
+const listingTemplate = document.getElementById("listingTemplate");
+
+/* Filters */
+
+const listingSearch = document.getElementById("listingSearch");
+const statusFilter = document.getElementById("statusFilter");
+const categoryFilter = document.getElementById("categoryFilter");
+const listingTypeFilter = document.getElementById("listingTypeFilter");
+const sortBy = document.getElementById("sortBy");
+
+/* Buttons */
+
+const refreshListings = document.getElementById("refreshListings");
+const clearFilters = document.getElementById("clearFilters");
+
+/* States */
+
+const emptyState = document.getElementById("emptyState");
+const loadingState = document.getElementById("loadingState");
+
+/* Listing Counter */
+
+const visibleListings = document.getElementById("visibleListings");
+const totalListingsCount = document.getElementById("totalListingsCount");
+
+/* Pagination */
+
+const pageStart = document.getElementById("pageStart");
+const pageEnd = document.getElementById("pageEnd");
+const totalRecords = document.getElementById("totalRecords");
+const pagination = document.getElementById("pagination");
+
+/* ==========================================================
+   Initialize Application
+========================================================== */
+
+document.addEventListener("DOMContentLoaded", init);
+
+function init() {
+  console.log("ReServe My Listings Loaded");
+
+  attachEventListeners();
+
+  loadListings();
+}
+
+/* ==========================================================
+   LOAD LISTINGS FROM BACKEND
+========================================================== */
+
+async function loadListings() {
+  showLoading(true);
+
+  try {
+    const response = await fetch(MY_LISTINGS_API, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "same-origin",
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    /* ------------------------------------------------------
+       Authentication Error
+    ------------------------------------------------------ */
+
+    if (response.status === 401) {
+      showErrorMessage(
+        data.message || "Your session has expired. Please login again.",
+      );
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1200);
+
+      return;
+    }
+
+    /* ------------------------------------------------------
+       Other API Errors
+    ------------------------------------------------------ */
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Unable to load your listings.");
+    }
+
+    /* ------------------------------------------------------
+       Store Real MongoDB Listings
+    ------------------------------------------------------ */
+
+    listings = Array.isArray(data.listings)
+      ? data.listings.map(normalizeListing)
+      : [];
+
+    filteredListings = [...listings];
+
+    console.log(`Loaded ${listings.length} listing(s) from MongoDB.`);
+
+    /* ------------------------------------------------------
+       Update UI
+    ------------------------------------------------------ */
+
+    populateCategoryFilter();
+
+    refreshPage();
+
+    updateLastUpdated();
+  } catch (error) {
+    console.error("Load Listings Error:", error);
+
+    listings = [];
+    filteredListings = [];
+
+    showErrorMessage(
+      error.message || "Unable to load listings. Please try again later.",
+    );
+  } finally {
+    showLoading(false);
+  }
+}
+
+/* ==========================================================
+   NORMALIZE BACKEND LISTING
+========================================================== */
+
+function normalizeListing(listing) {
+  return {
+    /* MongoDB ID */
+
+    id: listing.id,
+
+    /* Food */
+
+    title: listing.food_title || "Untitled Food Listing",
+
+    category: listing.category || "Other",
+
+    foodType: listing.food_type || "Not specified",
+
+    type: listing.listing_type || "",
+
+    quantity:
+      listing.quantity !== undefined && listing.quantity !== null
+        ? `${listing.quantity} ${listing.unit || ""}`.trim()
+        : "—",
+
+    /* Status */
+
+    status: formatStatus(listing.status),
+
+    /* Location */
+
+    location: listing.address || listing.city || "Location not specified",
+
+    /* Pickup */
+
+    pickup: formatPickupTime(listing.pickup_start, listing.pickup_end),
+
+    /* Price */
+
+    price: Number(listing.discounted_price) || 0,
+
+    originalPrice: Number(listing.original_price) || 0,
+
+    /* Image */
+
+    image: listing.image || "/static/images/food-placeholder.jpg",
+
+    /* Statistics */
+
+    views: Number(listing.views) || 0,
+
+    reservations: Number(listing.reservations) || 0,
+
+    /* AI */
+
+    aiScore: Number(listing.freshness_score) || 0,
+
+    recoveryProbability: Number(listing.recovery_probability) || 0,
+
+    carbonSaved: Number(listing.carbon_saved) || 0,
+
+    aiRecommendation: listing.ai_recommendation || "",
+
+    /* Dates */
+
+    createdAt: listing.created_at || null,
+
+    updated: formatUpdatedTime(listing.updated_at),
+
+    updatedAt: listing.updated_at || null,
+
+    expiryDate: listing.expiry_date || null,
+  };
+}
+
+/* ==========================================================
+   STATUS FORMAT
+========================================================== */
+
+function formatStatus(status) {
+  if (!status) {
+    return "Active";
+  }
+
+  const normalized = String(status).toLowerCase();
+
+  switch (normalized) {
+    case "available":
+    case "active":
+      return "Active";
+
+    case "reserved":
+      return "Reserved";
+
+    case "completed":
+      return "Completed";
+
+    case "expired":
+      return "Expired";
+
+    case "cancelled":
+      return "Cancelled";
+
+    case "paused":
+      return "Paused";
+
+    default:
+      return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  }
+}
+
+/* ==========================================================
+   FORMAT PICKUP TIME
+========================================================== */
+
+function formatPickupTime(start, end) {
+  if (!start && !end) {
+    return "Pickup time not specified";
+  }
+
+  if (start && end) {
+    return `${formatDateTime(start)} - ${formatDateTime(end)}`;
+  }
+
+  if (start) {
+    return formatDateTime(start);
+  }
+
+  return formatDateTime(end);
+}
+
+/* ==========================================================
+   FORMAT DATE / TIME
+========================================================== */
+
+function formatDateTime(value) {
+  if (!value) {
+    return "—";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+/* ==========================================================
+   FORMAT EXPIRY DATE
+========================================================== */
+
+function formatExpiryDate(value) {
+  if (!value) {
+    return "Expiry not specified";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+/* ==========================================================
+   FORMAT UPDATED TIME
+========================================================== */
+
+function formatUpdatedTime(value) {
+  if (!value) {
+    return "Recently";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  const now = new Date();
+
+  const difference = now.getTime() - date.getTime();
+
+  const minutes = Math.floor(difference / 60000);
+
+  if (minutes < 1) {
+    return "just now";
+  }
+
+  if (minutes < 60) {
+    return `${minutes} minute${minutes === 1 ? "" : "s"} ago`;
+  }
+
+  const hours = Math.floor(minutes / 60);
+
+  if (hours < 24) {
+    return `${hours} hour${hours === 1 ? "" : "s"} ago`;
+  }
+
+  const days = Math.floor(hours / 24);
+
+  if (days < 7) {
+    return `${days} day${days === 1 ? "" : "s"} ago`;
+  }
+
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+/* ==========================================================
+   RENDER LISTINGS
+========================================================== */
+
+function renderListings() {
+  listingsContainer.innerHTML = "";
+
+  /* ------------------------------------------------------
+     No Results
+  ------------------------------------------------------ */
+
+  if (filteredListings.length === 0) {
+    emptyState.classList.remove("hidden");
+    listingsContainer.classList.add("hidden");
+
+    return;
+  }
+
+  emptyState.classList.add("hidden");
+  listingsContainer.classList.remove("hidden");
+
+  /* ------------------------------------------------------
+     Current Page
+  ------------------------------------------------------ */
+
+  const currentListings = paginateListings();
+
+  currentListings.forEach((listing) => {
+    const clone = listingTemplate.content.cloneNode(true);
+
+    /* ====================================================
+       CARD
+    ==================================================== */
+
+    const card = clone.querySelector(".listing-card");
+
+    if (!card) {
+      console.error("listing-card not found in listingTemplate.");
+      return;
+    }
+
+    card.dataset.id = listing.id;
+
+    /* ====================================================
+       IMAGE
+    ==================================================== */
+
+    const foodImage = clone.querySelector(".food-image");
+
+    if (foodImage) {
+      foodImage.src = listing.image;
+      foodImage.alt = listing.title;
+
+      foodImage.onerror = function () {
+        this.onerror = null;
+        this.src = "/static/images/food-placeholder.jpg";
+      };
+    }
+
+    /* ====================================================
+       FOOD TITLE
+    ==================================================== */
+
+    const foodName = clone.querySelector(".food-name");
+
+    if (foodName) {
+      foodName.textContent = listing.title;
+    }
+
+    /* ====================================================
+       CATEGORY
+    ==================================================== */
+
+    const category = clone.querySelector(".category");
+
+    if (category) {
+      category.textContent = listing.category;
+    }
+
+    /* ====================================================
+       QUANTITY
+    ==================================================== */
+
+    const quantity = clone.querySelector(".quantity");
+
+    if (quantity) {
+      quantity.textContent = listing.quantity;
+    }
+
+    /* ====================================================
+       FOOD TYPE
+    ==================================================== */
+
+    const foodType = clone.querySelector(".food-type-text");
+
+    if (foodType) {
+      foodType.textContent = listing.foodType;
+    }
+
+    /* ====================================================
+       LOCATION
+    ==================================================== */
+
+    const location = clone.querySelector(".location");
+
+    if (location) {
+      location.textContent = listing.location;
+    }
+
+    /* ====================================================
+       PICKUP TIME
+    ==================================================== */
+
+    const pickupTime = clone.querySelector(".pickup-time");
+
+    if (pickupTime) {
+      pickupTime.textContent = listing.pickup;
+    }
+
+    /* ====================================================
+       EXPIRY
+    ==================================================== */
+
+    const expiryDate = clone.querySelector(".expiry-date");
+
+    if (expiryDate) {
+      expiryDate.textContent = formatExpiryDate(listing.expiryDate);
+    }
+
+    /* ====================================================
+       PRICE
+    ==================================================== */
+
+    const currentPrice = clone.querySelector(".current-price");
+
+    if (currentPrice) {
+      if (listing.price > 0) {
+        currentPrice.textContent = `₹${listing.price}`;
+      } else {
+        currentPrice.textContent = "Free";
+      }
+    }
+
+    /* ====================================================
+       ORIGINAL PRICE
+    ==================================================== */
+
+    const oldPrice = clone.querySelector(".old-price");
+
+    if (oldPrice) {
+      if (listing.originalPrice > 0 && listing.originalPrice > listing.price) {
+        oldPrice.textContent = `₹${listing.originalPrice}`;
+        oldPrice.classList.remove("hidden");
+      } else {
+        oldPrice.textContent = "";
+        oldPrice.classList.add("hidden");
+      }
+    }
+
+    /* ====================================================
+       AI SCORE
+    ==================================================== */
+
+    const aiScore = clone.querySelector(".ai-score");
+
+    if (aiScore) {
+      aiScore.textContent = `${listing.aiScore}%`;
+    }
+
+    /* ====================================================
+       VIEWS
+    ==================================================== */
+
+    const views = clone.querySelector(".views-count");
+
+    if (views) {
+      views.textContent = listing.views;
+    }
+
+    /* ====================================================
+       RESERVATIONS
+    ==================================================== */
+
+    const reservations = clone.querySelector(".reservations-count");
+
+    if (reservations) {
+      reservations.textContent = listing.reservations;
+    }
+
+    /* ====================================================
+       STATUS
+    ==================================================== */
+
+    const badge = clone.querySelector(".status-badge");
+
+    if (badge) {
+      const statusClass = listing.status.toLowerCase();
+
+      badge.textContent = listing.status;
+
+      badge.className = "status-badge";
+
+      badge.classList.add(statusClass);
+
+      badge.dataset.status = statusClass;
+    }
+
+    /* ====================================================
+       AI BADGE
+    ==================================================== */
+
+    const aiBadge = clone.querySelector(".ai-badge");
+
+    if (aiBadge) {
+      if (listing.aiScore > 0) {
+        aiBadge.classList.remove("hidden");
+      } else {
+        aiBadge.classList.add("hidden");
+      }
+    }
+
+    /* ====================================================
+       ACTION BUTTON IDs
+    ==================================================== */
+
+    const viewButton = clone.querySelector(".view-btn");
+
+    if (viewButton) {
+      viewButton.dataset.id = listing.id;
+    }
+
+    const editButton = clone.querySelector(".edit-btn");
+
+    if (editButton) {
+      editButton.dataset.id = listing.id;
+    }
+
+    const duplicateButton = clone.querySelector(".duplicate-btn");
+
+    if (duplicateButton) {
+      duplicateButton.dataset.id = listing.id;
+    }
+
+    const pauseButton = clone.querySelector(".pause-btn");
+
+    if (pauseButton) {
+      pauseButton.dataset.id = listing.id;
+    }
+
+    const deleteButton = clone.querySelector(".delete-btn");
+
+    if (deleteButton) {
+      deleteButton.dataset.id = listing.id;
+    }
+
+    /* ====================================================
+       APPEND CARD
+    ==================================================== */
+
+    listingsContainer.appendChild(clone);
+  });
+}
+
+/* ==========================================================
+   POPULATE CATEGORY FILTER
+========================================================== */
+
+function populateCategoryFilter() {
+  if (!categoryFilter) {
+    return;
+  }
+
+  categoryFilter.innerHTML =
+    '<option value="" disabled selected>Categories</option>';
+
+  const categories = [
+    ...new Set(listings.map((listing) => listing.category).filter(Boolean)),
+  ];
+
+  categories.sort((a, b) => a.localeCompare(b));
+
+  categories.forEach((category) => {
+    const option = document.createElement("option");
+
+    option.value = category;
+    option.textContent = category;
+
+    categoryFilter.appendChild(option);
+  });
+}
+
+/* ==========================================================
+   FILTER LISTINGS
+========================================================== */
+
+function filterListings() {
+  const searchValue = listingSearch
+    ? listingSearch.value.trim().toLowerCase()
+    : "";
+
+  const selectedStatus = statusFilter ? statusFilter.value : "";
+
+  const selectedCategory = categoryFilter ? categoryFilter.value : "";
+
+  const selectedType = listingTypeFilter ? listingTypeFilter.value : "";
+
+  filteredListings = listings.filter((listing) => {
+    /* Search */
+
+    const matchesSearch = listing.title.toLowerCase().includes(searchValue);
+
+    /* Status */
+
+    const matchesStatus =
+      selectedStatus === "" ||
+      selectedStatus === "status" ||
+      listing.status === selectedStatus;
+
+    /* Category */
+
+    const matchesCategory =
+      selectedCategory === "" ||
+      selectedCategory === "categories" ||
+      listing.category === selectedCategory;
+
+    /* Listing Type */
+
+    const matchesType =
+      selectedType === "" ||
+      selectedType === "types" ||
+      normalizeListingType(listing.type) === normalizeListingType(selectedType);
+
+    return matchesSearch && matchesStatus && matchesCategory && matchesType;
+  });
+}
+
+/* ==========================================================
+   NORMALIZE LISTING TYPE
+========================================================== */
+
+function normalizeListingType(type) {
+  const normalized = String(type || "")
+    .trim()
+    .toLowerCase();
+
+  if (
+    normalized === "sell" ||
+    normalized === "sale" ||
+    normalized === "for sale"
+  ) {
+    return "sale";
+  }
+
+  if (normalized === "donation" || normalized === "donate") {
+    return "donation";
+  }
+
+  return normalized;
+}
+
+/* ==========================================================
+   SORT LISTINGS
+========================================================== */
+
+function sortListings() {
+  const sortValue = sortBy ? sortBy.value : "newest";
+
+  switch (sortValue) {
+    case "newest":
+      filteredListings.sort(
+        (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0),
+      );
+      break;
+
+    case "oldest":
+      filteredListings.sort(
+        (a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0),
+      );
+      break;
+
+    case "priceLow":
+      filteredListings.sort((a, b) => a.price - b.price);
+      break;
+
+    case "priceHigh":
+      filteredListings.sort((a, b) => b.price - a.price);
+      break;
+
+    case "expiry":
+      filteredListings.sort(
+        (a, b) => new Date(a.expiryDate || 0) - new Date(b.expiryDate || 0),
+      );
+      break;
+  }
+}
+
+/* ==========================================================
+   PAGINATION
+========================================================== */
+
+function paginateListings() {
+  const startIndex = (currentPage - 1) * listingsPerPage;
+
+  const endIndex = startIndex + listingsPerPage;
+
+  return filteredListings.slice(startIndex, endIndex);
+}
+
+/* ==========================================================
+   RENDER PAGINATION
+========================================================== */
+
+function renderPagination() {
+  if (!pagination) {
+    return;
+  }
+
+  pagination.innerHTML = "";
+
+  const totalPages = Math.ceil(filteredListings.length / listingsPerPage);
+
+  if (totalPages <= 1) {
+    return;
+  }
+
+  /* Previous */
+
+  if (currentPage > 1) {
+    const previousButton = document.createElement("button");
+
+    previousButton.innerHTML = '<i class="ri-arrow-left-s-line"></i>';
+
+    previousButton.addEventListener("click", () => {
+      currentPage--;
+
+      renderListings();
+      renderPagination();
+      updatePaginationInfo();
+    });
+
+    pagination.appendChild(previousButton);
+  }
+
+  /* Page Numbers */
+
+  for (let page = 1; page <= totalPages; page++) {
+    const button = document.createElement("button");
+
+    button.textContent = page;
+
+    if (page === currentPage) {
+      button.classList.add("active");
+    }
+
+    button.addEventListener("click", () => {
+      currentPage = page;
+
+      renderListings();
+      renderPagination();
+      updatePaginationInfo();
+    });
+
+    pagination.appendChild(button);
+  }
+
+  /* Next */
+
+  if (currentPage < totalPages) {
+    const nextButton = document.createElement("button");
+
+    nextButton.innerHTML = '<i class="ri-arrow-right-s-line"></i>';
+
+    nextButton.addEventListener("click", () => {
+      currentPage++;
+
+      renderListings();
+      renderPagination();
+      updatePaginationInfo();
+    });
+
+    pagination.appendChild(nextButton);
+  }
+}
+
+/* ==========================================================
+   PAGINATION INFORMATION
+========================================================== */
+
+function updatePaginationInfo() {
+  if (!pageStart || !pageEnd || !totalRecords) {
+    return;
+  }
+
+  const total = filteredListings.length;
+
+  if (total === 0) {
+    pageStart.textContent = 0;
+    pageEnd.textContent = 0;
+    totalRecords.textContent = 0;
+
+    return;
+  }
+
+  const start = (currentPage - 1) * listingsPerPage + 1;
+
+  const end = Math.min(currentPage * listingsPerPage, total);
+
+  pageStart.textContent = start;
+  pageEnd.textContent = end;
+  totalRecords.textContent = total;
+}
+
+/* ==========================================================
+   UPDATE LISTING COUNT
+========================================================== */
+
+function updateListingCount() {
+  if (visibleListings) {
+    visibleListings.textContent = filteredListings.length;
+  }
+
+  if (totalListingsCount) {
+    totalListingsCount.textContent = listings.length;
+  }
+}
+
+/* ==========================================================
+   REFRESH PAGE
+========================================================== */
+
+function refreshPage() {
+  currentPage = 1;
+
+  filterListings();
+
+  sortListings();
+
+  updateListingCount();
+
+  renderListings();
+
+  renderPagination();
+
+  updatePaginationInfo();
+}
+
+/* ==========================================================
+   EVENT LISTENERS
+========================================================== */
+
+function attachEventListeners() {
+  /* Search */
+
+  if (listingSearch) {
+    listingSearch.addEventListener("input", refreshPage);
+  }
+
+  /* Status */
+
+  if (statusFilter) {
+    statusFilter.addEventListener("change", refreshPage);
+  }
+
+  /* Category */
+
+  if (categoryFilter) {
+    categoryFilter.addEventListener("change", refreshPage);
+  }
+
+  /* Listing Type */
+
+  if (listingTypeFilter) {
+    listingTypeFilter.addEventListener("change", refreshPage);
+  }
+
+  /* Sort */
+
+  if (sortBy) {
+    sortBy.addEventListener("change", refreshPage);
+  }
+
+  /* Refresh */
+
+  if (refreshListings) {
+    refreshListings.addEventListener("click", loadListings);
+  }
+
+  /* Reset */
+
+  if (clearFilters) {
+    clearFilters.addEventListener("click", resetFilters);
+  }
+
+  /* Listing actions */
+
+  if (listingsContainer) {
+    listingsContainer.addEventListener("click", handleListingAction);
+  }
+}
+
+/* ==========================================================
+   HANDLE LISTING ACTION
+========================================================== */
+
+function handleListingAction(event) {
+  const button = event.target.closest("button");
+
+  if (!button) {
+    return;
+  }
+
+  const card = button.closest(".listing-card");
+
+  if (!card) {
+    return;
+  }
+
+  const listingId = card.dataset.id;
+
+  if (!listingId) {
+    return;
+  }
+
+  /* ========================================================
+     THREE-DOT MENU
+  ======================================================== */
+
+  if (button.classList.contains("menu-btn")) {
+    const menu = card.querySelector(".listing-menu");
+
+    if (!menu) {
+      return;
+    }
+
+    /* Close all other menus */
+
+    document.querySelectorAll(".listing-menu").forEach((item) => {
+      if (item !== menu) {
+        item.classList.add("hidden");
+      }
+    });
+
+    /* Toggle current menu */
+
+    menu.classList.toggle("hidden");
+
+    return;
+  }
+
+  /* ========================================================
+     VIEW DETAILS
+  ======================================================== */
+
+  if (button.classList.contains("view-btn")) {
+    viewListing(listingId);
+    return;
+  }
+
+  /* ========================================================
+     EDIT
+  ======================================================== */
+
+  if (button.classList.contains("edit-btn")) {
+    editListing(listingId);
+    return;
+  }
+
+  /* ========================================================
+     DUPLICATE
+  ======================================================== */
+
+  if (button.classList.contains("duplicate-btn")) {
+    duplicateListing(listingId);
+
+    const menu = card.querySelector(".listing-menu");
+
+    if (menu) {
+      menu.classList.add("hidden");
+    }
+
+    return;
+  }
+
+  /* ========================================================
+     PAUSE
+  ======================================================== */
+
+  if (button.classList.contains("pause-btn")) {
+    pauseListing(listingId);
+
+    const menu = card.querySelector(".listing-menu");
+
+    if (menu) {
+      menu.classList.add("hidden");
+    }
+
+    return;
+  }
+
+  /* ========================================================
+     DELETE
+  ======================================================== */
+
+  if (button.classList.contains("delete-btn")) {
+    deleteListing(listingId);
+    return;
+  }
+}
+
+/* ==========================================================
+   CLOSE MENUS WHEN CLICKING OUTSIDE
+========================================================== */
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".menu-wrapper")) {
+    return;
+  }
+
+  document.querySelectorAll(".listing-menu").forEach((menu) => {
+    menu.classList.add("hidden");
+  });
+});
+
+/* ==========================================================
+   RESET FILTERS
+========================================================== */
+
+function resetFilters() {
+  if (listingSearch) {
+    listingSearch.value = "";
+  }
+
+  if (statusFilter) {
+    statusFilter.value = "";
+  }
+
+  if (categoryFilter) {
+    categoryFilter.value = "";
+  }
+
+  if (listingTypeFilter) {
+    listingTypeFilter.value = "";
+  }
+
+  if (sortBy) {
+    sortBy.value = "newest";
+  }
+
+  refreshPage();
+}
+
+/* ==========================================================
+   VIEW LISTING
+========================================================== */
+
+function viewListing(id) {
+  window.location.href = `/view-listing?id=${encodeURIComponent(id)}`;
+}
+
+/* ==========================================================
+   EDIT LISTING
+========================================================== */
+
+function editListing(id) {
+  const listing = listings.find((item) => String(item.id) === String(id));
+
+  if (!listing) {
+    return;
+  }
+
+  console.log("Edit Listing:", listing);
+
+  /*
+     Edit API/page will be
+     connected later.
+  */
+}
+
+/* ==========================================================
+   DUPLICATE LISTING
+========================================================== */
+
+function duplicateListing(id) {
+  const listing = listings.find((item) => String(item.id) === String(id));
+
+  if (!listing) {
+    return;
+  }
+
+  console.log("Duplicate Listing:", listing);
+
+  /*
+     Duplicate API will be
+     connected later.
+  */
+}
+
+/* ==========================================================
+   PAUSE LISTING
+========================================================== */
+
+function pauseListing(id) {
+  const listing = listings.find((item) => String(item.id) === String(id));
+
+  if (!listing) {
+    return;
+  }
+
+  console.log("Pause Listing:", listing);
+
+  /*
+     Pause / Resume API will be
+     connected later.
+  */
+}
+
+/* ==========================================================
+   DELETE LISTING
+========================================================== */
+
+async function deleteListing(id) {
+  const listing = listings.find((item) => String(item.id) === String(id));
+
+  if (!listing) {
+    return;
+  }
+
+  const confirmed = confirm(
+    `Are you sure you want to delete "${listing.title}"?\n\nThis action cannot be undone.`,
+  );
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/listings/${id}`, {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "same-origin",
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    /* Authentication */
+
+    if (response.status === 401) {
+      alert(data.message || "Your session has expired. Please login again.");
+
+      window.location.href = "/login";
+
+      return;
+    }
+
+    /* API error */
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Unable to delete the listing.");
+    }
+
+    /* Success */
+
+    alert(data.message || "Listing deleted successfully.");
+
+    /* Reload from MongoDB */
+
+    await loadListings();
+  } catch (error) {
+    console.error("Delete Listing Error:", error);
+
+    alert(error.message || "Unable to delete the listing. Please try again.");
+  }
+}
+
+/* ==========================================================
+   LOADING STATE
+========================================================== */
+
+function showLoading(show) {
+  if (!loadingState) {
+    return;
+  }
+
+  if (show) {
+    loadingState.classList.remove("hidden");
+
+    listingsContainer.classList.add("hidden");
+
+    emptyState.classList.add("hidden");
+  } else {
+    loadingState.classList.add("hidden");
+  }
+}
+
+/* ==========================================================
+   ERROR MESSAGE
+========================================================== */
+
+function showErrorMessage(message) {
+  listingsContainer.innerHTML = "";
+
+  listingsContainer.classList.add("hidden");
+
+  emptyState.classList.remove("hidden");
+
+  const title = emptyState.querySelector("h2");
+
+  const paragraph = emptyState.querySelector("p");
+
+  if (title) {
+    title.textContent = "Unable to Load Listings";
+  }
+
+  if (paragraph) {
+    paragraph.textContent = message;
+  }
+
+  console.error(message);
+}
+
+/* ==========================================================
+   LAST UPDATED
+========================================================== */
+
+function updateLastUpdated() {
+  const element = document.getElementById("lastUpdated");
+
+  if (!element) {
+    return;
+  }
+
+  element.textContent = "Just now";
+}

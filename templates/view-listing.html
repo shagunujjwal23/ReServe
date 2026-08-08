@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>View Listing | ReServe</title>
+
+    <!-- Remix Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css"
+    />
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    />
+
+    <!-- Sidebar CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/sidebar.css') }}"
+    />
+
+    <!-- View Listing CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/view-listing.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <!-- ==========================================================
+           SIDEBAR
+      =========================================================== -->
+
+      <aside class="sidebar">
+        <!-- Brand -->
+
+        <div class="sidebar-brand">
+          <div class="logo-wrapper">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe Logo"
+            />
+          </div>
+
+          <div class="brand-content">
+            <h2>ReServe</h2>
+            <p>Food Rescue Platform</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+
+        <nav class="sidebar-nav">
+          <a href="/dashboard">
+            <i class="ri-home-5-line"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="/add-listings">
+            <i class="ri-restaurant-line"></i>
+            <span>Add Listings</span>
+          </a>
+
+          <a href="/my-listings" class="active">
+            <i class="ri-store-2-line"></i>
+            <span>My Listings</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-file-list-3-line"></i>
+            <span>Requests</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-box-3-line"></i>
+            <span>Pickups</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-robot-2-line"></i>
+            <span>AI Insights</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-bar-chart-box-line"></i>
+            <span>Analytics</span>
+          </a>
+        </nav>
+
+        <!-- Footer -->
+
+        <div class="sidebar-footer">
+          <a href="/logout">
+            <i class="ri-logout-box-r-line"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- ==========================================================
+           MAIN CONTENT
+      =========================================================== -->
+
+      <div class="main-content">
+        <main class="content-wrapper">
+          <!-- ======================================================
+               TOPBAR
+          ======================================================= -->
+
+          <header class="topbar">
+            <div class="topbar-right">
+              <!-- Notification -->
+
+              <button class="icon-btn" id="notificationBtn" type="button">
+                <i class="ri-notification-3-line"></i>
+
+                <span id="notificationCount" class="badge">3</span>
+              </button>
+
+              <!-- Profile -->
+
+              <button class="profile" type="button">
+                <img
+                  src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
+                  alt="Profile"
+                />
+
+                <div>
+                  <h4>{{ user.name if user.name else 'Restaurant Owner' }}</h4>
+
+                  <p>{{ user.role if user.role else 'Restaurant Owner' }}</p>
+                </div>
+
+                <i class="ri-arrow-down-s-line"></i>
+              </button>
+            </div>
+          </header>
+
+          <!-- ======================================================
+               PAGE TOP
+          ======================================================= -->
+
+          <div class="details-top">
+            <a href="/my-listings" class="back-link">
+              <i class="ri-arrow-left-line"></i>
+              Back to My Listings
+            </a>
+
+            <div class="details-top-actions">
+              <!-- AI Ready -->
+
+              <span class="ai-ready-top">
+                <i class="ri-sparkling-2-line"></i>
+                AI Ready
+              </span>
+
+              <!-- More Actions -->
+
+              <button class="more-actions-btn" type="button">
+                <i class="ri-more-2-fill"></i>
+                More Actions
+                <i class="ri-arrow-down-s-line"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- ======================================================
+               LISTING MAIN AREA
+          ======================================================= -->
+
+          <section class="listing-details-layout">
+            <!-- ====================================================
+                 LEFT CONTENT
+            ===================================================== -->
+
+            <div class="listing-main">
+              <!-- ==================================================
+                   IMAGE + BASIC INFORMATION
+              =================================================== -->
+
+              <div class="listing-overview">
+                <!-- IMAGE -->
+
+                <div class="listing-gallery">
+                  <div class="main-image-wrapper">
+                    <img
+                      id="listingImage"
+                      src="/static/images/food-placeholder.jpg"
+                      alt="Food Image"
+                    />
+
+                    <span id="listingStatusBadge" class="status-badge">
+                      Available
+                    </span>
+                  </div>
+                </div>
+
+                <!-- BASIC DETAILS -->
+
+                <div class="listing-summary">
+                  <h1 id="listingTitle">Loading listing...</h1>
+                  
+                  <!-- Details -->
+
+                  <div class="listing-meta">
+                    <!-- Food Type -->
+
+                    <div class="meta-row">
+                      <i class="ri-leaf-line"></i>
+
+                      <span>Food Type</span>
+
+                      <strong id="foodType">—</strong>
+                    </div>
+
+                    <!-- Category -->
+
+                    <div class="meta-row">
+                      <i class="ri-folder-line"></i>
+
+                      <span>Category</span>
+
+                      <strong id="foodCategory">—</strong>
+                    </div>
+
+                    <!-- Listing Type -->
+
+                    <div class="meta-row">
+                      <i class="ri-price-tag-3-line"></i>
+
+                      <span>Listing Type</span>
+
+                      <strong id="listingType">—</strong>
+                    </div>
+
+                    <!-- Pickup -->
+
+                    <div class="meta-row">
+                      <i class="ri-time-line"></i>
+
+                      <span>Pickup Time</span>
+
+                      <strong id="pickupTime">—</strong>
+                    </div>
+
+                    <!-- Expiry -->
+
+                    <div class="meta-row">
+                      <i class="ri-timer-line"></i>
+
+                      <span>Best Before</span>
+
+                      <strong id="expiryDate">—</strong>
+                    </div>
+
+                    <!-- Quantity -->
+
+                    <div class="meta-row">
+                      <i class="ri-stack-line"></i>
+
+                      <span>Quantity</span>
+
+                      <strong id="listingQuantity">—</strong>
+                    </div>
+
+                    <!-- Price -->
+
+                    <div class="meta-row">
+                      <i class="ri-money-rupee-circle-line"></i>
+
+                      <span>Price</span>
+
+                      <strong id="listingPrice">—</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ==================================================
+                   DESCRIPTION
+              =================================================== -->
+
+              <section class="detail-section">
+                <h3>Description</h3>
+
+                <p id="listingDescription">Loading description...</p>
+              </section>
+
+              <!-- ==================================================
+                   PICKUP INFORMATION
+              =================================================== -->
+
+              <section class="detail-section">
+                <h3>Pickup Information</h3>
+
+                <div class="pickup-info-grid">
+                  <!-- Pickup Start -->
+
+                  <div class="pickup-info-item">
+                    <i class="ri-calendar-line"></i>
+
+                    <div>
+                      <span>Pickup Start</span>
+
+                      <strong id="pickupStart"> — </strong>
+                    </div>
+                  </div>
+
+                  <!-- Pickup End -->
+
+                  <div class="pickup-info-item">
+                    <i class="ri-calendar-check-line"></i>
+
+                    <div>
+                      <span>Pickup End</span>
+
+                      <strong id="pickupEnd"> — </strong>
+                    </div>
+                  </div>
+
+                  <!-- Pickup Instructions -->
+
+                  <div class="pickup-info-item">
+                    <i class="ri-information-line"></i>
+
+                    <div>
+                      <span>Pickup Instructions</span>
+
+                      <strong id="pickupInstructions"> — </strong>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- ====================================================
+                 RIGHT SIDEBAR
+            ===================================================== -->
+
+            <aside class="details-sidebar">
+              <!-- ==================================================
+                   LISTING STATUS
+              =================================================== -->
+
+              <section class="detail-card">
+                <h3>Listing Status</h3>
+
+                <div class="status-details">
+                  <!-- Status -->
+
+                  <div class="status-row">
+                    <span>Status</span>
+
+                    <strong id="sideStatus" class="small-status">
+                      Available
+                    </strong>
+                  </div>
+
+                  <!-- Listed On -->
+
+                  <div class="status-row">
+                    <span>Listed On</span>
+
+                    <strong id="listedOn">—</strong>
+                  </div>
+
+                  <!-- Listing ID -->
+
+                  <div class="status-row">
+                    <span>Listing ID</span>
+
+                    <strong id="listingId">—</strong>
+                  </div>
+
+                  <!-- Views -->
+
+                  <div class="status-row">
+                    <span>Views</span>
+
+                    <strong id="sideViews">0</strong>
+                  </div>
+
+                  <!-- Reservations -->
+
+                  <div class="status-row">
+                    <span>Reservations</span>
+
+                    <strong id="sideReservations">0</strong>
+                  </div>
+
+                  <!-- Remaining Quantity -->
+
+                  <div class="status-row">
+                    <span>Remaining Quantity</span>
+
+                    <strong id="remainingQuantity">—</strong>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+
+                <div class="status-actions">
+                  <button
+                    type="button"
+                    class="edit-listing-btn"
+                    id="editListingBtn"
+                  >
+                    <i class="ri-edit-line"></i>
+                    Edit Listing
+                  </button>
+
+                  <button
+                    type="button"
+                    class="remove-listing-btn"
+                    id="removeListingBtn"
+                  >
+                    <i class="ri-delete-bin-line"></i>
+                    Remove Listing
+                  </button>
+                </div>
+              </section>
+
+              <!-- ==================================================
+                   PERFORMANCE
+              =================================================== -->
+
+              <section class="detail-card">
+                <h3>Performance Overview</h3>
+
+                <div class="performance-grid">
+                  <!-- Views -->
+
+                  <div class="performance-item">
+                    <i class="ri-eye-line"></i>
+
+                    <strong id="performanceViews"> 0 </strong>
+
+                    <span>Views</span>
+                  </div>
+
+                  <!-- Reservations -->
+
+                  <div class="performance-item">
+                    <i class="ri-calendar-check-line"></i>
+
+                    <strong id="performanceReservations"> 0 </strong>
+
+                    <span>Reservations</span>
+                  </div>
+
+                  <!-- Recovery -->
+
+                  <div class="performance-item">
+                    <i class="ri-recycle-line"></i>
+
+                    <strong id="performanceRecovery"> 0% </strong>
+
+                    <span>Recovery Chance</span>
+                  </div>
+                </div>
+              </section>
+
+              <!-- ==================================================
+                   FOOD INFORMATION
+              =================================================== -->
+
+              <section class="detail-card">
+                <h3>Food Information</h3>
+
+                <div class="food-information">
+                  <!-- Original Price -->
+
+                  <div class="info-line">
+                    <span>Original Price</span>
+
+                    <strong id="originalPrice"> — </strong>
+                  </div>
+
+                  <!-- Discounted Price -->
+
+                  <div class="info-line">
+                    <span>Discounted Price</span>
+
+                    <strong id="discountedPrice"> — </strong>
+                  </div>
+
+                  <!-- Unit -->
+
+                  <div class="info-line">
+                    <span>Unit</span>
+
+                    <strong id="unit"> — </strong>
+                  </div>
+
+                  <!-- City -->
+
+                  <div class="info-line">
+                    <span>City</span>
+
+                    <strong id="city"> — </strong>
+                  </div>
+                </div>
+              </section>
+
+              <!-- ==================================================
+                   RECENT RESERVATIONS
+              =================================================== -->
+
+              <section class="detail-card recent-reservations-card">
+                <div class="recent-reservations-header">
+                  <h3>Recent Reservations</h3>
+
+                  <button type="button" class="view-all-reservations">
+                    View All
+                  </button>
+                </div>
+
+                <div id="recentReservations" class="recent-reservations">
+                  <!-- Empty state until reservation API is available -->
+
+                  <div class="no-reservations">
+                    <i class="ri-calendar-event-line"></i>
+
+                    <strong> No reservations yet </strong>
+
+                    <p>Reservations for this listing will appear here.</p>
+                  </div>
+                </div>
+              </section>
+            </aside>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+         JAVASCRIPT
+    =========================================================== -->
+
+    <script src="{{ url_for('static', filename='js/view-listing.js') }}"></script>
+  </body>
+</html>
