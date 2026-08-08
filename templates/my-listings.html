@@ -356,12 +356,16 @@
                      PRICE + VIEW
                 =================================================== -->
 
+                <!-- ==================================================
+     PRICE + VIEW
+================================================== -->
+
                 <div class="listing-card-footer">
                   <!-- Price -->
                   <div class="price-section">
-                    <span class="current-price"> ₹0 </span>
+                    <span class="current-price">₹0</span>
 
-                    <span class="old-price"> ₹0 </span>
+                    <span class="old-price">₹0</span>
                   </div>
 
                   <!-- View Details -->
@@ -398,6 +402,66 @@
           </section>
         </main>
       </div>
+    </div>
+
+    <!-- ==========================================================
+     RESERVE CONFIRMATION MODAL
+========================================================== -->
+
+    <div class="reserve-confirm-overlay" id="confirmOverlay">
+      <div class="reserve-confirm-modal">
+        <div class="confirm-icon warning" id="confirmIcon">
+          <i class="ri-question-line"></i>
+        </div>
+
+        <div class="confirm-content">
+          <h3 id="confirmTitle">Confirm Action</h3>
+
+          <p id="confirmMessage">Are you sure you want to continue?</p>
+        </div>
+
+        <div class="confirm-actions">
+          <button
+            type="button"
+            class="confirm-cancel-btn"
+            id="confirmCancelBtn"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            class="confirm-submit-btn warning"
+            id="confirmSubmitBtn"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==========================================================
+     RESERVE TOAST
+========================================================== -->
+
+    <div class="reserve-toast" id="reserveToast">
+      <div class="toast-icon">
+        <i class="ri-check-line" id="toastIcon"></i>
+      </div>
+
+      <div class="toast-content">
+        <strong id="toastTitle">Success</strong>
+        <span id="toastMessage"></span>
+      </div>
+
+      <button
+        type="button"
+        class="toast-close"
+        id="toastClose"
+        aria-label="Close notification"
+      >
+        <i class="ri-close-line"></i>
+      </button>
     </div>
 
     <!-- ========================================================

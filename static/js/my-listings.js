@@ -60,6 +60,147 @@ const totalRecords = document.getElementById("totalRecords");
 const pagination = document.getElementById("pagination");
 
 /* ==========================================================
+   CONFIRMATION MODAL
+========================================================== */
+
+const confirmOverlay = document.getElementById("confirmOverlay");
+
+const confirmIcon = document.getElementById("confirmIcon");
+
+const confirmTitle = document.getElementById("confirmTitle");
+
+const confirmMessage = document.getElementById("confirmMessage");
+
+const confirmCancelBtn = document.getElementById("confirmCancelBtn");
+
+const confirmSubmitBtn = document.getElementById("confirmSubmitBtn");
+
+let confirmResolve = null;
+
+/* ==========================================================
+   SHOW CONFIRMATION MODAL
+========================================================== */
+
+function showConfirmModal({
+  title = "Confirm Action",
+  message = "Are you sure you want to continue?",
+  confirmText = "Confirm",
+  type = "warning",
+}) {
+  return new Promise((resolve) => {
+    confirmResolve = resolve;
+
+    confirmTitle.textContent = title;
+
+    confirmMessage.textContent = message;
+
+    confirmSubmitBtn.textContent = confirmText;
+
+    confirmIcon.className = `confirm-icon ${type}`;
+
+    confirmSubmitBtn.className = `confirm-submit-btn ${type}`;
+
+    confirmOverlay.classList.add("show");
+  });
+}
+
+/* ==========================================================
+   CLOSE CONFIRMATION MODAL
+========================================================== */
+
+function closeConfirmModal(result) {
+  confirmOverlay.classList.remove("show");
+
+  if (confirmResolve) {
+    confirmResolve(result);
+
+    confirmResolve = null;
+  }
+}
+
+/* ==========================================================
+   MODAL EVENTS
+========================================================== */
+
+if (confirmCancelBtn) {
+  confirmCancelBtn.addEventListener("click", () => {
+    closeConfirmModal(false);
+  });
+}
+
+if (confirmSubmitBtn) {
+  confirmSubmitBtn.addEventListener("click", () => {
+    closeConfirmModal(true);
+  });
+}
+
+if (confirmOverlay) {
+  confirmOverlay.addEventListener("click", (event) => {
+    if (event.target === confirmOverlay) {
+      closeConfirmModal(false);
+    }
+  });
+}
+
+/* ==========================================================
+   TOAST
+========================================================== */
+
+const reserveToast = document.getElementById("reserveToast");
+
+const toastIcon = document.getElementById("toastIcon");
+
+const toastTitle = document.getElementById("toastTitle");
+
+const toastMessage = document.getElementById("toastMessage");
+
+const toastClose = document.getElementById("toastClose");
+
+let toastTimer = null;
+
+/* ==========================================================
+   SHOW TOAST
+========================================================== */
+
+function showToast(message, type = "success", title = null) {
+  if (!reserveToast) {
+    return;
+  }
+
+  clearTimeout(toastTimer);
+
+  if (type === "error") {
+    toastIcon.className = "ri-error-warning-line";
+
+    toastTitle.textContent = title || "Something went wrong";
+  } else {
+    toastIcon.className = "ri-check-line";
+
+    toastTitle.textContent = title || "Success";
+  }
+
+  toastMessage.textContent = message;
+
+  reserveToast.classList.add("show");
+
+  toastTimer = setTimeout(() => {
+    reserveToast.classList.remove("show");
+  }, 3500);
+}
+
+/* ==========================================================
+   CLOSE TOAST
+========================================================== */
+
+if (toastClose) {
+  toastClose.addEventListener("click", () => {
+    clearTimeout(toastTimer);
+
+    reserveToast.classList.remove("show");
+  });
+}
+
+/* ==========================================================
    Initialize Application
 ========================================================== */
 
@@ -96,8 +237,10 @@ async function loadListings() {
     ------------------------------------------------------ */
 
     if (response.status === 401) {
-      showErrorMessage(
+      showToast(
         data.message || "Your session has expired. Please login again.",
+        "error",
+        "Session Expired",
       );
 
       setTimeout(() => {
@@ -606,12 +749,6 @@ function renderListings() {
       viewButton.dataset.id = listing.id;
     }
 
-    const editButton = clone.querySelector(".edit-btn");
-
-    if (editButton) {
-      editButton.dataset.id = listing.id;
-    }
-
     const duplicateButton = clone.querySelector(".duplicate-btn");
 
     if (duplicateButton) {
@@ -622,12 +759,22 @@ function renderListings() {
 
     if (pauseButton) {
       pauseButton.dataset.id = listing.id;
-    }
 
-    const deleteButton = clone.querySelector(".delete-btn");
+      const isPaused = String(listing.status).toLowerCase() === "paused";
 
-    if (deleteButton) {
-      deleteButton.dataset.id = listing.id;
+      if (isPaused) {
+        pauseButton.innerHTML = '<i class="ri-play-circle-line"></i>';
+
+        pauseButton.title = "Resume Listing";
+
+        pauseButton.setAttribute("aria-label", "Resume Listing");
+      } else {
+        pauseButton.innerHTML = '<i class="ri-pause-circle-line"></i>';
+
+        pauseButton.title = "Pause Listing";
+
+        pauseButton.setAttribute("aria-label", "Pause Listing");
+      }
     }
 
     /* ====================================================
@@ -995,32 +1142,7 @@ function handleListingAction(event) {
   const listingId = card.dataset.id;
 
   if (!listingId) {
-    return;
-  }
-
-  /* ========================================================
-     THREE-DOT MENU
-  ======================================================== */
-
-  if (button.classList.contains("menu-btn")) {
-    const menu = card.querySelector(".listing-menu");
-
-    if (!menu) {
-      return;
-    }
-
-    /* Close all other menus */
-
-    document.querySelectorAll(".listing-menu").forEach((item) => {
-      if (item !== menu) {
-        item.classList.add("hidden");
-      }
-    });
-
-    /* Toggle current menu */
-
-    menu.classList.toggle("hidden");
-
+    console.error("Listing ID not found.");
     return;
   }
 
@@ -1034,69 +1156,23 @@ function handleListingAction(event) {
   }
 
   /* ========================================================
-     EDIT
-  ======================================================== */
-
-  if (button.classList.contains("edit-btn")) {
-    editListing(listingId);
-    return;
-  }
-
-  /* ========================================================
      DUPLICATE
   ======================================================== */
 
   if (button.classList.contains("duplicate-btn")) {
     duplicateListing(listingId);
-
-    const menu = card.querySelector(".listing-menu");
-
-    if (menu) {
-      menu.classList.add("hidden");
-    }
-
     return;
   }
 
   /* ========================================================
-     PAUSE
+     PAUSE / RESUME
   ======================================================== */
 
   if (button.classList.contains("pause-btn")) {
     pauseListing(listingId);
-
-    const menu = card.querySelector(".listing-menu");
-
-    if (menu) {
-      menu.classList.add("hidden");
-    }
-
-    return;
-  }
-
-  /* ========================================================
-     DELETE
-  ======================================================== */
-
-  if (button.classList.contains("delete-btn")) {
-    deleteListing(listingId);
     return;
   }
 }
-
-/* ==========================================================
-   CLOSE MENUS WHEN CLICKING OUTSIDE
-========================================================== */
-
-document.addEventListener("click", (event) => {
-  if (event.target.closest(".menu-wrapper")) {
-    return;
-  }
-
-  document.querySelectorAll(".listing-menu").forEach((menu) => {
-    menu.classList.add("hidden");
-  });
-});
 
 /* ==========================================================
    RESET FILTERS
@@ -1157,38 +1233,177 @@ function editListing(id) {
    DUPLICATE LISTING
 ========================================================== */
 
-function duplicateListing(id) {
+async function duplicateListing(id) {
   const listing = listings.find((item) => String(item.id) === String(id));
 
   if (!listing) {
     return;
   }
 
-  console.log("Duplicate Listing:", listing);
+  const confirmed = await showConfirmModal({
+    title: "Duplicate Listing?",
 
-  /*
-     Duplicate API will be
-     connected later.
-  */
+    message: `Create a new listing using the same details as "${listing.title}"?`,
+
+    confirmText: "Duplicate",
+
+    type: "warning",
+  });
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `/api/listings/${encodeURIComponent(id)}/duplicate`,
+      {
+        method: "POST",
+
+        headers: {
+          Accept: "application/json",
+        },
+
+        credentials: "same-origin",
+      },
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    /* Authentication */
+
+    if (response.status === 401) {
+      showToast(
+        data.message || "Your session has expired.",
+        "error",
+        "Session Expired",
+      );
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1200);
+
+      return;
+    }
+
+    /* API Error */
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Unable to duplicate the listing.");
+    }
+
+    /* Success */
+
+    showToast(data.message || "Listing duplicated successfully.");
+
+    await loadListings();
+  } catch (error) {
+    console.error("Duplicate Listing Error:", error);
+
+    showToast(
+      error.message || "Unable to duplicate the listing. Please try again.",
+      "error",
+    );
+  }
 }
 
 /* ==========================================================
-   PAUSE LISTING
+   PAUSE / RESUME LISTING
 ========================================================== */
 
-function pauseListing(id) {
+async function pauseListing(id) {
   const listing = listings.find((item) => String(item.id) === String(id));
 
   if (!listing) {
+    console.error("Listing not found:", id);
     return;
   }
 
-  console.log("Pause Listing:", listing);
+  const isPaused = String(listing.status).trim().toLowerCase() === "paused";
 
-  /*
-     Pause / Resume API will be
-     connected later.
-  */
+  const actionText = isPaused ? "resume" : "pause";
+
+  const confirmed = await showConfirmModal({
+    title: isPaused ? "Resume Listing?" : "Pause Listing?",
+
+    message: `Are you sure you want to ${actionText} "${listing.title}"?`,
+
+    confirmText: isPaused ? "Resume Listing" : "Pause Listing",
+
+    type: "warning",
+  });
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `/api/listings/${encodeURIComponent(id)}/pause`,
+      {
+        method: "PATCH",
+
+        headers: {
+          Accept: "application/json",
+        },
+
+        credentials: "same-origin",
+      },
+    );
+
+    const data = await response.json().catch(() => ({}));
+
+    /* Authentication */
+
+    if (response.status === 401) {
+      showToast(
+        data.message || "Your session has expired.",
+        "error",
+        "Session Expired",
+      );
+
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1200);
+
+      return;
+    }
+
+    /* API Error */
+
+    if (!response.ok || !data.success) {
+      throw new Error(data.message || "Unable to update listing status.");
+    }
+
+    /* ======================================================
+       UPDATE LOCAL STATUS
+    ====================================================== */
+
+    const newStatus = String(data.status || "").toLowerCase();
+
+    listing.status = newStatus === "paused" ? "Paused" : "Active";
+
+    console.log("Listing status changed to:", listing.status);
+
+    /* ======================================================
+       RE-RENDER
+    ====================================================== */
+
+    refreshPage();
+
+    /* ======================================================
+       SUCCESS
+    ====================================================== */
+
+    showToast(data.message || `Listing ${actionText}d successfully.`);
+  } catch (error) {
+    console.error("Pause / Resume Listing Error:", error);
+
+    showToast(
+      error.message || "Unable to update listing status. Please try again.",
+      "error",
+    );
+  }
 }
 
 /* ==========================================================
@@ -1202,20 +1417,28 @@ async function deleteListing(id) {
     return;
   }
 
-  const confirmed = confirm(
-    `Are you sure you want to delete "${listing.title}"?\n\nThis action cannot be undone.`,
-  );
+  const confirmed = await showConfirmModal({
+    title: "Delete Listing?",
+
+    message: `Are you sure you want to delete "${listing.title}"? This action cannot be undone.`,
+
+    confirmText: "Delete Listing",
+
+    type: "danger",
+  });
 
   if (!confirmed) {
     return;
   }
 
   try {
-    const response = await fetch(`/api/listings/${id}`, {
+    const response = await fetch(`/api/listings/${encodeURIComponent(id)}`, {
       method: "DELETE",
+
       headers: {
         Accept: "application/json",
       },
+
       credentials: "same-origin",
     });
 
@@ -1224,14 +1447,20 @@ async function deleteListing(id) {
     /* Authentication */
 
     if (response.status === 401) {
-      alert(data.message || "Your session has expired. Please login again.");
+      showToast(
+        data.message || "Your session has expired.",
+        "error",
+        "Session Expired",
+      );
 
-      window.location.href = "/login";
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1200);
 
       return;
     }
 
-    /* API error */
+    /* API Error */
 
     if (!response.ok || !data.success) {
       throw new Error(data.message || "Unable to delete the listing.");
@@ -1239,15 +1468,18 @@ async function deleteListing(id) {
 
     /* Success */
 
-    alert(data.message || "Listing deleted successfully.");
+    showToast(data.message || "Listing deleted successfully.");
 
-    /* Reload from MongoDB */
+    /* Reload listings */
 
     await loadListings();
   } catch (error) {
     console.error("Delete Listing Error:", error);
 
-    alert(error.message || "Unable to delete the listing. Please try again.");
+    showToast(
+      error.message || "Unable to delete the listing. Please try again.",
+      "error",
+    );
   }
 }
 

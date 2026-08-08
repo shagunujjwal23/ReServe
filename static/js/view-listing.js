@@ -15,6 +15,171 @@ const API_BASE_URL = "/api/listings";
 let listing = null;
 
 /* ==========================================================
+   REUSABLE UI - TOAST & CONFIRMATION MODAL
+========================================================== */
+
+function showToast(message, type = "success") {
+  let container = document.getElementById("reserveToastContainer");
+
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "reserveToastContainer";
+    container.className = "reserve-toast-container";
+
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement("div");
+
+  toast.className = `reserve-toast ${type}`;
+
+  const icon =
+    type === "success"
+      ? "ri-checkbox-circle-line"
+      : type === "error"
+        ? "ri-error-warning-line"
+        : "ri-information-line";
+
+  toast.innerHTML = `
+    <div class="toast-icon">
+      <i class="${icon}"></i>
+    </div>
+
+    <div class="toast-content">
+      <strong>
+        ${type === "success" ? "Success" : type === "error" ? "Error" : "Notice"}
+      </strong>
+
+      <span>${escapeHTML(message)}</span>
+    </div>
+
+    <button type="button" class="toast-close" aria-label="Close">
+      <i class="ri-close-line"></i>
+    </button>
+  `;
+
+  container.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+
+  const closeToast = () => {
+    toast.classList.remove("show");
+
+    setTimeout(() => {
+      toast.remove();
+    }, 250);
+  };
+
+  toast.querySelector(".toast-close").addEventListener("click", closeToast);
+
+  setTimeout(closeToast, 3500);
+}
+
+/* ==========================================================
+   CONFIRMATION MODAL
+========================================================== */
+
+function showConfirmModal({
+  title,
+  message,
+  confirmText = "Confirm",
+  cancelText = "Cancel",
+  type = "warning",
+}) {
+  return new Promise((resolve) => {
+    const existingModal = document.getElementById("reserveConfirmModal");
+
+    if (existingModal) {
+      existingModal.remove();
+    }
+
+    const modal = document.createElement("div");
+
+    modal.id = "reserveConfirmModal";
+    modal.className = "reserve-confirm-overlay";
+
+    const icon =
+      type === "danger"
+        ? "ri-delete-bin-line"
+        : type === "success"
+          ? "ri-checkbox-circle-line"
+          : "ri-question-line";
+
+    modal.innerHTML = `
+      <div class="reserve-confirm-modal">
+
+        <div class="confirm-icon ${type}">
+          <i class="${icon}"></i>
+        </div>
+
+        <div class="confirm-content">
+
+          <h3>
+            ${escapeHTML(title)}
+          </h3>
+
+          <p>
+            ${escapeHTML(message)}
+          </p>
+
+        </div>
+
+        <div class="confirm-actions">
+
+          <button
+            type="button"
+            class="confirm-cancel-btn"
+          >
+            ${escapeHTML(cancelText)}
+          </button>
+
+          <button
+            type="button"
+            class="confirm-submit-btn ${type}"
+          >
+            ${escapeHTML(confirmText)}
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    requestAnimationFrame(() => {
+      modal.classList.add("show");
+    });
+
+    const closeModal = (result) => {
+      modal.classList.remove("show");
+
+      setTimeout(() => {
+        modal.remove();
+      }, 200);
+
+      resolve(result);
+    };
+
+    modal.querySelector(".confirm-cancel-btn").addEventListener("click", () => {
+      closeModal(false);
+    });
+
+    modal.querySelector(".confirm-submit-btn").addEventListener("click", () => {
+      closeModal(true);
+    });
+
+    modal.addEventListener("click", (event) => {
+      if (event.target === modal) {
+        closeModal(false);
+      }
+    });
+  });
+}
+
+/* ==========================================================
    DOM ELEMENTS
 ========================================================== */
 
@@ -114,7 +279,9 @@ const editListingBtn = document.getElementById("editListingBtn");
 
 const removeListingBtn = document.getElementById("removeListingBtn");
 
-const moreActionsBtn = document.querySelector(".more-actions-btn");
+const pauseListingBtn = document.getElementById("pauseListingBtn");
+
+const duplicateListingBtn = document.getElementById("duplicateListingBtn");
 
 /* ==========================================================
    INITIALIZE
@@ -173,13 +340,17 @@ async function loadListing(id) {
     ------------------------------------------------------ */
 
     if (response.status === 401) {
-      alert(data.message || "Your session has expired. Please login again.");
+      showToast(
+        data.message || "Your session has expired. Please login again.",
+        "error",
+      );
 
-      window.location.href = "/login";
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1200);
 
       return;
     }
-
     /* ------------------------------------------------------
        Not Found
     ------------------------------------------------------ */
@@ -254,6 +425,7 @@ function renderListing(data) {
   ======================================================== */
 
   const status = formatStatus(data.status);
+  updatePauseResumeButton(data.status);
 
   if (listingStatusBadge) {
     listingStatusBadge.textContent = status;
@@ -444,6 +616,34 @@ function renderRecentReservations(reservations) {
   recentReservations.innerHTML = latestReservations
     .map((reservation) => createReservationHTML(reservation))
     .join("");
+}
+
+/* ==========================================================
+   UPDATE PAUSE / RESUME BUTTON
+========================================================== */
+
+function updatePauseResumeButton(status) {
+  if (!pauseListingBtn) {
+    return;
+  }
+
+  const normalizedStatus = String(status || "")
+    .trim()
+    .toLowerCase();
+
+  if (normalizedStatus === "paused") {
+    pauseListingBtn.innerHTML = '<i class="ri-play-circle-line"></i>';
+
+    pauseListingBtn.title = "Resume Listing";
+
+    pauseListingBtn.setAttribute("aria-label", "Resume Listing");
+  } else {
+    pauseListingBtn.innerHTML = '<i class="ri-pause-circle-line"></i>';
+
+    pauseListingBtn.title = "Pause Listing";
+
+    pauseListingBtn.setAttribute("aria-label", "Pause Listing");
+  }
 }
 
 /* ==========================================================
@@ -716,15 +916,11 @@ function showPageError(message) {
 
 if (editListingBtn) {
   editListingBtn.addEventListener("click", () => {
-    if (!listing) {
+    if (!listing || !listing.id) {
       return;
     }
 
-    console.log("Edit Listing:", listing);
-
-    /*
-        Edit page will be connected later.
-      */
+    window.location.href = `/add-listings?id=${encodeURIComponent(listing.id)}&mode=edit`;
   });
 }
 
@@ -738,9 +934,13 @@ if (removeListingBtn) {
       return;
     }
 
-    const confirmed = confirm(
-      `Are you sure you want to remove "${listing.food_title}"?\n\nThis action cannot be undone.`,
-    );
+    const confirmed = await showConfirmModal({
+      title: "Remove Listing?",
+      message: `Are you sure you want to remove "${listing.food_title}"? This action cannot be undone.`,
+      confirmText: "Remove Listing",
+      cancelText: "Keep Listing",
+      type: "danger",
+    });
 
     if (!confirmed) {
       return;
@@ -774,9 +974,11 @@ if (removeListingBtn) {
         throw new Error(data.message || "Unable to remove listing.");
       }
 
-      alert(data.message || "Listing removed successfully.");
+      showToast(data.message || "Listing removed successfully.", "success");
 
-      window.location.href = "/my-listings";
+      setTimeout(() => {
+        window.location.href = "/my-listings";
+      }, 900);
     } catch (error) {
       console.error("Remove Listing Error:", error);
 
@@ -786,17 +988,219 @@ if (removeListingBtn) {
 }
 
 /* ==========================================================
-   MORE ACTIONS
+   DUPLICATE LISTING
 ========================================================== */
 
-if (moreActionsBtn) {
-  moreActionsBtn.addEventListener("click", () => {
-    console.log("More Actions clicked.");
+if (duplicateListingBtn) {
+  duplicateListingBtn.addEventListener("click", async () => {
+    if (!listing || !listing.id) {
+      return;
+    }
 
-    /*
-        More actions menu will be
-        connected later.
-      */
+    const confirmed = await showConfirmModal({
+      title: "Duplicate Listing?",
+      message: `A new listing will be created using "${listing.food_title}" as the template.`,
+      confirmText: "Duplicate",
+      cancelText: "Cancel",
+      type: "warning",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      duplicateListingBtn.disabled = true;
+
+      const response = await fetch(
+        `${API_BASE_URL}/${encodeURIComponent(listing.id)}/duplicate`,
+        {
+          method: "POST",
+
+          headers: {
+            Accept: "application/json",
+          },
+
+          credentials: "same-origin",
+        },
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      /* Authentication */
+
+      if (response.status === 401) {
+        alert(data.message || "Your session has expired. Please login again.");
+
+        window.location.href = "/login";
+
+        return;
+      }
+
+      /* API Error */
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Unable to duplicate the listing.");
+      }
+
+      /* Success */
+
+      showToast(data.message || "Listing duplicated successfully.", "success");
+
+      /* Return to My Listings */
+
+      window.location.href = "/my-listings";
+    } catch (error) {
+      console.error("Duplicate Listing Error:", error);
+
+      showToast(
+        error.message || "Unable to duplicate the listing. Please try again.",
+        "error",
+      );
+    }
+  });
+}
+
+/* ==========================================================
+   PAUSE / RESUME LISTING
+========================================================== */
+
+if (pauseListingBtn) {
+  pauseListingBtn.addEventListener("click", async () => {
+    if (!listing || !listing.id) {
+      return;
+    }
+
+    const currentStatus = String(listing.status || "")
+      .trim()
+      .toLowerCase();
+
+    const isPaused = currentStatus === "paused";
+
+    const actionText = isPaused ? "resume" : "pause";
+
+    const confirmed = await showConfirmModal({
+      title: isPaused ? "Resume Listing?" : "Pause Listing?",
+      message: `Are you sure you want to ${actionText} "${listing.food_title}"?`,
+      confirmText: isPaused ? "Resume Listing" : "Pause Listing",
+      cancelText: "Cancel",
+      type: "warning",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+    /* --------------------------------------------------------
+       Prevent double click
+    -------------------------------------------------------- */
+
+    pauseListingBtn.disabled = true;
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/${encodeURIComponent(listing.id)}/pause`,
+        {
+          method: "PATCH",
+
+          headers: {
+            Accept: "application/json",
+          },
+
+          credentials: "same-origin",
+        },
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      /* ------------------------------------------------------
+         Authentication
+      ------------------------------------------------------ */
+
+      if (response.status === 401) {
+        showToast(
+          data.message || "Your session has expired. Please login again.",
+          "error",
+        );
+
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1200);
+
+        return;
+
+        window.location.href = "/login";
+
+        return;
+      }
+
+      /* ------------------------------------------------------
+         API Error
+      ------------------------------------------------------ */
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Unable to update listing status.");
+      }
+
+      /* ------------------------------------------------------
+         Update local listing
+      ------------------------------------------------------ */
+
+      listing.status = data.status;
+
+      /* ------------------------------------------------------
+         Format status for UI
+      ------------------------------------------------------ */
+
+      const formattedStatus = formatStatus(data.status);
+
+      /* ------------------------------------------------------
+         Update main status badge
+      ------------------------------------------------------ */
+
+      if (listingStatusBadge) {
+        listingStatusBadge.textContent = formattedStatus;
+
+        listingStatusBadge.className = "status-badge";
+
+        listingStatusBadge.classList.add(formattedStatus.toLowerCase());
+      }
+
+      /* ------------------------------------------------------
+         Update sidebar status
+      ------------------------------------------------------ */
+
+      if (sideStatus) {
+        sideStatus.textContent = formattedStatus;
+
+        sideStatus.className = "small-status";
+
+        sideStatus.classList.add(formattedStatus.toLowerCase());
+      }
+
+      /* ------------------------------------------------------
+         Update Pause / Resume icon
+      ------------------------------------------------------ */
+
+      updatePauseResumeButton(data.status);
+
+      /* ------------------------------------------------------
+         Success
+      ------------------------------------------------------ */
+
+      showToast(
+        data.message || "Listing status updated successfully.",
+        "success",
+      );
+    } catch (error) {
+      console.error("Pause / Resume Listing Error:", error);
+
+      showToast(
+        error.message || "Unable to update listing status. Please try again.",
+        "error",
+      );
+    } finally {
+      pauseListingBtn.disabled = false;
+    }
   });
 }
 

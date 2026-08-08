@@ -4,12 +4,139 @@
 ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+  /* =====================================================
+   UPDATE EXISTING LISTING
+===================================================== */
+
+  async function updateExistingListing() {
+    if (!editMode || !editListingId) {
+      return;
+    }
+
+    /* Validate normal form fields */
+
+    if (!validateForm()) {
+      return;
+    }
+
+    analyzeBtn.disabled = true;
+
+    analyzeBtn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> Saving...';
+
+    try {
+      /* =================================================
+       IMAGE
+    ================================================= */
+
+      let imageUrl = existingImageUrl;
+
+      /* Upload only when user selected a new image */
+
+      if (foodImage.files.length > 0) {
+        analyzeBtn.innerHTML =
+          '<i class="ri-loader-4-line ri-spin"></i> Uploading Image...';
+
+        imageUrl = await uploadListingImage();
+      }
+
+      /* =================================================
+       BUILD PAYLOAD
+    ================================================= */
+
+      const listingData = buildEditListingPayload(imageUrl);
+
+      console.log("Updating listing:", listingData);
+
+      /* =================================================
+       UPDATE BACKEND
+    ================================================= */
+
+      analyzeBtn.innerHTML =
+        '<i class="ri-loader-4-line ri-spin"></i> Updating...';
+
+      const response = await fetch(
+        `/api/listings/${encodeURIComponent(editListingId)}`,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+
+          credentials: "same-origin",
+
+          body: JSON.stringify(listingData),
+        },
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      /* =================================================
+       AUTHENTICATION
+    ================================================= */
+
+      if (response.status === 401) {
+        alert(data.message || "Your session has expired. Please login again.");
+
+        window.location.href = "/login";
+
+        return;
+      }
+
+      /* =================================================
+       ERROR
+    ================================================= */
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.missing_fields
+            ? `${data.message}\nMissing: ${data.missing_fields.join(", ")}`
+            : data.message || "Unable to update the listing.",
+        );
+      }
+
+      /* =================================================
+       SUCCESS
+    ================================================= */
+
+      localStorage.removeItem("reserveListingDraft");
+
+      alert(data.message || "Listing updated successfully.");
+
+      /* =================================================
+       RETURN TO VIEW LISTING
+    ================================================= */
+
+      window.location.href = `/view-listing?id=${encodeURIComponent(editListingId)}`;
+    } catch (error) {
+      console.error("Update Listing Error:", error);
+
+      alert(error.message || "Unable to update the listing. Please try again.");
+
+      analyzeBtn.disabled = false;
+
+      analyzeBtn.innerHTML = '<i class="ri-save-line"></i> Save Changes';
+    }
+  }
   /* ==========================================================
        DOM ELEMENTS
     ========================================================== */
 
   // Form
   const form = document.getElementById("createListingForm");
+
+  /* =====================================================
+   EDIT MODE
+===================================================== */
+
+  const urlParams = new URLSearchParams(window.location.search);
+
+  const editMode = urlParams.get("mode") === "edit";
+
+  const editListingId = urlParams.get("id");
+
+  let existingImageUrl = "";
 
   // Food Information
   const foodName = document.getElementById("foodName");
@@ -376,7 +503,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       pickup: pickupAddress.value.trim() !== "",
 
-      image: foodImage.files.length > 0,
+      image: foodImage.files.length > 0 || existingImageUrl !== "",
     };
 
     updateChecklistItem(foodNameCheck, checks.foodName);
@@ -495,6 +622,8 @@ document.addEventListener("DOMContentLoaded", () => {
     event.stopPropagation();
 
     foodImage.value = "";
+
+    existingImageUrl = "";
 
     previewImage.src = "";
     updatePreviewCard();
@@ -811,8 +940,7 @@ document.addEventListener("DOMContentLoaded", () => {
     /* -------------------------
        Image
     ------------------------- */
-
-    if (foodImage.files.length === 0) {
+    if (foodImage.files.length === 0 && !existingImageUrl) {
       alert("Please upload a food image.");
 
       isValid = false;
@@ -862,6 +990,8 @@ document.addEventListener("DOMContentLoaded", () => {
     pickupInstructions.value = "";
 
     foodImage.value = "";
+
+    existingImageUrl = "";
 
     previewImage.src = "";
 
@@ -917,11 +1047,318 @@ document.addEventListener("DOMContentLoaded", () => {
   initializeAIReview();
 
   /* =====================================================
+   LOAD LISTING FOR EDIT MODE
+===================================================== */
+
+  async function loadListingForEdit() {
+    if (!editMode || !editListingId) {
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/listings/${encodeURIComponent(editListingId)}`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "same-origin",
+        },
+      );
+
+      const data = await response.json().catch(() => ({}));
+
+      if (response.status === 401) {
+        alert(data.message || "Your session has expired. Please login again.");
+
+        window.location.href = "/login";
+
+        return;
+      }
+
+      if (!response.ok || !data.success || !data.listing) {
+        throw new Error(data.message || "Unable to load listing.");
+      }
+
+      const listing = data.listing;
+
+      window.editOriginalPickupStart =
+        listing.pickup_start || new Date().toISOString();
+
+      window.editExistingFreshnessScore = Number(listing.freshness_score) || 0;
+
+      window.editExistingRecoveryProbability =
+        Number(listing.recovery_probability) || 0;
+
+      window.editExistingCarbonSaved = Number(listing.carbon_saved) || 0;
+
+      window.editExistingAIRecommendation = listing.ai_recommendation || "";
+
+      /* =================================================
+       BASIC INFORMATION
+    ================================================= */
+
+      foodName.value = listing.food_title || "";
+
+      foodType.value = listing.food_type || "";
+
+      description.value = listing.description || "";
+
+      /* =================================================
+       CATEGORY
+    ================================================= */
+
+      const categoryExists = Array.from(category.options).some(
+        (option) => option.value === listing.category,
+      );
+
+      if (categoryExists) {
+        category.value = listing.category;
+        otherCategory.value = "";
+      } else {
+        category.value = "Other";
+        otherCategory.value = listing.category || "";
+      }
+
+      /* =================================================
+       LISTING TYPE
+    ================================================= */
+
+      listingType.value = listing.listing_type || "sell";
+
+      /* =================================================
+       QUANTITY
+    ================================================= */
+
+      quantity.value =
+        listing.quantity !== undefined && listing.quantity !== null
+          ? listing.quantity
+          : "";
+
+      /* =================================================
+       UNIT
+    ================================================= */
+
+      const unitExists = Array.from(unit.options).some(
+        (option) => option.value === listing.unit,
+      );
+
+      if (unitExists) {
+        unit.value = listing.unit;
+        otherUnit.value = "";
+      } else {
+        unit.value = "Other";
+        otherUnit.value = listing.unit || "";
+      }
+
+      /* =================================================
+       PRICE
+    ================================================= */
+
+      originalPrice.value = Number(listing.original_price) || 0;
+
+      sellingPrice.value = Number(listing.discounted_price) || 0;
+
+      /* =================================================
+       EXPIRY
+    ================================================= */
+
+      const hasRealExpiry =
+        listing.expiry_date &&
+        listing.pickup_end &&
+        String(listing.expiry_date) !== String(listing.pickup_end);
+
+      hasExpiry.checked = Boolean(hasRealExpiry);
+
+      if (hasRealExpiry) {
+        expiryDate.value = toDateTimeLocal(listing.expiry_date);
+      } else {
+        expiryDate.value = "";
+      }
+
+      availableUntil.value = toDateTimeLocal(listing.pickup_end);
+
+      /* =================================================
+       PICKUP INFORMATION
+    ================================================= */
+
+      city.value = listing.city || "";
+
+      landmark.value = listing.landmark || "";
+
+      pickupInstructions.value = listing.pickup_instructions || "";
+
+      /* =================================================
+       ADDRESS
+    ================================================= */
+
+      pickupAddress.value = getBasePickupAddress(
+        listing.address || "",
+        listing.landmark || "",
+        listing.city || "",
+      );
+
+      /* =================================================
+       EXISTING IMAGE
+    ================================================= */
+
+      existingImageUrl = listing.image || "";
+
+      if (existingImageUrl) {
+        previewImage.src = existingImageUrl;
+
+        previewImage.classList.add("show");
+
+        uploadContent.style.display = "none";
+
+        imageOverlay.classList.remove("hidden");
+      }
+
+      /* =================================================
+       UI
+    ================================================= */
+
+      toggleOtherCategory();
+      toggleOtherUnit();
+      toggleListingType();
+      toggleExpiryFields();
+
+      updateCharacterCounter();
+      updateCompletionBadge();
+      updateReadiness();
+      updatePreviewCard();
+
+      /* =================================================
+       EDIT PAGE TEXT
+    ================================================= */
+
+      const pageTitle = document.querySelector(".page-header h1");
+
+      const pageDescription = document.querySelector(".page-header p");
+
+      if (pageTitle) {
+        pageTitle.textContent = "Edit Listing";
+      }
+
+      if (pageDescription) {
+        pageDescription.textContent =
+          "Update your food listing details and keep your information accurate.";
+      }
+
+      /* Stepper */
+
+      const firstStepTitle = document.querySelector(
+        ".progress-steps .step:first-child h4",
+      );
+
+      const firstStepDescription = document.querySelector(
+        ".progress-steps .step:first-child span",
+      );
+
+      if (firstStepTitle) {
+        firstStepTitle.textContent = "Edit Listing";
+      }
+
+      if (firstStepDescription) {
+        firstStepDescription.textContent = "Update Food Details";
+      }
+
+      /* Main action */
+
+      if (analyzeBtn) {
+        analyzeBtn.innerHTML = '<i class="ri-save-line"></i> Save Changes';
+      }
+
+      /* File input is optional because old image exists */
+
+      if (foodImage) {
+        foodImage.removeAttribute("required");
+      }
+
+      /* Hide draft notification in edit mode */
+
+      if (draftNotification) {
+        draftNotification.classList.add("hidden");
+      }
+
+      updateDraftStatus(
+        "Editing Listing",
+        "Changes will update the existing listing",
+        "ri-edit-line",
+      );
+
+      console.log("Editing listing:", listing);
+    } catch (error) {
+      console.error("Load Edit Listing Error:", error);
+
+      alert(error.message || "Unable to load listing for editing.");
+
+      window.location.href = "/my-listings";
+    }
+  }
+
+  /* =====================================================
+   DATETIME LOCAL FORMAT
+===================================================== */
+
+  function toDateTimeLocal(value) {
+    if (!value) {
+      return "";
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+
+    const year = date.getFullYear();
+
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+
+    const day = String(date.getDate()).padStart(2, "0");
+
+    const hours = String(date.getHours()).padStart(2, "0");
+
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
+
+  /* =====================================================
+   GET BASE PICKUP ADDRESS
+===================================================== */
+
+  function getBasePickupAddress(address, landmarkValue, cityValue) {
+    let result = String(address || "").trim();
+
+    const suffixParts = [landmarkValue, cityValue]
+      .map((value) => String(value || "").trim())
+      .filter(Boolean);
+
+    if (suffixParts.length === 0) {
+      return result;
+    }
+
+    const suffix = suffixParts.join(", ");
+
+    if (result.endsWith(`, ${suffix}`)) {
+      result = result.slice(0, -`, ${suffix}`.length);
+    }
+
+    return result.trim();
+  }
+
+  /* =====================================================
    EVENT LISTENERS
 ===================================================== */
 
   if (analyzeBtn) {
-    analyzeBtn.addEventListener("click", startAIAnalysis);
+    analyzeBtn.addEventListener(
+      "click",
+      editMode ? updateExistingListing : startAIAnalysis,
+    );
   }
 
   if (backToEditBtn) {
@@ -1531,7 +1968,7 @@ document.addEventListener("DOMContentLoaded", () => {
       preparationTime: preparationTime.value,
       availableUntil: availableUntil.value,
       pickupAddress: pickupAddress.value.trim(),
-      hasImage: foodImage.files.length > 0,
+      hasImage: foodImage.files.length > 0 || existingImageUrl !== "",
       listingType: listingType.value,
       city: city.value,
       landmark: landmark.value,
@@ -2217,6 +2654,78 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  /* =====================================================
+   BUILD EDIT LISTING PAYLOAD
+===================================================== */
+
+  function buildEditListingPayload(imageUrl) {
+    const selectedCategory =
+      category.value === "Other" ? otherCategory.value.trim() : category.value;
+
+    const selectedUnit =
+      unit.value === "Other" ? otherUnit.value.trim() : unit.value;
+
+    const isDonation = listingType.value === "donate";
+
+    const addressParts = [
+      pickupAddress.value.trim(),
+      landmark.value.trim(),
+      city.value.trim(),
+    ].filter(Boolean);
+
+    return {
+      food_title: foodName.value.trim(),
+
+      category: selectedCategory,
+
+      food_type: foodType.value,
+
+      listing_type: listingType.value,
+
+      quantity: Number(quantity.value),
+
+      unit: selectedUnit,
+
+      original_price: isDonation ? 0 : Number(originalPrice.value || 0),
+
+      discounted_price: isDonation ? 0 : Number(sellingPrice.value || 0),
+
+      expiry_date: hasExpiry.checked ? expiryDate.value : availableUntil.value,
+
+      /*
+       Keep original pickup start.
+       The Add Listing form does not expose
+       pickup_start as an editable field.
+    */
+      pickup_start: window.editOriginalPickupStart || new Date().toISOString(),
+
+      pickup_end: availableUntil.value,
+
+      address: addressParts.join(", "),
+
+      city: city.value.trim(),
+
+      landmark: landmark.value.trim(),
+
+      pickup_instructions: pickupInstructions.value.trim(),
+
+      description: description.value.trim(),
+
+      image: imageUrl,
+
+      /*
+       Preserve existing AI values.
+    */
+      freshness_score: window.editExistingFreshnessScore || 0,
+
+      recovery_probability: window.editExistingRecoveryProbability || 0,
+
+      carbon_saved: window.editExistingCarbonSaved || 0,
+
+      ai_recommendation: window.editExistingAIRecommendation || "",
+    };
+  }
+
   let reviewRefreshTimer;
   function refreshReviewFromChanges() {
     if (!aiResult || !stepTwo || stepTwo.hidden) return;
@@ -2423,10 +2932,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ==========================================================
-    EVENTS
-========================================================== */
+     INITIALIZE PAGE
+  ========================================================== */
 
-  if (localStorage.getItem("reserveListingDraft")) {
+  if (editMode && editListingId) {
+    // Load existing listing into the form
+    loadListingForEdit();
+  } else if (localStorage.getItem("reserveListingDraft")) {
     draftNotification.classList.remove("hidden");
 
     updateDraftStatus(
