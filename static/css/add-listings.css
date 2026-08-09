@@ -2988,6 +2988,64 @@ body.ai-review-mode .content-wrapper {
   font-size: 0.88rem;
 }
 
+/* =====================================================
+   DONATION PRICING STATE
+===================================================== */
+
+/* Center contents vertically and horizontally */
+.smart-pricing-card.is-donation .pricing-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Hide arrow, divider, and first price box (Original) */
+.smart-pricing-card.is-donation .price-divider,
+.smart-pricing-card.is-donation .price-card:first-child,
+.smart-pricing-card.is-donation .discount-badge,
+.smart-pricing-card.is-donation .price-arrow {
+  display: none !important;
+}
+
+/* Style and size the suggested card */
+.smart-pricing-card.is-donation .price-card.suggested {
+  width: 100%;
+  max-width: 240px; /* Aligns visually with the grid layout */
+  box-sizing: border-box;
+  padding: 24px 20px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.smart-pricing-card.is-donation .price-card.suggested span {
+  color: #8b93a7;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.smart-pricing-card.is-donation .price-card.suggested h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  white-space: nowrap;
+  margin: 0;
+  color: #ffffff;
+}
+
+/* Ensure bottom text spans nicely centered below */
+.smart-pricing-card.is-donation .pricing-footer-text,
+.smart-pricing-card.is-donation p {
+  text-align: center;
+  color: #a0aec0;
+  font-size: 0.9rem;
+  margin-top: 8px;
+}
+
 /*==========================================================
   STICKY ACTION BAR & BOTTOM BALANCE
 ==========================================================*/
@@ -4734,4 +4792,2370 @@ SUCCESS MESSAGE
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* ==========================================================
+   UPDATED STEP 1 — PROFESSIONAL DESKTOP WORKSPACE
+   ReServe Create Listing
+   Appended overrides keep existing AI Review / Publish styles.
+========================================================== */
+
+.create-listing-container {
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+#stepOne {
+  width: 100%;
+}
+#stepOne .page-header {
+  margin-bottom: 24px;
+}
+#stepOne .page-header h1 {
+  margin-bottom: 6px;
+}
+#stepOne .page-header p {
+  max-width: 760px;
+}
+#stepOne .draft-notification {
+  margin-bottom: 20px;
+}
+
+#stepOne .progress-section {
+  padding: 20px 28px;
+  margin-bottom: 24px;
+  border-radius: 18px;
+}
+#stepOne .progress-steps {
+  max-width: 900px;
+  margin: 0 auto;
+}
+#stepOne .step {
+  gap: 12px;
+}
+#stepOne .step-number {
+  width: 42px;
+  height: 42px;
+}
+#stepOne .step-line {
+  margin: 0 14px;
+}
+
+/* Two-column desktop workspace */
+#stepOne .listing-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 350px;
+  gap: 24px;
+  align-items: start;
+}
+#stepOne .listing-main-column {
+  min-width: 0;
+}
+#stepOne .listing-side-column {
+  min-width: 0;
+  position: sticky;
+  top: 24px;
+}
+
+#stepOne .listing-form-wrapper {
+  gap: 20px;
+}
+#stepOne .form-card {
+  padding: 26px 28px;
+  border-radius: 18px;
+}
+#stepOne .card-header {
+  padding-bottom: 18px;
+  margin-bottom: 22px;
+}
+#stepOne .section-content h2 {
+  font-size: 1.12rem;
+}
+#stepOne .section-content h2 i {
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+}
+#stepOne .section-content p {
+  margin-top: 5px;
+  font-size: 0.86rem;
+}
+#stepOne .section-heading {
+  gap: 12px;
+}
+#stepOne .form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+#stepOne .form-group {
+  gap: 8px;
+}
+#stepOne .form-group input:not([type="checkbox"]),
+#stepOne .form-group select {
+  height: 50px;
+  padding: 0 14px;
+}
+#stepOne .form-group textarea {
+  min-height: 110px;
+  padding: 13px 14px;
+}
+#stepOne .field-helper {
+  margin-top: 0;
+  font-size: 0.76rem;
+}
+#stepOne .checkbox-field {
+  min-height: 50px;
+}
+
+/* Image upload */
+#stepOne .upload-area {
+  min-height: 235px;
+  border-radius: 16px;
+}
+#stepOne .upload-icon {
+  width: 60px;
+  height: 60px;
+  margin-bottom: 14px;
+}
+#stepOne .upload-icon i {
+  font-size: 28px;
+}
+#stepOne .upload-content h3 {
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+#stepOne .upload-content p {
+  margin-bottom: 8px;
+  font-size: 0.88rem;
+}
+#stepOne .upload-content small {
+  font-size: 0.73rem;
+}
+
+/* AI readiness */
+#stepOne .readiness-card {
+  padding: 22px;
+  border-radius: 20px;
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.07);
+}
+#stepOne .readiness-header {
+  margin-bottom: 18px;
+}
+#stepOne .readiness-header h3 {
+  font-size: 1.05rem;
+  margin-bottom: 5px;
+}
+#stepOne .readiness-header h3 i {
+  font-size: 19px;
+}
+#stepOne .readiness-header p {
+  font-size: 0.76rem;
+  line-height: 1.55;
+}
+#stepOne .readiness-score-area {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+  border: 1px solid #e7f5ec;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+#stepOne .readiness-score {
+  width: 72px;
+  height: 72px;
+  border-width: 3px;
+  flex-shrink: 0;
+}
+#stepOne .readiness-score span {
+  font-size: 1.25rem;
+}
+#stepOne .readiness-score small {
+  font-size: 0.68rem;
+}
+#stepOne .readiness-message strong {
+  display: block;
+  font-size: 0.84rem;
+  color: var(--text-dark);
+  margin-bottom: 4px;
+}
+#stepOne .readiness-message p {
+  margin: 0;
+  font-size: 0.73rem;
+  line-height: 1.5;
+  color: var(--text-light);
+}
+#stepOne .readiness-factors {
+  margin-bottom: 16px;
+}
+#stepOne .factors-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.78rem;
+  color: var(--text);
+}
+#stepOne .factors-heading strong {
+  color: var(--primary-dark);
+  font-size: 0.76rem;
+}
+#stepOne .checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+#stepOne .check-item {
+  min-height: 40px;
+  padding: 9px 11px;
+  border-radius: 11px;
+  gap: 9px;
+  font-size: 0.76rem;
+}
+#stepOne .check-item i {
+  font-size: 18px;
+}
+#stepOne .progress-bar {
+  height: 7px;
+  margin-bottom: 18px;
+}
+#stepOne .ai-placeholder {
+  padding: 22px 16px;
+  margin-bottom: 0;
+  border-radius: 15px;
+}
+#stepOne .ai-placeholder i {
+  width: 52px;
+  height: 52px;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+#stepOne .ai-placeholder h4 {
+  font-size: 0.84rem;
+  margin-bottom: 6px;
+}
+#stepOne .ai-placeholder p {
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+/* Availability summary */
+#stepOne .availability-summary-card {
+  margin-top: 18px;
+  padding: 20px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+#stepOne .availability-summary-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+#stepOne .availability-summary-header h3 {
+  margin: 4px 0 0;
+  font-size: 0.98rem;
+  color: var(--text-dark);
+}
+#stepOne .availability-summary-header > i {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: #eff6ff;
+  color: var(--blue);
+  font-size: 18px;
+}
+#stepOne .section-tag {
+  display: inline-block;
+  color: var(--primary-dark);
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+#stepOne .availability-summary-content {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+#stepOne .availability-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+#stepOne .availability-icon {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #ecfdf5;
+  color: var(--primary-dark);
+}
+#stepOne .availability-item span {
+  display: block;
+  font-size: 0.67rem;
+  color: var(--text-light);
+  margin-bottom: 2px;
+}
+#stepOne .availability-item strong {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--text-dark);
+}
+#stepOne .availability-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  padding-top: 4px;
+  color: var(--text-light);
+  font-size: 0.67rem;
+  line-height: 1.45;
+}
+#stepOne .status-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  margin-top: 4px;
+  border-radius: 50%;
+  background: #f59e0b;
+}
+
+/* Listing reach */
+#stepOne .listing-reach-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 18px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #eff6ff, #f8fafc);
+  border: 1px solid #dbeafe;
+}
+#stepOne .reach-icon {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: #dbeafe;
+  color: var(--blue);
+}
+#stepOne .listing-reach-card h3 {
+  margin: 4px 0 4px;
+  font-size: 0.92rem;
+  color: var(--text-dark);
+}
+#stepOne .listing-reach-card p {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1.5;
+  color: var(--text-light);
+}
+
+/* Action bar */
+#stepOne .action-bar {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: 18px;
+}
+#stepOne .draft-status {
+  min-width: 0;
+  padding: 5px 8px;
+}
+#stepOne .draft-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+}
+#stepOne .draft-title {
+  font-size: 0.82rem;
+}
+#stepOne .draft-time {
+  font-size: 0.7rem;
+}
+#stepOne .btn {
+  height: 46px;
+  padding: 0 18px;
+  font-size: 0.86rem;
+}
+
+#stepOne [hidden],
+#stepOne .hidden {
+  display: none !important;
+}
+
+/* Responsive */
+@media (min-width: 1200px) {
+  #stepOne .form-card {
+    padding: 24px 26px;
+  }
+  #stepOne .form-grid {
+    gap: 18px 20px;
+  }
+  #stepOne .listing-workspace {
+    grid-template-columns: minmax(0, 1fr) 340px;
+  }
+}
+@media (max-width: 1100px) {
+  #stepOne .listing-workspace {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 18px;
+  }
+  #stepOne .readiness-card {
+    padding: 18px;
+  }
+  #stepOne .readiness-score-area {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+@media (max-width: 900px) {
+  #stepOne .listing-workspace {
+    grid-template-columns: 1fr;
+  }
+  #stepOne .listing-side-column {
+    position: static;
+  }
+  #stepOne .availability-summary-card,
+  #stepOne .listing-reach-card {
+    display: none;
+  }
+}
+@media (max-width: 768px) {
+  #stepOne .page-header {
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  #stepOne .page-header h1 {
+    font-size: 1.55rem;
+  }
+  #stepOne .ai-status {
+    min-width: 0;
+    padding: 13px 16px;
+  }
+  #stepOne .ai-status i {
+    width: 42px;
+    height: 42px;
+    font-size: 20px;
+  }
+  #stepOne .progress-section {
+    padding: 18px;
+  }
+  #stepOne .form-card {
+    padding: 20px;
+  }
+  #stepOne .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  #stepOne .full-width {
+    grid-column: auto;
+  }
+  #stepOne .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  #stepOne .action-bar {
+    position: sticky;
+    bottom: 10px;
+  }
+  #stepOne .action-buttons {
+    flex-direction: column;
+  }
+  #stepOne .action-buttons .btn {
+    width: 100%;
+  }
+}
+@media (max-width: 576px) {
+  #stepOne .form-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+  #stepOne .progress-section {
+    border-radius: 16px;
+  }
+  #stepOne .step-content span {
+    font-size: 0.74rem;
+  }
+  #stepOne .upload-area {
+    min-height: 200px;
+  }
+  #stepOne .action-bar {
+    padding: 14px;
+  }
+  #stepOne .draft-status {
+    width: 100%;
+  }
+}
+
+.upload-content p {
+  line-height: 1.6;
+}
+
+.browse-files {
+  display: block;
+  margin-top: 4px;
+  color: #16a34a !important;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.browse-files:hover {
+  text-decoration: underline;
+}
+
+/* ==========================================================
+   FINAL CREATE LISTING LAYOUT
+   ReServe - Desktop Layout Fix
+========================================================== */
+
+#stepOne {
+  width: 100%;
+}
+
+/* ----------------------------------------------------------
+   MAIN CONTAINER
+---------------------------------------------------------- */
+
+#stepOne .create-listing-container {
+  width: 100%;
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+/* ----------------------------------------------------------
+   TOP RIGHT PROFILE / NOTIFICATION
+---------------------------------------------------------- */
+
+#stepOne .page-top {
+  height: 46px;
+
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  margin-bottom: 10px;
+}
+
+#stepOne .page-top-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#stepOne .notification-btn {
+  width: 44px;
+  height: 44px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 11px;
+
+  background: #fff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+
+  cursor: pointer;
+}
+
+#stepOne .notification-btn i {
+  font-size: 21px;
+  color: #111827;
+}
+
+#stepOne .notification-count {
+  position: absolute;
+
+  top: -5px;
+  right: -5px;
+
+  width: 18px;
+  height: 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ef4444;
+  color: #fff;
+
+  border: 2px solid #fff;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+#stepOne .profile-menu {
+  height: 44px;
+
+  min-width: 170px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 4px 10px 4px 5px;
+
+  background: #fff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 11px;
+
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+
+  cursor: pointer;
+}
+
+#stepOne .profile-avatar {
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+
+  background: #f1f5f9;
+}
+
+#stepOne .profile-avatar img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+}
+
+#stepOne .profile-info {
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+#stepOne .profile-info strong {
+  color: #111827;
+
+  font-size: 13px;
+
+  line-height: 16px;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+}
+
+#stepOne .profile-info span {
+  color: #64748b;
+
+  font-size: 11px;
+
+  line-height: 14px;
+}
+
+#stepOne .profile-menu > i {
+  color: #64748b;
+
+  font-size: 18px;
+}
+
+/* ----------------------------------------------------------
+   BREADCRUMB
+---------------------------------------------------------- */
+
+#stepOne .breadcrumb {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+
+  margin: 0 0 10px;
+
+  font-size: 12px;
+}
+
+#stepOne .breadcrumb a {
+  color: #64748b;
+
+  text-decoration: none;
+}
+
+#stepOne .breadcrumb a:hover {
+  color: #16a34a;
+}
+
+#stepOne .breadcrumb i {
+  color: #94a3b8;
+
+  font-size: 15px;
+}
+
+#stepOne .breadcrumb span {
+  color: #111827;
+
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------
+   HEADER
+---------------------------------------------------------- */
+
+#stepOne .page-header {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: stretch;
+
+  gap: 0;
+
+  margin-bottom: 20px;
+}
+
+/*
+   IMPORTANT:
+   Header main must contain:
+   LEFT  = title + subtitle
+   RIGHT = AI status
+*/
+
+#stepOne .page-header-main {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 30px;
+
+  width: 100%;
+}
+
+#stepOne .page-header-text {
+  flex: 1;
+
+  min-width: 0;
+}
+
+#stepOne .page-header-text h1 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 30px;
+
+  line-height: 1.2;
+
+  font-weight: 800;
+
+  letter-spacing: -0.5px;
+}
+
+#stepOne .page-header-text p {
+  margin: 6px 0 0;
+
+  max-width: 720px;
+
+  color: #64748b;
+
+  font-size: 15px;
+
+  line-height: 1.55;
+}
+
+/* ----------------------------------------------------------
+   AI STATUS
+---------------------------------------------------------- */
+
+#stepOne .ai-status {
+  flex-shrink: 0;
+
+  min-width: 245px;
+
+  height: 76px;
+
+  padding: 12px 18px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  background: #fff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 15px;
+
+  box-shadow: 0 5px 15px rgba(15, 23, 42, 0.06);
+}
+
+#stepOne .ai-status i {
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e8f1ff;
+
+  color: #2563eb;
+
+  font-size: 22px;
+}
+
+#stepOne .status-label {
+  margin-bottom: 2px;
+
+  font-size: 11px;
+
+  color: #64748b;
+}
+
+#stepOne .ai-status strong {
+  font-size: 14px;
+
+  color: #111827;
+}
+
+/* ----------------------------------------------------------
+   COMPACT TIMELINE
+---------------------------------------------------------- */
+
+#stepOne .progress-section {
+  width: 100%;
+
+  min-height: 78px;
+
+  padding: 15px 28px;
+
+  margin-bottom: 22px;
+
+  background: #fff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 16px;
+
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.04);
+
+  box-sizing: border-box;
+}
+
+#stepOne .progress-steps {
+  width: 100%;
+
+  max-width: none;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+}
+
+#stepOne .step {
+  gap: 10px;
+}
+
+#stepOne .step-number {
+  width: 40px;
+  height: 40px;
+
+  flex-shrink: 0;
+
+  font-size: 14px;
+}
+
+#stepOne .step-content h4 {
+  margin: 0 0 2px;
+
+  font-size: 14px;
+
+  font-weight: 700;
+
+  color: #111827;
+}
+
+#stepOne .step-content span {
+  font-size: 12px;
+
+  color: #64748b;
+}
+
+#stepOne .step-line {
+  flex: 1;
+
+  height: 3px;
+
+  min-width: 50px;
+
+  margin: 0 18px;
+
+  border-radius: 50px;
+
+  background: #e5e7eb;
+}
+
+#stepOne .step-line.active {
+  background: #22c55e;
+}
+
+/* ----------------------------------------------------------
+   MAIN WORKSPACE
+---------------------------------------------------------- */
+
+#stepOne .listing-workspace {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) 340px;
+
+  gap: 22px;
+
+  align-items: start;
+}
+
+#stepOne .listing-main-column {
+  min-width: 0;
+}
+
+#stepOne .listing-side-column {
+  min-width: 0;
+
+  position: sticky;
+
+  top: 20px;
+}
+
+/* ----------------------------------------------------------
+   FORM CARD
+---------------------------------------------------------- */
+
+#stepOne .form-card {
+  padding: 25px 27px;
+
+  border-radius: 18px;
+
+  background: #fff;
+
+  border: 1px solid #e5e7eb;
+
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+}
+
+/* ----------------------------------------------------------
+   FORM CARD HEADER
+---------------------------------------------------------- */
+
+#stepOne .card-header {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding-bottom: 17px;
+
+  margin-bottom: 20px;
+
+  border-bottom: 1px solid #edf2f7;
+}
+
+#stepOne .section-content {
+  min-width: 0;
+}
+
+#stepOne .section-content h2 {
+  margin: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  font-size: 17px;
+
+  color: #111827;
+}
+
+#stepOne .section-content h2 i {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 11px;
+
+  font-size: 18px;
+}
+
+#stepOne .section-content p {
+  margin: 4px 0 0;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+/* ----------------------------------------------------------
+   COMPLETION BADGE
+---------------------------------------------------------- */
+
+#stepOne .completion-badge {
+  margin-left: auto;
+
+  flex-shrink: 0;
+
+  padding: 6px 11px;
+
+  border-radius: 20px;
+
+  background: #f3f4f6;
+
+  color: #374151;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------
+   FORM GRID
+---------------------------------------------------------- */
+
+#stepOne .form-grid {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: 18px 20px;
+}
+
+#stepOne .form-group {
+  gap: 7px;
+}
+
+#stepOne .form-group label {
+  font-size: 13px;
+
+  font-weight: 600;
+}
+
+#stepOne .form-group input:not([type="checkbox"]),
+#stepOne .form-group select {
+  height: 50px;
+
+  padding: 0 14px;
+
+  border-radius: 12px;
+
+  font-size: 13px;
+}
+
+#stepOne .form-group textarea {
+  min-height: 105px;
+
+  padding: 12px 14px;
+
+  border-radius: 12px;
+
+  font-size: 13px;
+}
+
+/* ----------------------------------------------------------
+   AI READINESS CARD
+---------------------------------------------------------- */
+
+#stepOne .readiness-card {
+  width: 100%;
+
+  padding: 22px;
+
+  box-sizing: border-box;
+
+  border-radius: 20px;
+
+  background: linear-gradient(180deg, #ffffff 0%, #f9fffb 100%);
+
+  border: 1px solid #d9f7e5;
+
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+}
+
+#stepOne .readiness-header {
+  display: block;
+
+  margin-bottom: 17px;
+}
+
+#stepOne .readiness-header h3 {
+  margin: 0 0 5px;
+
+  font-size: 17px;
+}
+
+#stepOne .readiness-header p {
+  margin: 0;
+
+  font-size: 12px;
+
+  line-height: 1.55;
+}
+
+/* ----------------------------------------------------------
+   READINESS SCORE
+---------------------------------------------------------- */
+
+#stepOne .readiness-score-area {
+  display: flex;
+
+  align-items: center;
+
+  gap: 13px;
+
+  padding: 13px;
+
+  margin-bottom: 15px;
+
+  border: 1px solid #e5f5ea;
+
+  border-radius: 14px;
+
+  background: #fff;
+}
+
+#stepOne .readiness-score {
+  width: 68px;
+  height: 68px;
+
+  flex-shrink: 0;
+
+  border-width: 3px;
+}
+
+#stepOne .readiness-score span {
+  font-size: 21px;
+}
+
+#stepOne .readiness-score small {
+  font-size: 9px;
+}
+
+#stepOne .readiness-message strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  font-size: 13px;
+}
+
+#stepOne .readiness-message p {
+  margin: 0;
+
+  font-size: 11px;
+
+  line-height: 1.45;
+}
+
+/* ----------------------------------------------------------
+   READINESS PROGRESS
+---------------------------------------------------------- */
+
+#stepOne .progress-bar {
+  height: 7px;
+
+  margin-bottom: 15px;
+
+  border-radius: 20px;
+}
+
+/* ----------------------------------------------------------
+   AI CHECKLIST
+---------------------------------------------------------- */
+
+#stepOne .checklist {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+#stepOne .check-item {
+  min-height: 38px;
+
+  padding: 8px 10px;
+
+  border-radius: 10px;
+
+  gap: 8px;
+
+  font-size: 11px;
+}
+
+#stepOne .check-item i {
+  font-size: 16px;
+}
+
+/* ----------------------------------------------------------
+   AI PLACEHOLDER
+---------------------------------------------------------- */
+
+#stepOne .ai-placeholder {
+  padding: 20px 14px;
+
+  margin-top: 14px;
+
+  border-radius: 14px;
+}
+
+#stepOne .ai-placeholder i {
+  width: 48px;
+  height: 48px;
+
+  font-size: 22px;
+
+  margin-bottom: 10px;
+}
+
+#stepOne .ai-placeholder h4 {
+  margin-bottom: 5px;
+
+  font-size: 13px;
+}
+
+#stepOne .ai-placeholder p {
+  margin: 0;
+
+  font-size: 11px;
+
+  line-height: 1.5;
+}
+
+/* ----------------------------------------------------------
+   ACTION BAR
+---------------------------------------------------------- */
+
+#stepOne .action-bar {
+  width: 100%;
+
+  margin-top: 20px;
+
+  padding: 14px 18px;
+
+  border-radius: 17px;
+
+  box-sizing: border-box;
+}
+
+#stepOne .draft-status {
+  min-width: 0;
+
+  padding: 4px 6px;
+}
+
+#stepOne .draft-icon {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 10px;
+}
+
+#stepOne .draft-title {
+  font-size: 12px;
+}
+
+#stepOne .draft-time {
+  font-size: 10px;
+}
+
+#stepOne .action-buttons {
+  display: flex;
+
+  gap: 10px;
+}
+
+#stepOne .action-buttons .btn {
+  height: 44px;
+
+  padding: 0 17px;
+
+  border-radius: 11px;
+
+  font-size: 13px;
+}
+
+/* ==========================================================
+   LARGE DESKTOP
+========================================================== */
+
+@media (min-width: 1400px) {
+  #stepOne .create-listing-container {
+    max-width: 1300px;
+  }
+
+  #stepOne .listing-workspace {
+    grid-template-columns: minmax(0, 1fr) 360px;
+
+    gap: 24px;
+  }
+}
+
+/* ==========================================================
+   LAPTOP
+========================================================== */
+
+@media (max-width: 1100px) {
+  #stepOne .create-listing-container {
+    max-width: 100%;
+  }
+
+  #stepOne .listing-workspace {
+    grid-template-columns: minmax(0, 1fr) 310px;
+
+    gap: 18px;
+  }
+
+  #stepOne .page-header-main {
+    gap: 18px;
+  }
+
+  #stepOne .ai-status {
+    min-width: 220px;
+  }
+}
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width: 900px) {
+  #stepOne .listing-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  #stepOne .listing-side-column {
+    position: static;
+  }
+
+  #stepOne .page-header-main {
+    align-items: flex-start;
+
+    flex-direction: column;
+  }
+
+  #stepOne .ai-status {
+    width: 100%;
+  }
+}
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 700px) {
+  #stepOne .page-top-actions {
+    width: 100%;
+
+    justify-content: flex-end;
+  }
+
+  #stepOne .page-header-text h1 {
+    font-size: 25px;
+  }
+
+  #stepOne .progress-steps {
+    overflow-x: auto;
+
+    justify-content: flex-start;
+
+    padding-bottom: 2px;
+  }
+
+  #stepOne .step-line {
+    min-width: 35px;
+
+    margin: 0 10px;
+  }
+
+  #stepOne .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #stepOne .full-width {
+    grid-column: auto;
+  }
+
+  #stepOne .action-bar {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  #stepOne .action-buttons {
+    width: 100%;
+  }
+
+  #stepOne .action-buttons .btn {
+    flex: 1;
+  }
+}
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 480px) {
+  #stepOne .profile-menu {
+    min-width: 145px;
+  }
+
+  #stepOne .profile-info {
+    display: none;
+  }
+
+  #stepOne .profile-menu {
+    min-width: 44px;
+
+    width: 44px;
+
+    padding: 4px;
+
+    justify-content: center;
+  }
+
+  #stepOne .profile-menu > i {
+    display: none;
+  }
+
+  #stepOne .progress-section {
+    padding: 14px;
+  }
+
+  #stepOne .form-card {
+    padding: 18px;
+  }
+}
+
+/* ==========================================================
+   STEP 1
+   AI REVIEW STYLE TIMELINE + SAVED DRAFT
+   FINAL OVERRIDE
+========================================================== */
+
+/* ==========================================================
+   MAIN TOP ROW
+========================================================== */
+
+#stepOne .progress-draft-wrapper {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) 285px;
+
+  gap: 20px;
+
+  align-items: center;
+
+  margin-bottom: 26px;
+}
+
+/* ==========================================================
+   TIMELINE
+   Matches AI REVIEW timeline style
+========================================================== */
+
+#stepOne .progress-draft-wrapper .progress-section {
+  margin: 0;
+
+  padding: 8px 4px;
+
+  background: transparent;
+
+  border: none;
+
+  box-shadow: none;
+
+  border-radius: 0;
+
+  min-width: 0;
+}
+
+/* Timeline itself */
+
+#stepOne .progress-draft-wrapper .progress-steps {
+  width: 100%;
+
+  max-width: none;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-start;
+
+  gap: 18px;
+}
+
+/* ==========================================================
+   STEP
+========================================================== */
+
+#stepOne .progress-draft-wrapper .step {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+
+  flex-shrink: 0;
+}
+
+/* ==========================================================
+   STEP CIRCLE
+   Same proportions as AI Review
+========================================================== */
+
+#stepOne .progress-draft-wrapper .step-number {
+  width: 38px;
+
+  height: 38px;
+
+  min-width: 38px;
+
+  border-radius: 50%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  background: #f1f5f9;
+
+  border: 1px solid #e2e8f0;
+
+  color: #94a3b8;
+
+  font-size: 0.82rem;
+
+  font-weight: 700;
+
+  transition: all 0.3s ease;
+}
+
+/* Completed / current */
+
+#stepOne .progress-draft-wrapper .step.active .step-number {
+  background: linear-gradient(135deg, #6366f1, #3b82f6);
+
+  border-color: transparent;
+
+  color: #ffffff;
+
+  box-shadow: 0 0 18px rgba(99, 102, 241, 0.35);
+}
+
+/* If you use .completed */
+
+#stepOne .progress-draft-wrapper .step.completed .step-number {
+  background: #2563eb;
+
+  border-color: #2563eb;
+
+  color: #ffffff;
+}
+
+/* ==========================================================
+   STEP TEXT
+========================================================== */
+
+#stepOne .progress-draft-wrapper .step-content {
+  display: flex;
+
+  align-items: center;
+}
+
+#stepOne .progress-draft-wrapper .step-content h4 {
+  margin: 0;
+
+  font-size: 0.92rem;
+
+  line-height: 1;
+
+  font-weight: 600;
+
+  color: #94a3b8;
+
+  white-space: nowrap;
+}
+
+/* Active text */
+
+#stepOne .progress-draft-wrapper .step.active .step-content h4 {
+  color: #111827;
+
+  font-weight: 700;
+}
+
+/* Completed text */
+
+#stepOne .progress-draft-wrapper .step.completed .step-content h4 {
+  color: #374151;
+
+  font-weight: 600;
+}
+
+/* ==========================================================
+   CONNECTING LINES
+   Same compact appearance as AI Review
+========================================================== */
+
+#stepOne .progress-draft-wrapper .step-line {
+  flex: 0 1 100px;
+
+  width: 100px;
+
+  height: 2px;
+
+  margin: 0;
+
+  border-radius: 999px;
+
+  background: #e5e7eb;
+}
+
+#stepOne .progress-draft-wrapper .step-line.active {
+  background: linear-gradient(90deg, #6366f1, #3b82f6);
+}
+
+/* ==========================================================
+   DRAFT CARD
+========================================================== */
+
+#stepOne .progress-draft-wrapper .draft-notification {
+  position: relative;
+
+  margin: 0;
+
+  min-width: 0;
+
+  padding: 14px 16px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 16px;
+
+  box-shadow: 0 4px 18px rgba(15, 23, 42, 0.06);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+#stepOne .progress-draft-wrapper .draft-notification:hover {
+  transform: translateY(-2px);
+
+  border-color: #d1d5db;
+
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.09);
+}
+
+/* ==========================================================
+   DRAFT HEADER
+========================================================== */
+
+#stepOne .draft-notification-content {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+}
+
+/* Draft icon */
+
+#stepOne .draft-icon-small {
+  width: 38px;
+
+  height: 38px;
+
+  min-width: 38px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: #fff7ed;
+
+  color: #ea580c;
+}
+
+#stepOne .draft-icon-small i {
+  font-size: 18px;
+}
+
+/* Text */
+
+#stepOne .draft-text {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 3px;
+}
+
+#stepOne .draft-text strong {
+  color: #111827;
+
+  font-size: 0.84rem;
+
+  font-weight: 700;
+
+  line-height: 1.2;
+}
+
+#stepOne .draft-text span {
+  color: #6b7280;
+
+  font-size: 0.7rem;
+
+  line-height: 1.3;
+
+  white-space: nowrap;
+}
+
+/* ==========================================================
+   DRAFT ACTIONS
+========================================================== */
+
+#stepOne .draft-notification-actions {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+
+  width: 100%;
+}
+
+/* Buttons */
+
+#stepOne .draft-notification-actions .link-btn {
+  min-height: 34px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 5px;
+
+  padding: 6px 9px;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 9px;
+
+  background: #f8fafc;
+
+  color: #374151;
+
+  font-size: 0.72rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+#stepOne .draft-notification-actions .link-btn i {
+  font-size: 14px;
+}
+
+/* Restore */
+
+#stepOne .draft-notification-actions .restore-btn:hover {
+  background: #ecfdf5;
+
+  border-color: #bbf7d0;
+
+  color: #15803d;
+
+  transform: translateY(-1px);
+}
+
+/* Discard */
+
+#stepOne .draft-notification-actions .link-btn.danger {
+  color: #dc2626;
+}
+
+#stepOne .draft-notification-actions .link-btn.danger:hover {
+  background: #fef2f2;
+
+  border-color: #fecaca;
+
+  color: #b91c1c;
+
+  transform: translateY(-1px);
+}
+
+/* ==========================================================
+   HIDDEN DRAFT
+========================================================== */
+
+#stepOne .draft-notification.hidden {
+  display: none !important;
+}
+
+/*
+   When there is NO draft,
+   timeline uses the complete width.
+*/
+
+#stepOne .progress-draft-wrapper:has(.draft-notification.hidden) {
+  grid-template-columns: 1fr;
+}
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width: 1050px) {
+  #stepOne .progress-draft-wrapper {
+    grid-template-columns: 1fr;
+
+    gap: 12px;
+
+    align-items: stretch;
+  }
+
+  #stepOne .progress-draft-wrapper .draft-notification {
+    flex-direction: row;
+
+    align-items: center;
+
+    justify-content: space-between;
+  }
+
+  #stepOne .draft-notification-actions {
+    width: auto;
+
+    min-width: 190px;
+  }
+}
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 768px) {
+  #stepOne .progress-draft-wrapper {
+    gap: 14px;
+  }
+
+  #stepOne .progress-draft-wrapper .progress-section {
+    overflow-x: auto;
+
+    padding: 6px 0;
+
+    scrollbar-width: none;
+  }
+
+  #stepOne .progress-draft-wrapper .progress-section::-webkit-scrollbar {
+    display: none;
+  }
+
+  #stepOne .progress-draft-wrapper .progress-steps {
+    width: max-content;
+
+    min-width: 100%;
+  }
+
+  #stepOne .progress-draft-wrapper .step-line {
+    width: 55px;
+
+    flex-basis: 55px;
+  }
+
+  #stepOne .progress-draft-wrapper .draft-notification {
+    flex-direction: row;
+
+    align-items: center;
+  }
+
+  #stepOne .draft-notification-actions {
+    min-width: 170px;
+  }
+}
+
+/* ==========================================================
+   SMALL MOBILE
+========================================================== */
+
+@media (max-width: 560px) {
+  #stepOne .progress-draft-wrapper .draft-notification {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  #stepOne .draft-notification-actions {
+    width: 100%;
+
+    min-width: 0;
+  }
+}
+
+/* ==========================================================
+   GREEN TIMELINE
+========================================================== */
+
+/* Active step */
+#stepOne .progress-draft-wrapper .step.active .step-number {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  border-color: transparent;
+  color: #ffffff;
+
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.3);
+}
+
+/* Completed step */
+#stepOne .progress-draft-wrapper .step.completed .step-number {
+  background: #22c55e;
+  border-color: #22c55e;
+  color: #ffffff;
+}
+
+/* Active step text */
+#stepOne .progress-draft-wrapper .step.active .step-content h4 {
+  color: #111827;
+  font-weight: 700;
+}
+
+/* Completed text */
+#stepOne .progress-draft-wrapper .step.completed .step-content h4 {
+  color: #374151;
+  font-weight: 600;
+}
+
+/* Active connecting line */
+#stepOne .progress-draft-wrapper .step-line.active {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+/* Inactive connecting line */
+#stepOne .progress-draft-wrapper .step-line {
+  background: #e5e7eb;
+}
+
+/* ==========================================================
+   TOP TIMELINE — ALIGN WITH MAIN CONTENT COLUMNS
+========================================================== */
+
+#stepOne .progress-draft-wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 24px;
+
+  width: 100%;
+  margin-bottom: 24px;
+  align-items: stretch;
+}
+
+/* Timeline = exactly same width as Food Information */
+#stepOne .progress-draft-wrapper .progress-section {
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 8px 4px;
+
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Make timeline fit inside left column */
+#stepOne .progress-draft-wrapper .progress-steps {
+  width: 100%;
+  max-width: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 14px;
+}
+
+/* Compact steps */
+#stepOne .progress-draft-wrapper .step {
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+#stepOne .progress-draft-wrapper .step-number {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+
+  font-size: 0.8rem;
+}
+
+/* Timeline text */
+#stepOne .progress-draft-wrapper .step-content h4 {
+  margin: 0;
+
+  font-size: 0.86rem;
+  font-weight: 600;
+
+  white-space: nowrap;
+  color: #94a3b8;
+}
+
+#stepOne .progress-draft-wrapper .step.active .step-content h4 {
+  color: #111827;
+  font-weight: 700;
+}
+
+/* Lines automatically fill remaining space */
+#stepOne .progress-draft-wrapper .step-line {
+  flex: 1;
+
+  width: auto;
+  min-width: 35px;
+
+  height: 2px;
+
+  margin: 0;
+
+  background: #e5e7eb;
+  border-radius: 999px;
+}
+
+#stepOne .progress-draft-wrapper .step-line.active {
+  background: #22c55e;
+}
+
+/* ==========================================================
+   DRAFT — SAME STARTING POINT AS AI READINESS
+========================================================== */
+
+#stepOne .progress-draft-wrapper .draft-notification {
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 14px 16px;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  gap: 12px;
+
+  background: #fff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+
+  box-shadow: 0 5px 20px rgba(15, 23, 42, 0.06);
+}
+
+/* Draft header */
+#stepOne .draft-notification-content {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+#stepOne .draft-icon-small {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+#stepOne .draft-icon-small i {
+  font-size: 19px;
+}
+
+#stepOne .draft-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+#stepOne .draft-text strong {
+  color: #111827;
+  font-size: 0.86rem;
+}
+
+#stepOne .draft-text span {
+  color: #6b7280;
+  font-size: 0.72rem;
+}
+
+/* Draft buttons */
+#stepOne .draft-notification-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+  width: 100%;
+}
+
+#stepOne .draft-notification-actions .link-btn {
+  height: 34px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  padding: 0 10px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+
+  background: #f8fafc;
+
+  font-size: 0.72rem;
+  font-weight: 600;
+
+  color: #374151;
+}
+
+#stepOne .draft-notification-actions .restore-btn:hover {
+  background: #ecfdf5;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+#stepOne .draft-notification-actions .link-btn.danger {
+  color: #dc2626;
+}
+
+#stepOne .draft-notification-actions .link-btn.danger:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+/* ==========================================================
+   NO DRAFT
+========================================================== */
+
+#stepOne .progress-draft-wrapper:has(.draft-notification.hidden) {
+  grid-template-columns: 1fr;
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 1100px) {
+  #stepOne .progress-draft-wrapper {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 18px;
+  }
+}
+
+@media (max-width: 900px) {
+  #stepOne .progress-draft-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  #stepOne .progress-draft-wrapper .draft-notification {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  #stepOne .draft-notification-actions {
+    width: auto;
+    min-width: 190px;
+  }
+}
+
+@media (max-width: 600px) {
+  #stepOne .progress-draft-wrapper .draft-notification {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #stepOne .draft-notification-actions {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* ==========================================================
+   TIMELINE POSITION
+========================================================== */
+
+#stepOne .progress-draft-wrapper .progress-section {
+  transform: translateY(30px);
+}
+
+/* ================================
+   AI STATUS — WAITING FOR LISTING
+================================ */
+
+.ai-status-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+
+  white-space: nowrap;
+}
+
+.ai-status-icon {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eefbf4;
+  border-radius: 50%;
+
+  color: #16a34a;
+  font-size: 17px;
+}
+
+.ai-status-content {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.ai-status-content span {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.ai-status-content strong {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* =========================================
+   AI ANALYZING - FULL SCREEN STATE
+========================================= */
+
+#stepTwo {
+  min-height: 100vh;
+}
+
+#stepTwo.ai-analyzing {
+  height: 100vh;
+  overflow: hidden;
+}
+
+#stepTwo.ai-analyzing .ai-loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100vw;
+  height: 100vh;
+
+  margin: 0;
+  padding: 40px;
+
+  background: #070b18;
+  overflow: hidden;
+}
+
+/* Hide everything else while AI is analyzing */
+#stepTwo.ai-analyzing .ai-review-page {
+  display: none;
+}
+
+/* Prevent page itself from scrolling */
+body.ai-analysis-running {
+  overflow: hidden;
 }

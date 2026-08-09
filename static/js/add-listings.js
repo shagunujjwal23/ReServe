@@ -77,7 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
     ================================================= */
 
       if (response.status === 401) {
-        alert(data.message || "Your session has expired. Please login again.");
+        showToast(
+          data.message || "Your session has expired. Please login again.",
+          "error",
+          "Session Expired",
+        );
 
         window.location.href = "/login";
 
@@ -102,7 +106,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       localStorage.removeItem("reserveListingDraft");
 
-      alert(data.message || "Listing updated successfully.");
+      showToast(
+        data.message || "Listing updated successfully.",
+        "success",
+        "Listing Updated",
+      );
 
       /* =================================================
        RETURN TO VIEW LISTING
@@ -112,8 +120,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Update Listing Error:", error);
 
-      alert(error.message || "Unable to update the listing. Please try again.");
-
+      showToast(
+        error.message || "Unable to update the listing. Please try again.",
+        "error",
+      );
       analyzeBtn.disabled = false;
 
       analyzeBtn.innerHTML = '<i class="ri-save-line"></i> Save Changes';
@@ -222,6 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const stepThree = document.getElementById("stepThree");
 
   const aiLoadingScreen = document.getElementById("aiLoadingScreen");
+  const smartPricingCard = document.getElementById("smartPricingCard");
 
   const loadingProgress = document.getElementById("loadingProgress");
   const loadingPercent = document.getElementById("loadingPercent");
@@ -292,6 +303,52 @@ document.addEventListener("DOMContentLoaded", () => {
   const imageOverlay = document.getElementById("imageOverlay");
   const changeImageBtn = document.getElementById("changeImageBtn");
   const removeImageBtn = document.getElementById("removeImageBtn");
+
+  const availabilityDate = document.getElementById("availabilityDate");
+  const availabilityTime = document.getElementById("availabilityTime");
+
+  /* =====================================================
+   TOAST NOTIFICATION
+===================================================== */
+
+  const reserveToast = document.getElementById("reserveToast");
+  const toastIcon = document.getElementById("toastIcon");
+  const toastTitle = document.getElementById("toastTitle");
+  const toastMessage = document.getElementById("toastMessage");
+  const toastClose = document.getElementById("toastClose");
+
+  let toastTimer = null;
+
+  function showToast(message, type = "success", title = null) {
+    if (!reserveToast) {
+      return;
+    }
+
+    clearTimeout(toastTimer);
+
+    if (type === "error") {
+      toastIcon.className = "ri-error-warning-line";
+      toastTitle.textContent = title || "Something went wrong";
+    } else {
+      toastIcon.className = "ri-check-line";
+      toastTitle.textContent = title || "Success";
+    }
+
+    toastMessage.textContent = message;
+
+    reserveToast.classList.add("show");
+
+    toastTimer = setTimeout(() => {
+      reserveToast.classList.remove("show");
+    }, 3500);
+  }
+
+  if (toastClose) {
+    toastClose.addEventListener("click", () => {
+      clearTimeout(toastTimer);
+      reserveToast.classList.remove("show");
+    });
+  }
 
   /* =====================================================
    AI ANALYSIS STATE
@@ -489,40 +546,66 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateReadiness() {
     const checks = {
-      foodName: foodName.value.trim() !== "",
+      // 1. Food Details
+      foodDetails: foodName.value.trim() !== "" && category.value !== "",
 
-      category: category.value !== "",
+      // 2. Food Description
+      description: description.value.trim().length >= 20,
 
-      quantity: quantity.value.trim() !== "",
-
-      preparation: hasExpiry.checked
-        ? expiryDate.value !== ""
-        : preparationTime.value !== "",
-
-      availability: availableUntil.value !== "",
-
-      pickup: pickupAddress.value.trim() !== "",
-
+      // 3. Food Images
       image: foodImage.files.length > 0 || existingImageUrl !== "",
+
+      // 4. Quantity & Unit
+      quantityUnit:
+        quantity.value.trim() !== "" &&
+        unit.value !== "" &&
+        (unit.value !== "Other" || otherUnit.value.trim() !== ""),
+
+      // 5. Pickup Information
+      pickup: pickupAddress.value.trim() !== "" && city.value.trim() !== "",
+
+      // 6. Expiry / Best Before
+      expiry:
+        availableUntil.value !== "" &&
+        (hasExpiry.checked
+          ? expiryDate.value !== ""
+          : preparationTime.value !== ""),
+
+      // 7. Pricing & Listing Type
+      pricing:
+        listingType.value !== "" &&
+        (listingType.value === "donate" ||
+          (originalPrice.value !== "" &&
+            sellingPrice.value !== "" &&
+            Number(sellingPrice.value) > 0)),
     };
 
-    updateChecklistItem(foodNameCheck, checks.foodName);
-    updateChecklistItem(categoryCheck, checks.category);
-    updateChecklistItem(quantityCheck, checks.quantity);
-    updateChecklistItem(prepCheck, checks.preparation);
-    updateChecklistItem(expiryCheck, checks.availability);
+    // Update the 7 visual checklist items
+    updateChecklistItem(foodNameCheck, checks.foodDetails);
+    updateChecklistItem(categoryCheck, checks.description);
+    updateChecklistItem(quantityCheck, checks.image);
+    updateChecklistItem(prepCheck, checks.quantityUnit);
     updateChecklistItem(pickupCheck, checks.pickup);
-    updateChecklistItem(imageCheck, checks.image);
+    updateChecklistItem(expiryCheck, checks.expiry);
+    updateChecklistItem(imageCheck, checks.pricing);
 
+    // Calculate score
     const total = Object.keys(checks).length;
-
     const completed = Object.values(checks).filter(Boolean).length;
-
     const percent = Math.round((completed / total) * 100);
 
+    // Update percentage
     readinessScore.textContent = `${percent}%`;
 
+    // Update progress bar
     progressFill.style.width = `${percent}%`;
+
+    // Update 0/7 counter
+    const readinessCompleted = document.getElementById("readinessCompleted");
+
+    if (readinessCompleted) {
+      readinessCompleted.textContent = completed;
+    }
   }
 
   /* ==========================================================
@@ -538,7 +621,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
     if (!allowedTypes.includes(file.type)) {
-      alert("Only JPG, PNG and WEBP images are allowed.");
+      showToast(
+        "Only JPG, PNG and WEBP images are allowed.",
+        "error",
+        "Invalid Image",
+      );
 
       foodImage.value = "";
 
@@ -550,7 +637,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const maxSize = 5 * 1024 * 1024;
 
     if (file.size > maxSize) {
-      alert("Maximum file size is 5 MB.");
+      showToast("Maximum file size is 5 MB.", "error", "Image Too Large");
 
       foodImage.value = "";
 
@@ -635,7 +722,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateReadiness();
   });
 
-  function saveDraft() {
+  async function saveDraft() {
     const hasData = [
       foodName.value.trim(),
       category.value,
@@ -659,8 +746,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!hasData) {
       updateDraftStatus("No Draft", "Nothing to save", "ri-file-add-line");
-
       return;
+    }
+
+    // Save image as temporary data URL
+    let imageData = "";
+
+    if (foodImage.files.length > 0) {
+      imageData = await new Promise((resolve) => {
+        const reader = new FileReader();
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => resolve("");
+
+        reader.readAsDataURL(foodImage.files[0]);
+      });
     }
 
     const draft = {
@@ -683,6 +783,9 @@ document.addEventListener("DOMContentLoaded", () => {
       city: city.value,
       landmark: landmark.value,
       pickupInstructions: pickupInstructions.value,
+
+      // NEW
+      imageData: imageData,
     };
 
     localStorage.setItem("reserveListingDraft", JSON.stringify(draft));
@@ -701,7 +804,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  function loadDraft() {
+  async function loadDraft() {
     const savedDraft = localStorage.getItem("reserveListingDraft");
 
     if (!savedDraft) return;
@@ -728,6 +831,28 @@ document.addEventListener("DOMContentLoaded", () => {
     landmark.value = draft.landmark || "";
     pickupInstructions.value = draft.pickupInstructions || "";
 
+    // Restore image
+    if (draft.imageData) {
+      const response = await fetch(draft.imageData);
+      const blob = await response.blob();
+
+      const file = new File([blob], "restored-food-image.jpg", {
+        type: blob.type || "image/jpeg",
+      });
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      foodImage.files = dataTransfer.files;
+
+      existingImageUrl = draft.imageData;
+
+      previewImage.src = draft.imageData;
+      previewImage.classList.add("show");
+
+      uploadContent.style.display = "none";
+      imageOverlay.classList.remove("hidden");
+    }
+
     toggleOtherCategory();
     toggleOtherUnit();
     toggleListingType();
@@ -736,9 +861,12 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCharacterCounter();
     updateCompletionBadge();
     updateReadiness();
+    updatePreviewCard();
+    updateAvailabilitySummary();
   }
 
   let draftSaved = false;
+  let draftImageData = "";
 
   function markDraftUnsaved() {
     const hasData = [
@@ -819,10 +947,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  saveDraftBtn.addEventListener("click", (event) => {
+  saveDraftBtn.addEventListener("click", async (event) => {
     event.preventDefault();
 
-    saveDraft();
+    await saveDraft();
   });
 
   /* ==========================================================
@@ -906,12 +1034,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* -------------------------
-       Availability
-    ------------------------- */
+   Availability
+------------------------- */
 
     if (hasExpiry.checked) {
       if (expiryDate.value === "") {
         invalidate(expiryDate, "Select expiry date.");
+      } else {
+        const expiry = new Date(expiryDate.value);
+        const now = new Date();
+
+        if (expiry <= now) {
+          invalidate(expiryDate, "Expiry date and time must be in the future.");
+        }
       }
     } else {
       if (preparationTime.value === "") {
@@ -921,6 +1056,40 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (availableUntil.value === "") {
       invalidate(availableUntil, "Select availability time.");
+    } else {
+      const availableDate = new Date(availableUntil.value);
+      const now = new Date();
+
+      if (availableDate <= now) {
+        invalidate(
+          availableUntil,
+          "Pickup availability must be in the future.",
+        );
+      }
+
+      // Available Until must be after Preparation Time
+      if (
+        preparationTime.value &&
+        availableDate <= new Date(preparationTime.value)
+      ) {
+        invalidate(
+          availableUntil,
+          "Pickup availability must be later than preparation time.",
+        );
+      }
+    }
+
+    /* ADD / KEEP THIS HERE */
+    if (expiryDate.value && availableUntil.value) {
+      const expiry = new Date(expiryDate.value);
+      const availableUntilDate = new Date(availableUntil.value);
+
+      if (availableUntilDate > expiry) {
+        invalidate(
+          availableUntil,
+          "Pickup availability cannot be later than the food expiry time.",
+        );
+      }
     }
 
     /* -------------------------
@@ -941,7 +1110,7 @@ document.addEventListener("DOMContentLoaded", () => {
        Image
     ------------------------- */
     if (foodImage.files.length === 0 && !existingImageUrl) {
-      alert("Please upload a food image.");
+      showToast("Please upload a food image.", "error", "Image Required");
 
       isValid = false;
     }
@@ -962,8 +1131,8 @@ document.addEventListener("DOMContentLoaded", () => {
     return isValid;
   }
 
-  restoreDraftBtn.addEventListener("click", () => {
-    loadDraft();
+  restoreDraftBtn.addEventListener("click", async () => {
+    await loadDraft();
     updatePreviewCard();
 
     draftNotification.classList.add("hidden");
@@ -1010,6 +1179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCompletionBadge();
     updateReadiness();
     updatePreviewCard();
+    updateAvailabilitySummary();
 
     draftNotification.classList.add("hidden");
 
@@ -1070,7 +1240,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json().catch(() => ({}));
 
       if (response.status === 401) {
-        alert(data.message || "Your session has expired. Please login again.");
+        showToast(
+          data.message || "Your session has expired. Please login again.",
+          "error",
+          "Session Expired",
+        );
 
         window.location.href = "/login";
 
@@ -1228,6 +1402,7 @@ document.addEventListener("DOMContentLoaded", () => {
       updateCompletionBadge();
       updateReadiness();
       updatePreviewCard();
+      updateAvailabilitySummary();
 
       /* =================================================
        EDIT PAGE TEXT
@@ -1292,7 +1467,11 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Load Edit Listing Error:", error);
 
-      alert(error.message || "Unable to load listing for editing.");
+      showToast(
+        error.message || "Unable to load listing for editing.",
+        "error",
+        "Unable to Load Listing",
+      );
 
       window.location.href = "/my-listings";
     }
@@ -1392,6 +1571,7 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
    START AI ANALYSIS
 ===================================================== */
+
   async function startAIAnalysis() {
     analyzeBtn.disabled = true;
     analyzeBtn.innerHTML =
@@ -1404,11 +1584,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Save latest draft
-    saveDraft();
+    await saveDraft();
 
     // Switch to AI Review
     stepOne.hidden = true;
     stepTwo.hidden = false;
+
+    stepTwo.classList.add("ai-analyzing");
+    document.body.classList.add("ai-analysis-running");
 
     // Reset loading screen
     resetLoadingScreen();
@@ -1743,8 +1926,10 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.error("Publish listing error:", error);
 
-      alert(
+      showToast(
         error.message || "Unable to publish the listing. Please try again.",
+        "error",
+        "Publishing Failed",
       );
 
       finalPublishBtn.disabled = false;
@@ -1812,9 +1997,20 @@ document.addEventListener("DOMContentLoaded", () => {
     aiLoadingScreen.style.opacity = "0";
 
     setTimeout(() => {
+      // Hide loading screen
       aiLoadingScreen.style.display = "none";
-
       aiLoadingScreen.style.opacity = "1";
+
+      // IMPORTANT:
+      // Remove analyzing state so AI Review page becomes visible
+      stepTwo.classList.remove("ai-analyzing");
+      document.body.classList.remove("ai-analysis-running");
+
+      // Start AI Review page from the top
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }, 400);
   }
 
@@ -2450,8 +2646,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (result.pricing.isDonation) {
       originalPriceAI.textContent = "Donation";
       suggestedPriceAI.textContent = "No price";
+
+      // Change pricing card to donation layout
+      smartPricingCard.classList.add("is-donation");
     } else {
+      smartPricingCard.classList.remove("is-donation");
+
       animateValue(originalPriceAI, result.pricing.original, "", "₹");
+
       animateValue(suggestedPriceAI, result.pricing.suggested, "", "₹");
     }
     animateValue(discountPercent, result.pricing.discount, "% OFF");
@@ -2796,6 +2998,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCompletionBadge();
     updateReadiness();
     updatePreviewCard();
+    updateAvailabilitySummary();
 
     updateDraftStatus(
       "No Draft",
@@ -2812,6 +3015,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
   aiResult = null;
 
+  function updateAvailabilitySummary() {
+    const pickupValue = availableUntil.value;
+
+    if (!pickupValue) {
+      availabilityDate.textContent = "Not selected";
+      availabilityTime.textContent = "Not selected";
+      return;
+    }
+
+    const date = new Date(pickupValue);
+
+    if (isNaN(date.getTime())) {
+      availabilityDate.textContent = "Not selected";
+      availabilityTime.textContent = "Not selected";
+      return;
+    }
+
+    availabilityDate.textContent = date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+
+    availabilityTime.textContent = date.toLocaleTimeString("en-IN", {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  }
+
+  function setDateMinimums() {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+
+    const minDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+    // Future dates only
+    expiryDate.min = minDateTime;
+    availableUntil.min = minDateTime;
+  }
+
   /* ==========================================================
    READINESS EVENTS
 ========================================================== */
@@ -2823,6 +3071,20 @@ document.addEventListener("DOMContentLoaded", () => {
   foodType.addEventListener("change", updateReadiness);
 
   quantity.addEventListener("input", updateReadiness);
+
+  description.addEventListener("input", updateReadiness);
+
+  unit.addEventListener("change", updateReadiness);
+
+  otherUnit.addEventListener("input", updateReadiness);
+
+  city.addEventListener("input", updateReadiness);
+
+  listingType.addEventListener("change", updateReadiness);
+
+  originalPrice.addEventListener("input", updateReadiness);
+
+  sellingPrice.addEventListener("input", updateReadiness);
 
   preparationTime.addEventListener("change", updateReadiness);
 
@@ -2843,6 +3105,8 @@ document.addEventListener("DOMContentLoaded", () => {
   hasExpiry.addEventListener("change", toggleExpiryFields);
 
   description.addEventListener("input", updateCharacterCounter);
+
+  description.addEventListener("input", updateReadiness);
 
   foodName.addEventListener("input", updateCompletionBadge);
 
@@ -2906,6 +3170,9 @@ document.addEventListener("DOMContentLoaded", () => {
   landmark.addEventListener("input", refreshReviewFromChanges);
   pickupInstructions.addEventListener("change", refreshReviewFromChanges);
 
+  availableUntil.addEventListener("input", updateAvailabilitySummary);
+  availableUntil.addEventListener("change", updateAvailabilitySummary);
+
   [
     foodName,
     category,
@@ -2955,6 +3222,8 @@ document.addEventListener("DOMContentLoaded", () => {
     updateCompletionBadge();
     updateReadiness();
     updatePreviewCard();
+    setDateMinimums();
+    updateAvailabilitySummary();
 
     updateDraftStatus(
       "No Draft",
