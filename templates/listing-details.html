@@ -1,0 +1,729 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Food Details | ReServe</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Listing Details CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/listing-details.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="user-page">
+      <!-- =========================================================
+           NAVBAR
+      ========================================================== -->
+
+      <header class="user-navbar">
+        <!-- BRAND -->
+
+        <a href="/user-dashboard" class="user-brand">
+          <div class="brand-logo">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe Logo"
+            />
+          </div>
+
+          <div class="brand-text">
+            <h2>ReServe</h2>
+            <span>From Surplus to Solution.</span>
+          </div>
+        </a>
+
+        <!-- NAVIGATION -->
+
+        <nav class="user-nav-links">
+          <a href="/user-dashboard">
+            <i class="ri-home-5-line"></i>
+            <span>Home</span>
+          </a>
+
+          <a href="/explore-food" class="active">
+            <i class="ri-search-line"></i>
+            <span>Explore Food</span>
+          </a>
+
+          <a href="/my-reservations">
+            <i class="ri-calendar-check-line"></i>
+            <span>My Reservations</span>
+          </a>
+
+          <a href="/favorites">
+            <i class="ri-heart-3-line"></i>
+            <span>Favorites</span>
+          </a>
+        </nav>
+
+        <!-- NAVBAR ACTIONS -->
+
+        <div class="user-navbar-actions">
+          <!-- LOCATION -->
+
+          <button type="button" class="location-btn" id="locationBtn">
+            <i class="ri-map-pin-line"></i>
+
+            <span id="userLocation"> Lucknow, India </span>
+
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
+
+          <!-- NOTIFICATIONS -->
+
+          <button
+            type="button"
+            class="navbar-icon-btn"
+            id="notificationBtn"
+            title="Notifications"
+          >
+            <i class="ri-notification-3-line"></i>
+
+            <span class="notification-badge" id="notificationCount"> 0 </span>
+          </button>
+
+          <!-- MESSAGES -->
+
+          <button
+            type="button"
+            class="navbar-icon-btn"
+            id="messageBtn"
+            title="Messages"
+          >
+            <i class="ri-message-3-line"></i>
+
+            <span class="notification-badge" id="messageCount"> 0 </span>
+          </button>
+
+          <!-- PROFILE -->
+
+          <div class="user-profile-wrapper">
+            <button type="button" class="user-profile-btn" id="profileMenuBtn">
+              <div class="profile-avatar">
+                <img
+                  id="profileImage"
+                  src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                  alt="Profile"
+                />
+              </div>
+
+              <div class="profile-info">
+                <strong id="profileName"> Loading... </strong>
+
+                <span id="profileRole"> User </span>
+              </div>
+
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+
+            <!-- PROFILE DROPDOWN -->
+
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <a href="/profile">
+                <i class="ri-user-line"></i>
+                Profile
+              </a>
+
+              <a href="/settings">
+                <i class="ri-settings-3-line"></i>
+                Settings
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <button type="button" id="logoutBtn">
+                <i class="ri-logout-box-r-line"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =========================================================
+           MAIN CONTENT
+      ========================================================== -->
+
+      <main class="listing-details-page" id="listingDetailsPage">
+        <!-- =======================================================
+             BREADCRUMB
+        ======================================================== -->
+
+        <div class="back-navigation">
+          <a href="/explore-food" id="backToExplore">
+            <i class="ri-arrow-left-line"></i>
+
+            <span> Back to Explore Food </span>
+          </a>
+        </div>
+
+        <!-- =======================================================
+             LOADING
+        ======================================================== -->
+
+        <div class="listing-loading" id="listingLoading">
+          <i class="ri-loader-4-line"></i>
+
+          <span> Loading food details... </span>
+        </div>
+
+        <!-- =======================================================
+             ERROR
+        ======================================================== -->
+
+        <div class="listing-error hidden" id="listingError">
+          <i class="ri-error-warning-line"></i>
+
+          <h2>Unable to load listing</h2>
+
+          <p id="listingErrorMessage">Something went wrong.</p>
+
+          <a href="/explore-food"> Back to Explore Food </a>
+        </div>
+
+        <!-- =======================================================
+             MAIN GRID
+        ======================================================== -->
+
+        <div class="listing-details-layout">
+          <!-- =====================================================
+               LEFT CONTENT
+          ====================================================== -->
+
+          <div class="listing-main-content">
+            <!-- ===================================================
+                 TOP LEFT:
+                 IMAGE + FOOD INFORMATION
+            ==================================================== -->
+
+            <section class="listing-top-section">
+              <!-- =================================================
+                   FOOD IMAGE
+              ================================================== -->
+
+              <div class="food-image-section">
+                <div class="main-food-image">
+                  <img
+                    id="listingMainImage"
+                    src="/static/images/food-placeholder.jpg"
+                    alt="Food"
+                    loading="eager"
+                  />
+
+                  <div class="image-placeholder" id="mainImagePlaceholder">
+                    <i class="ri-image-2-line"></i>
+
+                    <span> Food image unavailable </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- =================================================
+                   FOOD INFORMATION
+              ================================================== -->
+
+              <div class="food-info-section">
+                <!-- STATUS -->
+
+                <div class="listing-status-row">
+                  <span class="listing-status available" id="listingStatus">
+                    <span class="status-dot"></span>
+
+                    Available
+                  </span>
+                </div>
+
+                <!-- TITLE -->
+
+                <div class="listing-title-row">
+                  <h1 id="listingFoodTitle">Food Listing</h1>
+
+                  <span class="food-type-badge" id="foodTypeBadge">
+                    <i class="ri-leaf-line"></i>
+
+                    <span id="foodTypeText"> Vegetarian </span>
+                  </span>
+                </div>
+
+                <!-- SHORT DESCRIPTION -->
+
+                <p
+                  class="listing-short-description"
+                  id="listingShortDescription"
+                >
+                  Loading food details...
+                </p>
+
+                <!-- FOOD INFORMATION LIST -->
+
+                <div class="listing-info-list">
+                  <!-- PROVIDER -->
+
+                  <div class="listing-info-row">
+                    <div class="info-label">
+                      <i class="ri-store-2-line"></i>
+
+                      <span> Provider </span>
+                    </div>
+
+                    <div class="info-value provider-value">
+                      <span id="providerName"> Food Provider </span>
+
+                      <i
+                        class="ri-verified-badge-fill verified-badge"
+                        id="providerVerified"
+                        title="Verified Provider"
+                      ></i>
+                    </div>
+                  </div>
+
+                  <!-- CATEGORY -->
+
+                  <div class="listing-info-row">
+                    <div class="info-label">
+                      <i class="ri-folder-2-line"></i>
+
+                      <span> Category </span>
+                    </div>
+
+                    <strong id="listingCategory"> Food </strong>
+                  </div>
+
+                  <!-- FOOD TYPE -->
+
+                  <div class="listing-info-row">
+                    <div class="info-label">
+                      <i class="ri-restaurant-line"></i>
+
+                      <span> Food Type </span>
+                    </div>
+
+                    <strong id="listingFoodType"> Vegetarian </strong>
+                  </div>
+
+                  <!-- LOCATION -->
+
+                  <div class="listing-info-row">
+                    <div class="info-label">
+                      <i class="ri-map-pin-line"></i>
+
+                      <span> Location </span>
+                    </div>
+
+                    <strong id="listingLocation"> Loading... </strong>
+                  </div>
+
+                  <!-- BEST BEFORE -->
+
+                  <div class="listing-info-row">
+                    <div class="info-label">
+                      <i class="ri-time-line"></i>
+
+                      <span> Best Before </span>
+                    </div>
+
+                    <strong id="listingExpiry"> Not specified </strong>
+                  </div>
+
+                  <!-- PICKUP TIME -->
+
+                  <div class="listing-info-row">
+                    <div class="info-label">
+                      <i class="ri-calendar-check-line"></i>
+
+                      <span> Pickup Time </span>
+                    </div>
+
+                    <strong id="listingPickupTime"> Not specified </strong>
+                  </div>
+
+                  <!-- QUANTITY -->
+
+                  <div class="listing-info-row">
+                    <div class="info-label">
+                      <i class="ri-stack-line"></i>
+
+                      <span> Quantity </span>
+                    </div>
+
+                    <strong id="listingQuantity"> 0 </strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ===================================================
+                 DESCRIPTION
+            ==================================================== -->
+
+            <section class="details-card description-card">
+              <div class="details-card-header">
+                <i class="ri-file-text-line"></i>
+
+                <h2>Description</h2>
+              </div>
+
+              <div class="details-card-content" id="listingDescription">
+                Loading description...
+              </div>
+            </section>
+
+            <!-- ===================================================
+                 PICKUP INFORMATION
+            ==================================================== -->
+
+            <section class="details-card pickup-card">
+              <div class="details-card-header">
+                <i class="ri-map-pin-2-line"></i>
+
+                <h2>Pickup Information</h2>
+              </div>
+
+              <div class="pickup-details">
+                <!-- ADDRESS -->
+
+                <div class="pickup-detail-row">
+                  <i class="ri-map-pin-line"></i>
+
+                  <div>
+                    <span> Address </span>
+
+                    <strong id="pickupAddress"> Loading... </strong>
+                  </div>
+                </div>
+
+                <!-- LANDMARK -->
+
+                <div class="pickup-detail-row" id="landmarkRow">
+                  <i class="ri-building-line"></i>
+
+                  <div>
+                    <span> Landmark </span>
+
+                    <strong id="pickupLandmark"> Not specified </strong>
+                  </div>
+                </div>
+
+                <!-- PICKUP DATE -->
+
+                <div class="pickup-detail-row">
+                  <i class="ri-calendar-line"></i>
+
+                  <div>
+                    <span> Pickup Date </span>
+
+                    <strong id="pickupDate"> Not specified </strong>
+                  </div>
+                </div>
+
+                <!-- PICKUP TIME -->
+
+                <div class="pickup-detail-row">
+                  <i class="ri-time-line"></i>
+
+                  <div>
+                    <span> Pickup Time </span>
+
+                    <strong id="pickupTime"> Not specified </strong>
+                  </div>
+                </div>
+
+                <!-- INSTRUCTIONS -->
+
+                <div class="pickup-detail-row" id="pickupInstructionsRow">
+                  <i class="ri-information-line"></i>
+
+                  <div>
+                    <span> Instructions </span>
+
+                    <strong id="pickupInstructions">
+                      No special instructions.
+                    </strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- ===================================================
+                 AI VERIFIED
+            ==================================================== -->
+
+            <section class="details-card ai-verified-card">
+              <div class="details-card-header">
+                <i class="ri-sparkling-2-line"></i>
+
+                <h2>AI Verified</h2>
+              </div>
+
+              <div class="ai-verified-content">
+                <!-- FRESHNESS -->
+
+                <div class="ai-score-item">
+                  <div class="ai-score-icon">
+                    <i class="ri-leaf-line"></i>
+                  </div>
+
+                  <div class="ai-score-text">
+                    <span> Freshness Score </span>
+
+                    <strong id="aiFreshnessScore"> — </strong>
+                  </div>
+                </div>
+
+                <!-- RECOVERY -->
+
+                <div class="ai-score-item">
+                  <div class="ai-score-icon">
+                    <i class="ri-recycle-line"></i>
+                  </div>
+
+                  <div class="ai-score-text">
+                    <span> Recovery Probability </span>
+
+                    <strong id="aiRecoveryProbability"> — </strong>
+                  </div>
+                </div>
+
+                <!-- CARBON -->
+
+                <div class="ai-score-item">
+                  <div class="ai-score-icon">
+                    <i class="ri-earth-line"></i>
+                  </div>
+
+                  <div class="ai-score-text">
+                    <span> Carbon Saved </span>
+
+                    <strong id="aiCarbonSaved"> — </strong>
+                  </div>
+                </div>
+
+                <!-- AI RECOMMENDATION -->
+
+                <!-- AI VERIFICATION -->
+
+                <div class="ai-recommendation">
+                  <i class="ri-sparkling-2-line"></i>
+
+                  <div>
+                    <span>AI Verification</span>
+                    <p id="aiRecommendation">Verified listing • AI analyzed</p>
+                  </div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- =====================================================
+               RIGHT CONTENT
+          ====================================================== -->
+
+          <aside class="listing-side-content">
+            <section class="reserve-card">
+              <div class="reserve-card-header">
+                <h2>
+                  <span id="reserveActionTitle">Reserve this Food</span>
+                </h2>
+              </div>
+
+              <!-- ======================================================
+       QUANTITY
+  ======================================================= -->
+
+              <div class="reserve-quantity-section">
+                <div class="reserve-label-row">
+                  <label for="reserveQuantity">
+                    Quantity
+                    <span id="reserveUnitLabel">(Units)</span>
+                  </label>
+                </div>
+
+                <div class="quantity-availability">
+                  <!-- QUANTITY CONTROL -->
+
+                  <div class="quantity-control">
+                    <button
+                      type="button"
+                      id="decreaseQuantity"
+                      aria-label="Decrease quantity"
+                    >
+                      <i class="ri-subtract-line"></i>
+                    </button>
+
+                    <input
+                      type="number"
+                      id="reserveQuantity"
+                      value="1"
+                      min="1"
+                      step="1"
+                      aria-label="Reservation quantity"
+                    />
+
+                    <button
+                      type="button"
+                      id="increaseQuantity"
+                      aria-label="Increase quantity"
+                    >
+                      <i class="ri-add-line"></i>
+                    </button>
+                  </div>
+
+                  <!-- AVAILABLE -->
+
+                  <div class="available-quantity">
+                    <strong id="availableQuantity">0</strong>
+                    <span>Available</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ======================================================
+       PICKUP NOTICE
+  ======================================================= -->
+
+              <div class="pickup-notice">
+                <i class="ri-shield-check-line"></i>
+
+                <p>Please pick up the food within the given time slot.</p>
+              </div>
+
+              <!-- ======================================================
+       PRICE
+  ======================================================= -->
+
+              <div class="reserve-price-section">
+                <div class="price-main">
+                  <span class="current-price" id="currentPrice"> ₹0 </span>
+                </div>
+
+                <div class="price-original" id="originalPriceContainer">
+                  <span id="originalPrice"> ₹0 </span>
+                </div>
+
+                <span class="discount-badge" id="discountBadge"> 0% OFF </span>
+              </div>
+
+              <!-- ======================================================
+       RESERVE BUTTON
+  ======================================================= -->
+
+              <button type="button" class="reserve-now-btn" id="reserveNowBtn">
+                <span id="reserveButtonText"> Reserve Now </span>
+
+                <i class="ri-arrow-right-line"></i>
+              </button>
+            </section>
+
+            <!-- ===================================================
+                 ABOUT PROVIDER
+            ==================================================== -->
+
+            <section class="provider-card">
+              <div class="provider-card-header">
+                <h2>About the Provider</h2>
+              </div>
+
+              <div class="provider-main">
+                <!-- PROVIDER AVATAR -->
+
+                <div class="provider-avatar">
+                  <i class="ri-store-3-line"></i>
+                </div>
+
+                <!-- PROVIDER DETAILS -->
+
+                <div class="provider-details">
+                  <div class="provider-name-row">
+                    <h3 id="providerCardName">Food Provider</h3>
+
+                    <span class="verified-provider-badge">
+                      <i class="ri-verified-badge-fill"></i>
+                      Verified
+                    </span>
+                  </div>
+
+                  <!-- RATING -->
+
+                  <div class="provider-rating">
+                    <i class="ri-star-fill"></i>
+
+                    <strong id="providerRating"> 4.8 </strong>
+
+                    <span id="providerReviews"> (0 reviews) </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PROVIDER STATS -->
+
+              <div class="provider-stats">
+                <div class="provider-stat">
+                  <span> Total Donations </span>
+
+                  <strong id="providerDonations"> 0 </strong>
+                </div>
+
+                <div class="provider-stat">
+                  <span> Response Rate </span>
+
+                  <strong id="providerResponseRate"> 0% </strong>
+                </div>
+              </div>
+
+              <!-- PROVIDER MESSAGE -->
+
+              <div class="provider-message">
+                <i class="ri-double-quotes-l"></i>
+
+                <p id="providerMessage">
+                  We believe in sharing surplus food and making a positive
+                  impact in the community.
+                </p>
+              </div>
+            </section>
+
+            <!-- ===================================================
+                 REPORT
+            ==================================================== -->
+
+            <section class="report-card">
+              <button
+                type="button"
+                id="reportListingBtn"
+                class="report-listing-btn"
+              >
+                <i class="ri-flag-line"></i>
+
+                <span> Report this listing </span>
+              </button>
+
+              <p>Inappropriate content or information</p>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script src="{{ url_for('static', filename='js/listing-details.js') }}"></script>
+  </body>
+</html>

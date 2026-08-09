@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Dashboard | ReServe</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- User Dashboard CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/user-dashboard.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="user-dashboard">
+      <!-- =========================================================
+         NAVBAR
+    ========================================================== -->
+
+      <header class="user-navbar">
+        <!-- Logo -->
+        <a href="/user-dashboard" class="user-brand">
+          <div class="brand-logo">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe Logo"
+            />
+          </div>
+
+          <div class="brand-text">
+            <h2>ReServe</h2>
+            <span>From Surplus to Solution.</span>
+          </div>
+        </a>
+
+        <!-- Navigation -->
+        <nav class="user-nav-links">
+          <a href="/user-dashboard" class="active">
+            <i class="ri-home-5-line"></i>
+            <span>Home</span>
+          </a>
+
+          <a href="/explore-food">
+            <i class="ri-search-line"></i>
+            <span>Explore Food</span>
+          </a>
+
+          <a href="/my-reservations">
+            <i class="ri-calendar-check-line"></i>
+            <span>My Reservations</span>
+          </a>
+
+          <a href="/favorites">
+            <i class="ri-heart-3-line"></i>
+            <span>Favorites</span>
+          </a>
+        </nav>
+
+        <!-- Right Actions -->
+        <div class="user-navbar-actions">
+          <!-- Location -->
+          <button type="button" class="location-btn" id="locationBtn">
+            <i class="ri-map-pin-line"></i>
+            <span id="userLocation">Lucknow, India</span>
+          </button>
+
+          <!-- Notifications -->
+          <button
+            type="button"
+            class="navbar-icon-btn"
+            id="notificationBtn"
+            title="Notifications"
+          >
+            <i class="ri-notification-3-line"></i>
+
+            <span class="notification-badge" id="notificationCount"> 0 </span>
+          </button>
+
+          <!-- Messages -->
+          <button
+            type="button"
+            class="navbar-icon-btn"
+            id="messageBtn"
+            title="Messages"
+          >
+            <i class="ri-message-3-line"></i>
+
+            <span class="notification-badge" id="messageCount"> 0 </span>
+          </button>
+
+          <!-- Profile -->
+          <div class="user-profile-wrapper">
+            <button type="button" class="user-profile-btn" id="profileMenuBtn">
+              <div class="profile-avatar">
+                <img
+                  id="profileImage"
+                  src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                  alt="Profile"
+                />
+              </div>
+
+              <div class="profile-info">
+                <strong id="profileName"> Loading... </strong>
+
+                <span id="profileRole"> User </span>
+              </div>
+
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <a href="/profile">
+                <i class="ri-user-line"></i>
+                Profile
+              </a>
+
+              <a href="/settings">
+                <i class="ri-settings-3-line"></i>
+                Settings
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <button type="button" id="logoutBtn">
+                <i class="ri-logout-box-r-line"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =========================================================
+         MAIN CONTENT
+    ========================================================== -->
+
+      <main class="user-main">
+        <!-- =====================================================
+             WELCOME SECTION
+        ====================================================== -->
+
+        <section class="welcome-section">
+          <div class="welcome-content">
+            <span class="welcome-label"> WELCOME BACK </span>
+
+            <h1>
+              Good morning,
+              <span id="welcomeUserName">there</span>
+              👋
+            </h1>
+
+            <p>
+              Discover surplus food near you and give every meal a second
+              chance.
+            </p>
+          </div>
+
+          <!-- Current Location -->
+
+          <div class="current-location">
+            <i class="ri-map-pin-2-line"></i>
+
+            <div>
+              <span>Your location</span>
+
+              <strong id="currentLocation"> Detecting location... </strong>
+            </div>
+
+            <button type="button" id="changeLocationBtn">Change</button>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             SEARCH
+        ====================================================== -->
+
+        <section class="search-section">
+          <div class="main-search">
+            <i class="ri-search-line"></i>
+
+            <input
+              type="search"
+              id="foodSearch"
+              placeholder="Search meals, restaurants, categories or locations..."
+              autocomplete="off"
+            />
+
+            <button type="button" id="searchBtn">Search</button>
+          </div>
+
+          <!-- Search Suggestions -->
+
+          <div class="search-suggestions hidden" id="searchSuggestions"></div>
+        </section>
+
+        <!-- =====================================================
+             HERO
+        ====================================================== -->
+
+        <section class="user-hero">
+          <!-- Hero Background -->
+          <img
+            class="hero-background-image"
+            src="{{ url_for('static', filename='images/user-dashboard-hero.png') }}"
+            alt=""
+          />
+
+          <div class="hero-overlay-content">
+            <span class="hero-badge">
+              <i class="ri-leaf-line"></i>
+              FOOD RESCUE
+            </span>
+
+            <h2>
+              Fresh food.
+              <br />
+              Less waste.
+              <br />
+              Better prices.
+            </h2>
+
+            <p>
+              Rescue quality surplus food from local restaurants and businesses
+              while helping reduce food waste.
+            </p>
+
+            <button type="button" class="hero-btn" id="exploreFoodBtn">
+              Explore Food
+              <i class="ri-arrow-right-line"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             RECOMMENDED FOOD
+        ====================================================== -->
+
+        <section class="listing-section">
+          <div class="section-header">
+            <div>
+              <span class="section-label"> RECOMMENDED </span>
+
+              <h2>Recommended For You</h2>
+
+              <p>Food selected based on your location and preferences.</p>
+            </div>
+
+            <a href="/listing-details">
+              View All
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+
+          <!-- Dynamic Listing Grid -->
+
+          <div class="food-grid" id="recommendedFoodGrid">
+            <!-- JavaScript will insert listings here -->
+
+            <div class="listing-loading">
+              <i class="ri-loader-4-line"></i>
+              <span>Finding food near you...</span>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+
+          <div class="listing-empty hidden" id="recommendedEmpty">
+            <i class="ri-restaurant-line"></i>
+
+            <h3>No recommendations yet</h3>
+
+            <p>
+              New surplus food will appear here as nearby restaurants add
+              listings.
+            </p>
+
+            <a href="/explore-food"> Explore Food </a>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             NEARBY LISTINGS
+        ====================================================== -->
+
+        <section class="listing-section nearby-section">
+          <div class="section-header">
+            <div>
+              <span class="section-label"> NEAR YOU </span>
+
+              <h2>Fresh Listings Nearby</h2>
+
+              <p>Recently added surplus food available for pickup.</p>
+            </div>
+
+            <a href="/explore-food">
+              View All
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+
+          <div class="food-grid" id="nearbyFoodGrid">
+            <!-- JavaScript will insert listings here -->
+
+            <div class="listing-loading">
+              <i class="ri-loader-4-line"></i>
+              <span>Loading nearby listings...</span>
+            </div>
+          </div>
+
+          <div class="listing-empty hidden" id="nearbyEmpty">
+            <i class="ri-map-pin-line"></i>
+
+            <h3>No nearby listings</h3>
+
+            <p>
+              There are no active food listings near your current location right
+              now.
+            </p>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             UPCOMING RESERVATION
+        ====================================================== -->
+
+        <section class="reservation-section">
+          <div class="section-header">
+            <div>
+              <span class="section-label"> YOUR ACTIVITY </span>
+
+              <h2>Upcoming Reservation</h2>
+            </div>
+
+            <a href="/my-reservations">
+              View Reservations
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+
+          <!-- Reservation -->
+
+          <div class="upcoming-reservation" id="upcomingReservation">
+            <!-- JS will populate this -->
+
+            <div class="reservation-loading">
+              <i class="ri-loader-4-line"></i>
+              <span>Loading reservation...</span>
+            </div>
+          </div>
+
+          <!-- No Reservation -->
+
+          <div class="no-reservation hidden" id="noReservation">
+            <div class="empty-icon">
+              <i class="ri-calendar-check-line"></i>
+            </div>
+
+            <div>
+              <h3>No upcoming reservations</h3>
+
+              <p>Find something delicious to rescue today.</p>
+            </div>
+
+            <a href="/explore-food">
+              Explore Food
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+        </section>
+      </main>
+
+      <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+      <script src="{{ url_for('static', filename='js/user-dashboard.js') }}"></script>
+    </div>
+  </body>
+</html>

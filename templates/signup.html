@@ -8,7 +8,7 @@
 
     <!-- Google Fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
@@ -24,184 +24,349 @@
     />
   </head>
 
-  <body class="signup-page">
-    <!-- Background -->
-    <div class="background">
-      <span class="blob blob1"></span>
-      <span class="blob blob2"></span>
-      <span class="blob blob3"></span>
+  <body>
+    <!-- ======================================================
+       TOP BAR
+  ======================================================= -->
+
+    <div class="top-bar">
+      <div class="top-bar-container">
+        <div class="top-message">
+          <i class="fa-solid fa-seedling"></i>
+          <span>Reducing food waste, nourishing communities</span>
+        </div>
+
+        <div class="top-links">
+          <a href="#about">
+            <i class="fa-regular fa-circle-info"></i>
+            About Us
+          </a>
+
+          <a href="#contact">
+            <i class="fa-regular fa-envelope"></i>
+            Contact
+          </a>
+
+          <a href="{{ url_for('login') }}">
+            <i class="fa-regular fa-user"></i>
+            Login
+          </a>
+        </div>
+      </div>
     </div>
 
-    <!-- Back Button -->
-    <a href="{{ url_for('home') }}" class="back-home">
-      <i class="fa-solid fa-arrow-left"></i>
-      <span>Back to Home</span>
-    </a>
+    <!-- ======================================================
+       NAVBAR
+  ======================================================= -->
 
-    <!-- Signup Card -->
-    <main class="signup-wrapper">
-      <!-- Logo -->
-      <a href="{{ url_for('home') }}" class="logo">
-        <i class="fa-solid fa-leaf"></i>
-        <span>ReServe</span>
-      </a>
-
-      <h1>Create Account</h1>
-
-      <p class="subtitle">
-        Join ReServe and start making a difference by reducing food waste in
-        your community.
-      </p>
-
-      <!-- Form -->
-      <form id="signupForm">
-        <!-- Full Name -->
-        <div class="input-group">
-          <label for="name">Full Name</label>
-
-          <div class="input-field">
-            <i class="fa-solid fa-user"></i>
-
-            <input
-              type="text"
-              id="name"
-              placeholder="Enter your full name"
-              autocomplete="name"
-              required
-            />
-          </div>
-          <p id="nameMessage" class="field-message"></p>
-        </div>
-
-        <!-- Email -->
-        <div class="input-group">
-          <label for="email">Email Address</label>
-
-          <div class="input-field">
-            <i class="fa-solid fa-envelope"></i>
-
-            <input
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-              autocomplete="email"
-              required
-            />
-          </div>
-          <p id="emailMessage" class="field-message"></p>
-        </div>
-
-        <!-- Password -->
-        <div class="input-group">
-          <label for="password">Password</label>
-
-          <div class="input-field password-field">
-            <i class="fa-solid fa-lock"></i>
-
-            <input
-              type="password"
-              id="password"
-              placeholder="Create a password"
-              autocomplete="new-password"
-              required
-            />
-
-            <button
-              type="button"
-              class="toggle-password"
-              id="togglePassword"
-              aria-label="Show Password"
-            >
-              <i class="fa-solid fa-eye"></i>
-            </button>
+    <header class="navbar">
+      <div class="container nav-container">
+        <!-- Logo -->
+        <a href="{{ url_for('home') }}" class="logo">
+          <div class="logo-icon">
+            <i class="fa-solid fa-leaf"></i>
           </div>
 
-          <!-- Password Validation -->
-          <p id="passwordMessage" class="field-message"></p>
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="input-group">
-          <label for="confirmPassword">Confirm Password</label>
-
-          <div class="input-field password-field">
-            <i class="fa-solid fa-lock"></i>
-
-            <input
-              type="password"
-              id="confirmPassword"
-              placeholder="Confirm your password"
-              autocomplete="new-password"
-              required
-            />
-
-            <button
-              type="button"
-              class="toggle-password"
-              id="toggleConfirmPassword"
-              aria-label="Show Password"
-            >
-              <i class="fa-solid fa-eye"></i>
-            </button>
+          <div class="logo-text">
+            <span>ReServe</span>
+            <small>From Surplus to Solution.</small>
           </div>
+        </a>
 
-          <!-- Password Match -->
-          <p id="matchMessage" class="field-message"></p>
+        <!-- Navigation -->
+        <nav class="nav-links">
+          <a href="{{ url_for('home') }}#home"> Home </a>
+
+          <a href="{{ url_for('home') }}#about"> About </a>
+
+          <a href="{{ url_for('home') }}#solutions"> Solutions </a>
+
+          <a href="{{ url_for('home') }}#marketplace"> Marketplace </a>
+
+          <a href="{{ url_for('home') }}#contact"> Contact </a>
+        </nav>
+
+        <!-- Buttons -->
+        <div class="nav-buttons">
+          <a href="{{ url_for('login') }}" class="login-btn"> Login </a>
+
+          <a href="{{ url_for('signup') }}" class="signup-nav-btn">
+            Get Started
+          </a>
         </div>
-
-        <!-- Terms -->
-        <div class="options">
-          <label class="remember">
-            <input type="checkbox" id="terms" required />
-
-            <span>
-              I agree to the
-              <a href="#">Terms</a>
-              &
-              <a href="#">Privacy Policy</a>
-            </span>
-          </label>
-        </div>
-
-        <!-- Signup Button -->
-        <button type="submit" class="signup-btn">
-          <span>Create Account</span>
-          <i class="fa-solid fa-arrow-right"></i>
-        </button>
-
-        <!-- Success -->
-        <div id="successMessage" class="success-message">
-          <i class="fa-solid fa-circle-check"></i>
-          <span></span>
-        </div>
-
-        <!-- Error -->
-        <div id="errorMessage" class="error-message">
-          <i class="fa-solid fa-circle-exclamation"></i>
-          <span></span>
-        </div>
-      </form>
-
-      <!-- Divider -->
-      <div class="divider">
-        <span>OR</span>
       </div>
+    </header>
 
-      <!-- Google Signup -->
-      <button class="google-btn" id="googleSignup">
-        <img
-          src="https://www.svgrepo.com/show/475656/google-color.svg"
-          alt="Google"
-        />
+    <!-- ======================================================
+       SIGNUP SECTION
+  ======================================================= -->
 
-        Continue with Google
-      </button>
+    <main class="signup-page">
+      <div class="signup-container">
+        <!-- ==================================================
+           LEFT SIDE
+      =================================================== -->
 
-      <!-- Login -->
-      <p class="login-text">
-        Already have an account?
-        <a href="{{ url_for('login') }}">Login</a>
-      </p>
+        <section class="signup-visual">
+          <div class="visual-content">
+            <h1>Join ReServe</h1>
+
+            <h2>Be a Part of the Change</h2>
+
+            <div class="green-line"></div>
+
+            <p>
+              Create your account to start sharing surplus food or find food
+              that can help build a better, hunger-free community.
+            </p>
+          </div>
+
+          <!-- Illustration -->
+          <div class="signup-illustration">
+            <img
+              src="{{ url_for('static', filename='images/signup-illustration.png') }}"
+              alt="People sharing surplus food"
+            />
+          </div>
+        </section>
+
+        <!-- ==================================================
+           RIGHT SIDE
+      =================================================== -->
+
+        <section class="signup-form-section">
+          <div class="form-header">
+            <div class="form-header-icon">
+              <i class="fa-solid fa-user-plus"></i>
+            </div>
+
+            <div>
+              <h2>Create Your Account</h2>
+
+              <p>Fill in the details to get started</p>
+            </div>
+          </div>
+
+          <!-- FORM -->
+
+          <form id="signupForm">
+            <!-- ROW 1 -->
+
+            <div class="form-row">
+              <!-- Full Name -->
+              <div class="input-group">
+                <label for="name"> Full Name </label>
+
+                <div class="input-field">
+                  <i class="fa-regular fa-user"></i>
+
+                  <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    required
+                  />
+                </div>
+
+                <p id="nameMessage" class="field-message"></p>
+              </div>
+
+              <!-- Email -->
+              <div class="input-group">
+                <label for="email"> Email Address </label>
+
+                <div class="input-field">
+                  <i class="fa-regular fa-envelope"></i>
+
+                  <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                  />
+                </div>
+
+                <p id="emailMessage" class="field-message"></p>
+              </div>
+            </div>
+
+            <!-- ROW 2 -->
+
+            <div class="form-row">
+              <!-- Phone -->
+              <div class="input-group">
+                <label for="phone"> Phone Number </label>
+
+                <div class="input-field">
+                  <i class="fa-solid fa-phone"></i>
+
+                  <input
+                    type="tel"
+                    id="phone"
+                    placeholder="Enter your phone number"
+                    autocomplete="tel"
+                    required
+                  />
+                </div>
+
+                <p id="phoneMessage" class="field-message"></p>
+              </div>
+
+              <!-- Password -->
+              <div class="input-group">
+                <label for="password"> Password </label>
+
+                <div class="input-field password-field">
+                  <i class="fa-solid fa-lock"></i>
+
+                  <input
+                    type="password"
+                    id="password"
+                    placeholder="Create a password"
+                    autocomplete="new-password"
+                    required
+                  />
+
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    id="togglePassword"
+                  >
+                    <i class="fa-regular fa-eye"></i>
+                  </button>
+                </div>
+
+                <p id="passwordMessage" class="field-message"></p>
+              </div>
+            </div>
+
+            <!-- ROW 3 -->
+
+            <div class="form-row">
+              <!-- Confirm Password -->
+              <div class="input-group">
+                <label for="confirmPassword"> Confirm Password </label>
+
+                <div class="input-field password-field">
+                  <i class="fa-solid fa-lock"></i>
+
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm your password"
+                    autocomplete="new-password"
+                    required
+                  />
+
+                  <button
+                    type="button"
+                    class="toggle-password"
+                    id="toggleConfirmPassword"
+                  >
+                    <i class="fa-regular fa-eye"></i>
+                  </button>
+                </div>
+
+                <p id="matchMessage" class="field-message"></p>
+              </div>
+
+              <!-- ROLE -->
+
+              <div class="input-group">
+                <label for="role"> I am a </label>
+
+                <div class="input-field select-field">
+                  <i class="fa-solid fa-user-tag"></i>
+
+                  <select id="role" required>
+                    <option value="" disabled selected>Select your role</option>
+
+                    <option value="customer">Individual / Customer</option>
+
+                    <option value="provider">Food Provider</option>
+
+                    <option value="ngo">NGO</option>
+                  </select>
+
+                  <i class="fa-solid fa-chevron-down select-arrow"></i>
+                </div>
+
+                <p id="roleMessage" class="field-message"></p>
+              </div>
+            </div>
+
+            <!-- TERMS -->
+
+            <div class="terms-box">
+              <label>
+                <input type="checkbox" id="terms" required />
+
+                <span>
+                  I agree to the
+                  <a href="#">Terms & Conditions</a>
+                  and
+                  <a href="#">Privacy Policy</a>
+                </span>
+              </label>
+            </div>
+
+            <!-- REGISTER BUTTON -->
+
+            <button type="submit" class="register-btn">
+              <span>Register</span>
+
+              <i class="fa-solid fa-user-plus"></i>
+            </button>
+
+            <!-- SUCCESS -->
+
+            <div id="successMessage" class="success-message">
+              <i class="fa-solid fa-circle-check"></i>
+              <span></span>
+            </div>
+
+            <!-- ERROR -->
+
+            <div id="errorMessage" class="error-message">
+              <i class="fa-solid fa-circle-exclamation"></i>
+              <span></span>
+            </div>
+          </form>
+
+          <!-- SOCIAL DIVIDER -->
+
+          <div class="divider">
+            <span>or register with</span>
+          </div>
+
+          <div class="social-buttons">
+            <button type="button" class="social-btn" id="googleSignup">
+              <img
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google"
+              />
+
+              <span>Google</span>
+            </button>
+
+            <button type="button" class="social-btn" id="facebookSignup">
+              <i class="fa-brands fa-facebook"></i>
+
+              <span>Facebook</span>
+            </button>
+          </div>
+
+          <!-- LOGIN -->
+
+          <p class="login-text">
+            Already have an account?
+
+            <a href="{{ url_for('login') }}"> Login </a>
+          </p>
+        </section>
+      </div>
     </main>
 
     <script src="{{ url_for('static', filename='js/signup.js') }}"></script>

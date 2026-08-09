@@ -1,0 +1,1480 @@
+/* ==========================================================
+   ReServe - Individual User Dashboard
+========================================================== */
+
+/* ==========================================================
+   RESET
+========================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: #f8faf9;
+  color: #142018;
+  min-height: 100vh;
+}
+
+button,
+input,
+a {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================================
+   DASHBOARD
+========================================================== */
+
+.user-dashboard {
+  min-height: 100vh;
+  background: #f8faf9;
+}
+
+/* ==========================================================
+   NAVBAR
+========================================================== */
+
+.user-navbar {
+  height: 78px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #e8eee9;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 38px;
+  gap: 40px;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  backdrop-filter: blur(14px);
+}
+
+/* ==========================================================
+   BRAND
+========================================================== */
+
+.user-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  min-width: 205px;
+}
+
+.brand-logo {
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.brand-text h2 {
+  font-size: 22px;
+  line-height: 1.1;
+  font-weight: 800;
+  color: #176b36;
+}
+
+.brand-text span {
+  display: block;
+
+  margin-top: 3px;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  color: #68766d;
+}
+
+/* ==========================================================
+   NAVIGATION
+========================================================== */
+
+.user-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  flex: 1;
+}
+
+.user-nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 10px 15px;
+
+  border-radius: 9px;
+
+  color: #59665e;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  transition: all 0.2s ease;
+}
+
+.user-nav-links a i {
+  font-size: 18px;
+}
+
+.user-nav-links a:hover {
+  color: #176b36;
+  background: #f0f8f2;
+}
+
+.user-nav-links a.active {
+  color: #176b36;
+  background: #edf8ef;
+}
+
+/* ==========================================================
+   NAVBAR ACTIONS
+========================================================== */
+
+.user-navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================
+   LOCATION BUTTON
+========================================================== */
+
+.location-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  border: 1px solid #e4ebe6;
+  background: #ffffff;
+
+  padding: 9px 13px;
+
+  border-radius: 9px;
+
+  color: #45534a;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  transition: 0.2s ease;
+}
+
+.location-btn i {
+  color: #198743;
+  font-size: 17px;
+}
+
+.location-btn:hover {
+  border-color: #b9dcc4;
+  background: #f5faf6;
+}
+
+/* ==========================================================
+   ICON BUTTONS
+========================================================== */
+
+.navbar-icon-btn {
+  position: relative;
+
+  width: 40px;
+  height: 40px;
+
+  border: 1px solid #e8eee9;
+  border-radius: 50%;
+
+  background: #ffffff;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #34443a;
+
+  transition: 0.2s ease;
+}
+
+.navbar-icon-btn i {
+  font-size: 19px;
+}
+
+.navbar-icon-btn:hover {
+  background: #f1f8f3;
+  color: #176b36;
+}
+
+/* ==========================================================
+   NOTIFICATION BADGE
+========================================================== */
+
+.notification-badge {
+  position: absolute;
+
+  top: -3px;
+  right: -3px;
+
+  min-width: 17px;
+  height: 17px;
+
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e83c3c;
+  color: #ffffff;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  border: 2px solid #ffffff;
+}
+
+/* ==========================================================
+   PROFILE
+========================================================== */
+
+.user-profile-wrapper {
+  position: relative;
+}
+
+.user-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  border: none;
+  background: transparent;
+
+  padding: 4px 3px 4px 5px;
+
+  color: #17231b;
+}
+
+.profile-avatar {
+  width: 39px;
+  height: 39px;
+
+  overflow: hidden;
+  border-radius: 50%;
+
+  background: #edf5ef;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+
+  text-align: left;
+}
+
+.profile-info strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.profile-info span {
+  margin-top: 2px;
+
+  font-size: 10px;
+  color: #7a857e;
+}
+
+.user-profile-btn > i {
+  margin-left: 3px;
+  font-size: 17px;
+  color: #68736c;
+}
+
+/* ==========================================================
+   PROFILE DROPDOWN
+========================================================== */
+
+.profile-dropdown {
+  position: absolute;
+
+  top: calc(100% + 12px);
+  right: 0;
+
+  width: 190px;
+
+  padding: 7px;
+
+  background: #ffffff;
+
+  border: 1px solid #e5ebe7;
+  border-radius: 12px;
+
+  box-shadow: 0 14px 35px rgba(30, 55, 38, 0.12);
+}
+
+.profile-dropdown a,
+.profile-dropdown button {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 11px;
+
+  border: none;
+  background: transparent;
+
+  border-radius: 8px;
+
+  color: #45534a;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  text-align: left;
+}
+
+.profile-dropdown a:hover,
+.profile-dropdown button:hover {
+  background: #f1f8f3;
+  color: #176b36;
+}
+
+.profile-dropdown i {
+  font-size: 17px;
+}
+
+.profile-dropdown button {
+  color: #dc3737;
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: #edf0ee;
+  margin: 5px 0;
+}
+
+/* ==========================================================
+   MAIN
+========================================================== */
+
+.user-main {
+  width: min(1440px, calc(100% - 64px));
+
+  margin: 0 auto;
+
+  padding: 38px 0 70px;
+}
+
+/* ==========================================================
+   WELCOME SECTION
+========================================================== */
+
+.welcome-section {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  gap: 30px;
+
+  margin-bottom: 25px;
+}
+
+.welcome-label {
+  display: inline-block;
+
+  margin-bottom: 8px;
+
+  color: #16803d;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+}
+
+.welcome-content h1 {
+  font-size: 31px;
+  line-height: 1.2;
+  font-weight: 800;
+
+  color: #111b14;
+}
+
+.welcome-content p {
+  margin-top: 8px;
+
+  color: #68756d;
+
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ==========================================================
+   CURRENT LOCATION
+========================================================== */
+
+.current-location {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 13px;
+
+  border: 1px solid #e4ebe6;
+  border-radius: 11px;
+
+  background: #ffffff;
+}
+
+.current-location > i {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #eef8f1;
+  color: #16803d;
+
+  font-size: 17px;
+}
+
+.current-location div {
+  display: flex;
+  flex-direction: column;
+}
+
+.current-location div span {
+  font-size: 10px;
+  color: #88928c;
+}
+
+.current-location div strong {
+  margin-top: 2px;
+
+  font-size: 12px;
+  color: #27332b;
+}
+
+.current-location button {
+  border: none;
+  background: transparent;
+
+  margin-left: 8px;
+
+  color: #16803d;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ==========================================================
+   SEARCH
+========================================================== */
+
+.search-section {
+  position: relative;
+
+  margin-bottom: 28px;
+}
+
+.main-search {
+  width: 100%;
+  height: 54px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 7px 0 18px;
+
+  background: #ffffff;
+
+  border: 1px solid #dfe7e1;
+  border-radius: 12px;
+
+  box-shadow: 0 4px 14px rgba(31, 55, 39, 0.04);
+
+  transition: 0.2s ease;
+}
+
+.main-search:focus-within {
+  border-color: #38a65d;
+  box-shadow: 0 0 0 3px rgba(39, 167, 91, 0.09);
+}
+
+.main-search > i {
+  color: #78857c;
+  font-size: 20px;
+}
+
+.main-search input {
+  flex: 1;
+
+  height: 100%;
+
+  padding: 0 14px;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #17221a;
+
+  font-size: 14px;
+}
+
+.main-search input::placeholder {
+  color: #98a19b;
+}
+
+.main-search button {
+  height: 40px;
+
+  padding: 0 22px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #18823e;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.main-search button:hover {
+  background: #116d32;
+}
+
+/* ==========================================================
+   SEARCH SUGGESTIONS
+========================================================== */
+
+.search-suggestions {
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: calc(100% + 7px);
+
+  z-index: 100;
+
+  background: #ffffff;
+
+  border: 1px solid #e3eae5;
+  border-radius: 11px;
+
+  box-shadow: 0 15px 35px rgba(30, 55, 39, 0.12);
+
+  overflow: hidden;
+}
+
+/* ==========================================================
+   HERO
+========================================================== */
+
+.user-hero {
+  position: relative;
+
+  width: 100%;
+  min-height: 330px;
+
+  overflow: hidden;
+
+  border-radius: 17px;
+
+  margin-bottom: 42px;
+
+  background: #edf8ed;
+}
+
+.hero-background-image {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  object-position: center;
+}
+
+.hero-overlay-content {
+  position: relative;
+  z-index: 2;
+
+  width: 48%;
+
+  padding: 58px 0 55px 55px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 7px 12px;
+
+  border-radius: 20px;
+
+  background: rgba(24, 130, 62, 0.1);
+
+  color: #16783a;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
+.hero-badge i {
+  font-size: 14px;
+}
+
+.hero-overlay-content h2 {
+  margin-top: 15px;
+
+  font-size: 34px;
+  line-height: 1.16;
+  font-weight: 800;
+
+  color: #16331e;
+}
+
+.hero-overlay-content p {
+  max-width: 440px;
+
+  margin-top: 14px;
+
+  color: #526257;
+
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-top: 22px;
+
+  padding: 12px 19px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #17813d;
+  color: #ffffff;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  box-shadow: 0 7px 18px rgba(23, 129, 61, 0.2);
+
+  transition: 0.2s ease;
+}
+
+.hero-btn:hover {
+  background: #116b31;
+  transform: translateY(-1px);
+}
+
+.hero-btn i {
+  font-size: 17px;
+}
+
+/* ==========================================================
+   SECTIONS
+========================================================== */
+
+.listing-section,
+.reservation-section {
+  margin-bottom: 45px;
+}
+
+.section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 18px;
+}
+
+.section-label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #198542;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.section-header h2 {
+  font-size: 21px;
+  font-weight: 800;
+  color: #152019;
+}
+
+.section-header p {
+  margin-top: 5px;
+
+  color: #78847c;
+
+  font-size: 12px;
+}
+
+.section-header > a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  color: #18813e;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.section-header > a:hover {
+  color: #0f662f;
+}
+
+.section-header > a i {
+  font-size: 15px;
+}
+
+/* ==========================================================
+   FOOD GRID
+========================================================== */
+
+.food-grid {
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  gap: 17px;
+}
+
+/* ==========================================================
+   FOOD CARD
+========================================================== */
+
+.food-card {
+  overflow: hidden;
+
+  background: #ffffff;
+
+  border: 1px solid #e4ebe6;
+  border-radius: 13px;
+
+  box-shadow: 0 3px 12px rgba(28, 51, 35, 0.04);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.food-card:hover {
+  transform: translateY(-3px);
+
+  box-shadow: 0 12px 28px rgba(28, 65, 41, 0.1);
+}
+
+.food-card-image {
+  position: relative;
+
+  height: 185px;
+
+  background: #edf2ee;
+
+  overflow: hidden;
+}
+
+.food-card-image img {
+  width: 100%;
+  height: 100%;
+
+  object-fit: cover;
+
+  transition: transform 0.3s ease;
+}
+
+.food-card:hover .food-card-image img {
+  transform: scale(1.035);
+}
+
+/* ==========================================================
+   DISCOUNT
+========================================================== */
+
+.food-discount {
+  position: absolute;
+
+  top: 10px;
+  left: 10px;
+
+  padding: 5px 8px;
+
+  border-radius: 6px;
+
+  background: #16813d;
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* ==========================================================
+   FAVORITE
+========================================================== */
+
+.food-favorite {
+  position: absolute;
+
+  top: 9px;
+  right: 9px;
+
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  color: #5b6960;
+
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+
+  transition: 0.2s ease;
+}
+
+.food-favorite:hover {
+  color: #df3e4b;
+  transform: scale(1.05);
+}
+
+.food-favorite i {
+  font-size: 17px;
+}
+
+/* ==========================================================
+   FOOD CARD CONTENT
+========================================================== */
+
+.food-card-content {
+  padding: 14px;
+}
+
+.food-card-content h3 {
+  overflow: hidden;
+
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #19231d;
+}
+
+.food-provider {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  margin-top: 5px;
+
+  color: #6d7971;
+
+  font-size: 11px;
+}
+
+.verified-icon {
+  color: #16813d;
+  font-size: 13px;
+}
+
+.food-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 11px;
+
+  color: #69756d;
+
+  font-size: 10px;
+}
+
+.food-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.food-meta i {
+  font-size: 13px;
+}
+
+.food-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-top: 12px;
+}
+
+.food-price {
+  color: #16813d;
+
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.food-price.donation {
+  color: #a06615;
+}
+
+.reserve-btn {
+  padding: 7px 11px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #edf8f0;
+  color: #16813d;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  transition: 0.2s ease;
+}
+
+.reserve-btn:hover {
+  background: #16813d;
+  color: #ffffff;
+}
+
+/* ==========================================================
+   LOADING
+========================================================== */
+
+.listing-loading {
+  grid-column: 1 / -1;
+
+  min-height: 170px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  color: #758178;
+
+  font-size: 12px;
+}
+
+.listing-loading i,
+.reservation-loading i {
+  font-size: 22px;
+
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================
+   EMPTY STATE
+========================================================== */
+
+.listing-empty {
+  padding: 45px 20px;
+
+  text-align: center;
+
+  border: 1px dashed #d7e1da;
+  border-radius: 13px;
+
+  background: #ffffff;
+}
+
+.listing-empty > i {
+  font-size: 30px;
+  color: #5b9d72;
+}
+
+.listing-empty h3 {
+  margin-top: 10px;
+
+  font-size: 16px;
+}
+
+.listing-empty p {
+  max-width: 420px;
+
+  margin: 7px auto 15px;
+
+  color: #78847c;
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.listing-empty a {
+  display: inline-block;
+
+  padding: 9px 14px;
+
+  border-radius: 7px;
+
+  background: #18813e;
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* ==========================================================
+   UPCOMING RESERVATION
+========================================================== */
+
+.upcoming-reservation {
+  min-height: 130px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 20px;
+
+  border: 1px solid #e2ebe4;
+  border-radius: 13px;
+
+  background: #ffffff;
+}
+
+.reservation-loading {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 9px;
+
+  color: #78847c;
+
+  font-size: 12px;
+}
+
+/* ==========================================================
+   RESERVATION CARD
+========================================================== */
+
+.reservation-card {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+}
+
+.reservation-image {
+  width: 105px;
+  height: 85px;
+
+  overflow: hidden;
+
+  border-radius: 9px;
+
+  background: #edf2ee;
+}
+
+.reservation-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.reservation-details {
+  flex: 1;
+}
+
+.reservation-status {
+  display: inline-flex;
+
+  padding: 4px 8px;
+
+  border-radius: 20px;
+
+  background: #eaf8ef;
+  color: #16813d;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.reservation-details h3 {
+  margin-top: 7px;
+
+  font-size: 16px;
+}
+
+.reservation-details p {
+  margin-top: 4px;
+
+  color: #737f77;
+
+  font-size: 11px;
+}
+
+.reservation-meta {
+  display: flex;
+  gap: 16px;
+
+  margin-top: 8px;
+
+  color: #59665e;
+
+  font-size: 10px;
+}
+
+.reservation-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reservation-meta i {
+  color: #198542;
+}
+
+.reservation-action {
+  padding: 9px 15px;
+
+  border: 1px solid #cfe1d4;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #18813e;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.reservation-action:hover {
+  background: #f0f8f2;
+}
+
+/* ==========================================================
+   NO RESERVATION
+========================================================== */
+
+.no-reservation {
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 22px;
+
+  border: 1px dashed #d7e2da;
+  border-radius: 13px;
+
+  background: #ffffff;
+}
+
+.empty-icon {
+  width: 45px;
+  height: 45px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 11px;
+
+  background: #edf8f0;
+  color: #18813e;
+}
+
+.empty-icon i {
+  font-size: 21px;
+}
+
+.no-reservation h3 {
+  font-size: 14px;
+}
+
+.no-reservation p {
+  margin-top: 4px;
+
+  color: #7a857e;
+
+  font-size: 11px;
+}
+
+.no-reservation > a {
+  margin-left: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 9px 13px;
+
+  border-radius: 7px;
+
+  background: #18813e;
+  color: #ffffff;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ==========================================================
+   RESPONSIVE - LARGE TABLET
+========================================================== */
+
+@media (max-width: 1200px) {
+  .user-navbar {
+    padding: 0 24px;
+    gap: 20px;
+  }
+
+  .user-brand {
+    min-width: auto;
+  }
+
+  .brand-text span {
+    display: none;
+  }
+
+  .user-nav-links a span {
+    display: none;
+  }
+
+  .user-nav-links a {
+    width: 40px;
+    height: 40px;
+
+    justify-content: center;
+  }
+
+  .food-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .user-main {
+    width: min(1100px, calc(100% - 40px));
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE - TABLET
+========================================================== */
+
+@media (max-width: 900px) {
+  .location-btn {
+    display: none;
+  }
+
+  .profile-info {
+    display: none;
+  }
+
+  .welcome-section {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .current-location {
+    width: 100%;
+  }
+
+  .hero-overlay-content {
+    width: 60%;
+    padding-left: 38px;
+  }
+
+  .hero-overlay-content h2 {
+    font-size: 29px;
+  }
+
+  .food-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ==========================================================
+   RESPONSIVE - MOBILE
+========================================================== */
+
+@media (max-width: 650px) {
+  .user-navbar {
+    height: 65px;
+
+    padding: 0 15px;
+
+    gap: 10px;
+  }
+
+  .brand-text h2 {
+    font-size: 18px;
+  }
+
+  .user-nav-links {
+    display: none;
+  }
+
+  .user-navbar-actions {
+    margin-left: auto;
+  }
+
+  .user-main {
+    width: calc(100% - 28px);
+
+    padding-top: 25px;
+  }
+
+  .welcome-content h1 {
+    font-size: 25px;
+  }
+
+  .current-location {
+    align-items: center;
+  }
+
+  .main-search {
+    height: 50px;
+  }
+
+  .main-search button {
+    padding: 0 14px;
+  }
+
+  .main-search input {
+    font-size: 12px;
+  }
+
+  .user-hero {
+    min-height: 430px;
+  }
+
+  .hero-background-image {
+    object-position: 63% center;
+  }
+
+  .hero-overlay-content {
+    width: 75%;
+
+    padding: 35px 25px;
+  }
+
+  .hero-overlay-content h2 {
+    font-size: 27px;
+  }
+
+  .hero-overlay-content p {
+    font-size: 12px;
+  }
+
+  .food-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-header {
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .section-header h2 {
+    font-size: 19px;
+  }
+
+  .section-header p {
+    max-width: 260px;
+  }
+
+  .reservation-card {
+    flex-wrap: wrap;
+  }
+
+  .reservation-action {
+    width: 100%;
+  }
+
+  .no-reservation {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .no-reservation > a {
+    margin-left: 60px;
+  }
+}
