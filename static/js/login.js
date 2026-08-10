@@ -1,257 +1,538 @@
-/* ==========================================
-   ReServe Login
-========================================== */
+/* ==========================================================
+   ReServe - Login
+   login.js
+========================================================== */
 
-const form = document.getElementById("loginForm");
+const API_BASE_URL = "/api";
 
-const emailInput = document.getElementById("email");
-const passwordInput = document.getElementById("password");
+/* ==========================================================
+   DOM READY
+========================================================== */
 
-const successMessage = document.getElementById("successMessage");
-const errorMessage = document.getElementById("errorMessage");
-
-const loginButton = document.querySelector(".login-btn");
-const googleButton = document.getElementById("googleLoginBtn");
-
-/* ==========================================
-   PASSWORD TOGGLE
-========================================== */
-
-document.querySelectorAll(".toggle-password").forEach((button) => {
-  button.addEventListener("click", () => {
-    const target = document.getElementById(button.dataset.target);
-
-    const icon = button.querySelector("i");
-
-    if (target.type === "password") {
-      target.type = "text";
-
-      icon.classList.remove("fa-eye");
-      icon.classList.add("fa-eye-slash");
-    } else {
-      target.type = "password";
-
-      icon.classList.remove("fa-eye-slash");
-      icon.classList.add("fa-eye");
-    }
-  });
+document.addEventListener("DOMContentLoaded", () => {
+  initializeLogin();
 });
 
-/* ==========================================
+/* ==========================================================
+   INITIALIZE
+========================================================== */
+
+function initializeLogin() {
+  setupPasswordToggle();
+  setupValidation();
+  setupLoginForm();
+  setupForgotPassword();
+  setupSocialLogin();
+  loadRememberedEmail();
+}
+
+/* ==========================================================
+   PASSWORD TOGGLE
+========================================================== */
+
+function setupPasswordToggle() {
+  const button = document.getElementById("togglePassword");
+  const input = document.getElementById("password");
+
+  if (!button || !input) {
+    return;
+  }
+
+  button.addEventListener("click", () => {
+    const icon = button.querySelector("i");
+
+    if (input.type === "password") {
+      input.type = "text";
+
+      if (icon) {
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      }
+
+      button.setAttribute("aria-label", "Hide Password");
+    } else {
+      input.type = "password";
+
+      if (icon) {
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      }
+
+      button.setAttribute("aria-label", "Show Password");
+    }
+  });
+}
+
+/* ==========================================================
+   VALIDATION
+   Validation happens while typing.
+========================================================== */
+
+function setupValidation() {
+  const email = document.getElementById("email");
+  const password = document.getElementById("password");
+
+  if (email) {
+    email.addEventListener("input", () => {
+      validateEmail(false);
+    });
+  }
+
+  if (password) {
+    password.addEventListener("input", () => {
+      validatePassword(false);
+    });
+  }
+}
+
+/* ==========================================================
    EMAIL VALIDATION
-========================================== */
+========================================================== */
 
-function validateEmail(email) {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+function validateEmail(showRequired = false) {
+  const input = document.getElementById("email");
+  const message = document.getElementById("emailMessage");
 
-  return regex.test(email);
-}
-
-/* ==========================================
-   ALERTS
-========================================== */
-
-function hideMessages() {
-  successMessage.style.display = "none";
-
-  errorMessage.style.display = "none";
-}
-
-function showSuccess(message) {
-  hideMessages();
-
-  successMessage.querySelector("span").textContent = message;
-
-  successMessage.style.display = "flex";
-}
-
-function showError(message) {
-  hideMessages();
-
-  errorMessage.querySelector("span").textContent = message;
-
-  errorMessage.style.display = "flex";
-}
-
-/* ==========================================
-   LOADING BUTTON
-========================================== */
-
-function setLoading(state) {
-  if (state) {
-    loginButton.disabled = true;
-
-    loginButton.innerHTML = `
-            <i class="fa-solid fa-spinner fa-spin"></i>
-            Signing In...
-        `;
-  } else {
-    loginButton.disabled = false;
-
-    loginButton.innerHTML = `
-            <span>Continue</span>
-            <i class="fa-solid fa-arrow-right"></i>
-        `;
+  if (!input || !message) {
+    return true;
   }
-}
 
-/* ==========================================
-   INPUT VALIDATION
-========================================== */
+  const value = input.value.trim();
 
-function validateForm() {
-  hideMessages();
+  /* Empty */
+  if (!value) {
+    message.textContent = showRequired
+      ? "Please enter your email address."
+      : "";
 
-  const email = emailInput.value.trim();
-
-  const password = passwordInput.value.trim();
-
-  if (email === "") {
-    showError("Please enter your email.");
-
-    emailInput.focus();
+    message.style.color = "#dc2626";
 
     return false;
   }
 
-  if (!validateEmail(email)) {
-    showError("Please enter a valid email address.");
+  /* Email format */
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    emailInput.focus();
-
-    return false;
-  }
-
-  if (password === "") {
-    showError("Please enter your password.");
-
-    passwordInput.focus();
+  if (!emailPattern.test(value)) {
+    message.textContent = "Enter a valid email address.";
+    message.style.color = "#dc2626";
 
     return false;
   }
 
-  if (password.length < 6) {
-    showError("Password must contain at least 6 characters.");
-
-    passwordInput.focus();
-
-    return false;
-  }
+  /*
+   * Positive feedback only after
+   * a valid email has been entered.
+   */
+  message.textContent = "Valid email address.";
+  message.style.color = "#07883f";
 
   return true;
 }
 
-/* ==========================================
-   FORM SUBMIT
-========================================== */
+/* ==========================================================
+   PASSWORD VALIDATION
+========================================================== */
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
+function validatePassword(showRequired = false) {
+  const input = document.getElementById("password");
+  const message = document.getElementById("passwordMessage");
 
-  if (!validateForm()) return;
-
-  setLoading(true);
-
-  try {
-    const response = await fetch("/api/login", {
-      method: "POST",
-
-      credentials: "same-origin",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify({
-        email: emailInput.value.trim(),
-
-        password: passwordInput.value.trim(),
-
-        remember: document.querySelector('input[name="remember"]').checked,
-      }),
-    });
-
-    const data = await response.json().catch(() => ({}));
-
-    if (response.ok && data.success) {
-      showSuccess(data.message || "Login successful! Redirecting...");
-
-      setTimeout(() => {
-        window.location.href = data.redirect || "/dashboard";
-      }, 1200);
-    } else {
-      showError(data.message || "Invalid email or password.");
-    }
-  } catch (error) {
-    console.error(error);
-
-    showError("Unable to connect to the server.");
-  } finally {
-    setLoading(false);
+  if (!input || !message) {
+    return true;
   }
-});
 
-/* ==========================================
-   GOOGLE LOGIN
-========================================== */
+  const value = input.value;
 
-googleButton.addEventListener("click", () => {
-  // Replace with your Google OAuth route
+  /* Empty */
+  if (!value) {
+    message.textContent = showRequired ? "Please enter your password." : "";
 
-  window.location.href = "/auth/google";
-});
+    message.style.color = "#dc2626";
 
-/* ==========================================
-   ENTER KEY SUPPORT
-========================================== */
+    return false;
+  }
 
-[emailInput, passwordInput].forEach((input) => {
-  input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      form.requestSubmit();
-    }
-  });
-});
+  /*
+   * Login does not need to check password strength.
+   *
+   * The password was already validated during signup.
+   * Here we only need to make sure something is entered.
+   */
 
-/* ==========================================
-   AUTO HIDE ALERTS
-========================================== */
-
-function autoHideAlerts() {
-  setTimeout(() => {
-    hideMessages();
-  }, 5000);
+  message.textContent = "";
+  return true;
 }
 
-const originalSuccess = showSuccess;
-const originalError = showError;
+/* ==========================================================
+   LOGIN FORM
+========================================================== */
 
-showSuccess = function (message) {
-  originalSuccess(message);
+function setupLoginForm() {
+  const form = document.getElementById("loginForm");
 
-  autoHideAlerts();
-};
+  if (!form) {
+    return;
+  }
 
-showError = function (message) {
-  originalError(message);
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-  autoHideAlerts();
-};
+    clearMessages();
 
-/* ==========================================
-   REMOVE ERROR ON INPUT
-========================================== */
+    /* ======================================================
+       GET VALUES
+    ====================================================== */
 
-[emailInput, passwordInput].forEach((input) => {
-  input.addEventListener("input", () => {
-    hideMessages();
+    const email = document.getElementById("email")?.value.trim() || "";
+
+    const password = document.getElementById("password")?.value || "";
+
+    const rememberMe = document.getElementById("rememberMe")?.checked || false;
+
+    /* ======================================================
+       REQUIRED EMAIL
+    ====================================================== */
+
+    if (!email) {
+      validateEmail(true);
+
+      document.getElementById("email")?.focus();
+
+      return;
+    }
+
+    /* ======================================================
+       REQUIRED PASSWORD
+    ====================================================== */
+
+    if (!password) {
+      validatePassword(true);
+
+      document.getElementById("password")?.focus();
+
+      return;
+    }
+
+    /* ======================================================
+       VALIDATE EMAIL
+    ====================================================== */
+
+    if (!validateEmail()) {
+      document.getElementById("email")?.focus();
+
+      return;
+    }
+
+    /* ======================================================
+       VALIDATE PASSWORD
+    ====================================================== */
+
+    if (!validatePassword()) {
+      document.getElementById("password")?.focus();
+
+      return;
+    }
+
+    /* ======================================================
+       LOGIN BUTTON
+    ====================================================== */
+
+    const button = document.getElementById("loginBtn");
+
+    if (!button) {
+      return;
+    }
+
+    const originalHTML = button.innerHTML;
+
+    button.disabled = true;
+
+    button.innerHTML = `
+      <span>Logging in...</span>
+      <i class="fa-solid fa-spinner fa-spin"></i>
+    `;
+
+    /* ======================================================
+       LOGIN API
+    ====================================================== */
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/login`, {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+
+        credentials: "include",
+
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      /* ====================================================
+         API ERROR
+      ==================================================== */
+
+      if (!response.ok || data.success === false) {
+        throw new Error(
+          data.message || data.error || "Invalid email or password.",
+        );
+      }
+
+      /* ====================================================
+         GET USER
+      ==================================================== */
+
+      const user = data.user || {
+        email: email,
+      };
+
+      /*
+       * Make sure role is available.
+       *
+       * Some backends return:
+       * user.role
+       *
+       * Others may return:
+       * data.role
+       */
+
+      const role = user.role || data.role || "user";
+
+      user.role = role;
+
+      /* ====================================================
+         SAVE USER
+      ==================================================== */
+
+      localStorage.setItem("user", JSON.stringify(user));
+
+      /* ====================================================
+         REMEMBER ME
+      ==================================================== */
+
+      if (rememberMe) {
+        localStorage.setItem("rememberedEmail", email);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
+
+      /* ====================================================
+         SUCCESS
+      ==================================================== */
+
+      showSuccess(data.message || "Login successful!");
+
+      /* ====================================================
+         ROLE-BASED REDIRECT
+      ==================================================== */
+
+      setTimeout(() => {
+        redirectByRole(role);
+      }, 700);
+    } catch (error) {
+      console.error("Login error:", error);
+
+      showError(error.message || "Unable to login. Please try again.");
+
+      button.disabled = false;
+
+      button.innerHTML = originalHTML;
+    }
   });
-});
+}
 
-/* ==========================================
-   PAGE LOAD
-========================================== */
+/* ==========================================================
+   ROLE-BASED REDIRECT
+========================================================== */
 
-window.addEventListener("load", () => {
-  emailInput.focus();
-});
+function redirectByRole(role) {
+  const normalizedRole = String(role || "")
+    .trim()
+    .toLowerCase();
+
+  switch (normalizedRole) {
+    /* ======================================================
+       INDIVIDUAL USER
+    ====================================================== */
+
+    case "user":
+    case "individual":
+      window.location.href = "/user-dashboard";
+      break;
+
+    /* ======================================================
+       FOOD PROVIDER
+    ====================================================== */
+
+    case "provider":
+    case "food_provider":
+    case "food provider":
+    case "donor":
+    case "restaurant":
+      window.location.href = "/dashboard";
+      break;
+
+    /* ======================================================
+       NGO
+    ====================================================== */
+
+    case "ngo":
+      window.location.href = "/ngo-dashboard";
+      break;
+
+    /* ======================================================
+       ADMIN
+    ====================================================== */
+
+    case "admin":
+      window.location.href = "/dashboard";
+      break;
+
+    /* ======================================================
+       FALLBACK
+    ====================================================== */
+
+    default:
+      window.location.href = "/user-dashboard";
+      break;
+  }
+}
+
+/* ==========================================================
+   REMEMBERED EMAIL
+========================================================== */
+
+function loadRememberedEmail() {
+  const emailInput = document.getElementById("email");
+  const rememberMe = document.getElementById("rememberMe");
+
+  if (!emailInput) {
+    return;
+  }
+
+  const rememberedEmail = localStorage.getItem("rememberedEmail");
+
+  if (rememberedEmail) {
+    emailInput.value = rememberedEmail;
+
+    if (rememberMe) {
+      rememberMe.checked = true;
+    }
+
+    /*
+     * Don't show "Valid email address"
+     * immediately when the page loads.
+     */
+    const message = document.getElementById("emailMessage");
+
+    if (message) {
+      message.textContent = "";
+    }
+  }
+}
+
+/* ==========================================================
+   FORGOT PASSWORD
+========================================================== */
+
+function setupForgotPassword() {
+  const button = document.getElementById("forgotPassword");
+
+  if (!button) {
+    return;
+  }
+
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    showError("Password reset is not configured yet.");
+  });
+}
+
+/* ==========================================================
+   SOCIAL LOGIN
+========================================================== */
+
+function setupSocialLogin() {
+  const googleButton = document.getElementById("googleLogin");
+
+  const facebookButton = document.getElementById("facebookLogin");
+
+  if (googleButton) {
+    googleButton.addEventListener("click", () => {
+      showError("Google login is not configured yet.");
+    });
+  }
+
+  if (facebookButton) {
+    facebookButton.addEventListener("click", () => {
+      showError("Facebook login is not configured yet.");
+    });
+  }
+}
+
+/* ==========================================================
+   SUCCESS MESSAGE
+========================================================== */
+
+function showSuccess(message) {
+  const element = document.getElementById("successMessage");
+
+  if (!element) {
+    return;
+  }
+
+  const text = element.querySelector("span");
+
+  if (text) {
+    text.textContent = message;
+  }
+
+  element.style.display = "flex";
+}
+
+/* ==========================================================
+   ERROR MESSAGE
+========================================================== */
+
+function showError(message) {
+  const element = document.getElementById("errorMessage");
+
+  if (!element) {
+    return;
+  }
+
+  const text = element.querySelector("span");
+
+  if (text) {
+    text.textContent = message;
+  }
+
+  element.style.display = "flex";
+}
+
+/* ==========================================================
+   CLEAR MESSAGES
+========================================================== */
+
+function clearMessages() {
+  const success = document.getElementById("successMessage");
+
+  const error = document.getElementById("errorMessage");
+
+  if (success) {
+    success.style.display = "none";
+  }
+
+  if (error) {
+    error.style.display = "none";
+  }
+}

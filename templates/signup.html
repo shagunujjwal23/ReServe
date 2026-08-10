@@ -46,11 +46,6 @@
             <i class="fa-regular fa-envelope"></i>
             Contact
           </a>
-
-          <a href="{{ url_for('login') }}">
-            <i class="fa-regular fa-user"></i>
-            Login
-          </a>
         </div>
       </div>
     </div>
@@ -69,7 +64,6 @@
 
           <div class="logo-text">
             <span>ReServe</span>
-            <small>From Surplus to Solution.</small>
           </div>
         </a>
 
@@ -77,13 +71,9 @@
         <nav class="nav-links">
           <a href="{{ url_for('home') }}#home"> Home </a>
 
-          <a href="{{ url_for('home') }}#about"> About </a>
-
           <a href="{{ url_for('home') }}#solutions"> Solutions </a>
 
           <a href="{{ url_for('home') }}#marketplace"> Marketplace </a>
-
-          <a href="{{ url_for('home') }}#contact"> Contact </a>
         </nav>
 
         <!-- Buttons -->
@@ -197,7 +187,7 @@
             <div class="form-row">
               <!-- Phone -->
               <div class="input-group">
-                <label for="phone"> Phone Number </label>
+                <label for="phone">Phone Number</label>
 
                 <div class="input-field">
                   <i class="fa-solid fa-phone"></i>
@@ -205,9 +195,10 @@
                   <input
                     type="tel"
                     id="phone"
+                    name="phone"
                     placeholder="Enter your phone number"
                     autocomplete="tel"
-                    required
+                    maxlength="10"
                   />
                 </div>
 
@@ -275,15 +266,15 @@
               <!-- ROLE -->
 
               <div class="input-group">
-                <label for="role"> I am a </label>
+                <label for="role">I am a</label>
 
-                <div class="input-field select-field">
+                <div class="input-field">
                   <i class="fa-solid fa-user-tag"></i>
 
                   <select id="role" required>
                     <option value="" disabled selected>Select your role</option>
 
-                    <option value="customer">Individual / Customer</option>
+                    <option value="user">Individual User</option>
 
                     <option value="provider">Food Provider</option>
 
@@ -292,8 +283,6 @@
 
                   <i class="fa-solid fa-chevron-down select-arrow"></i>
                 </div>
-
-                <p id="roleMessage" class="field-message"></p>
               </div>
             </div>
 
@@ -315,9 +304,7 @@
             <!-- REGISTER BUTTON -->
 
             <button type="submit" class="register-btn">
-              <span>Register</span>
-
-              <i class="fa-solid fa-user-plus"></i>
+              <span>Create Account</span>
             </button>
 
             <!-- SUCCESS -->
@@ -338,7 +325,7 @@
           <!-- SOCIAL DIVIDER -->
 
           <div class="divider">
-            <span>or register with</span>
+            <span>Or Register With</span>
           </div>
 
           <div class="social-buttons">

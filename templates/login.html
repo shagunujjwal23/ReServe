@@ -2,29 +2,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Login | ReServe</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Google Fonts -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
 
+    <!-- Font Awesome -->
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
     />
 
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/variables.css') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/components.css') }}"
-    />
+    <!-- Login CSS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/login.css') }}"
@@ -32,120 +27,249 @@
   </head>
 
   <body>
-    <div class="background">
-      <span class="blob blob-1"></span>
-      <span class="blob blob-2"></span>
-      <span class="blob blob-3"></span>
-    </div>
+    <!-- ======================================================
+       TOP BAR
+  ======================================================= -->
 
-    <main class="login-page">
-      <a href="{{ url_for('home') }}" class="back-home">
-        <i class="fa-solid fa-arrow-left"></i>
-        <span>Back to Home</span>
-      </a>
-
-      <section class="login-wrapper">
-        <!-- Logo -->
-
-        <a href="{{ url_for('home') }}" class="logo">
-          <i class="fa-solid fa-leaf"></i>
-
-          <span>ReServe</span>
-        </a>
-
-        <!-- Heading -->
-
-        <h2 class="login-title">Welcome</h2>
-
-        <!-- Subtitle -->
-
-        <p class="subtitle">Sign in to continue your food rescue journey.</p>
-
-        <form id="loginForm">
-          <div class="input-group">
-            <label for="email">Email Address</label>
-            <div class="input-field">
-              <i class="fa-regular fa-envelope"></i>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
-                required
-              />
-            </div>
-          </div>
-
-          <div class="input-group">
-            <label for="password">Password</label>
-            <div class="input-field">
-              <i class="fa-solid fa-lock"></i>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                required
-              />
-
-              <button
-                type="button"
-                class="toggle-password"
-                data-target="password"
-              >
-                <i class="fa-solid fa-eye"></i>
-              </button>
-            </div>
-          </div>
-
-          <div class="login-options">
-            <label class="remember">
-              <input type="checkbox" name="remember" />
-              <span>Remember Me</span>
-            </label>
-
-            <a href="/forgot-password">Forgot Password?</a>
-          </div>
-
-          <button type="submit" class="login-btn">
-            <span>Login</span>
-            <i class="fa-solid fa-arrow-right"></i>
-          </button>
-
-          <div id="successMessage" class="success-message">
-            <i class="fa-solid fa-circle-check"></i>
-            <span></span>
-          </div>
-
-          <div id="errorMessage" class="error-message">
-            <i class="fa-solid fa-circle-exclamation"></i>
-            <span></span>
-          </div>
-        </form>
-
-        <div class="divider">
-          <span></span>
-          <p>OR</p>
-          <span></span>
+    <div class="top-bar">
+      <div class="top-bar-container">
+        <div class="top-message">
+          <i class="fa-solid fa-seedling"></i>
+          <span>Reducing food waste, nourishing communities</span>
         </div>
 
-        <button type="button" class="google-btn" id="googleLoginBtn">
-          <img
-            src="{{ url_for('static', filename='images/google-icon.svg') }}"
-            alt="Google"
-          />
-          <span>Continue with Google</span>
-        </button>
-
-        <p class="signup-page">
-          New to ReServe?
-          <a href="/signup">
-            Create Account
-            <i class="fa-solid fa-arrow-right"></i>
+        <div class="top-links">
+          <a href="#about">
+            <i class="fa-regular fa-circle-info"></i>
+            About Us
           </a>
-        </p>
-      </section>
+
+          <a href="#contact">
+            <i class="fa-regular fa-envelope"></i>
+            Contact
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ======================================================
+       NAVBAR
+  ======================================================= -->
+
+    <header class="navbar">
+      <div class="container nav-container">
+        <!-- Logo -->
+        <a href="{{ url_for('home') }}" class="logo">
+          <div class="logo-icon">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+
+          <div class="logo-text">
+            <span>ReServe</span>
+          </div>
+        </a>
+
+        <!-- Navigation -->
+        <nav class="nav-links">
+          <a href="{{ url_for('home') }}#home"> Home </a>
+
+          <a href="{{ url_for('home') }}#solutions"> Solutions </a>
+
+          <a href="{{ url_for('home') }}#marketplace"> Marketplace </a>
+        </nav>
+
+        <!-- Buttons -->
+        <div class="nav-buttons">
+          <a href="{{ url_for('login') }}" class="login-btn"> Login </a>
+
+          <a href="{{ url_for('signup') }}" class="signup-nav-btn">
+            Get Started
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======================================================
+       LOGIN PAGE
+  ======================================================= -->
+
+    <main class="login-page">
+      <div class="login-container">
+        <!-- ==================================================
+           LEFT VISUAL SECTION
+      ================================================== -->
+
+        <section class="login-visual">
+          <div class="visual-content">
+            <h1>Welcome Back!</h1>
+
+            <h2>Good to see you again.</h2>
+
+            <div class="green-line"></div>
+
+            <p>
+              Log in to your account to continue sharing surplus food and
+              helping those in need.
+            </p>
+          </div>
+
+          <!-- Illustration -->
+
+          <div class="login-illustration">
+            <img
+              src="{{ url_for('static', filename='images/login-illustration.png') }}"
+              alt="People sharing surplus food"
+            />
+          </div>
+        </section>
+
+        <!-- ==================================================
+           RIGHT LOGIN FORM
+      ================================================== -->
+
+        <section class="login-form-section">
+          <!-- Form Header -->
+
+          <div class="form-header">
+            <div class="form-header-icon">
+              <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <div>
+              <h2>Login to ReServe</h2>
+
+              <p>Access your account</p>
+            </div>
+          </div>
+
+          <!-- Login Form -->
+
+          <form id="loginForm" novalidate>
+            <!-- Email -->
+
+            <div class="input-group">
+              <label for="email"> Email Address </label>
+
+              <div class="input-field">
+                <i class="fa-regular fa-envelope"></i>
+
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email address"
+                  autocomplete="email"
+                />
+              </div>
+
+              <p id="emailMessage" class="field-message"></p>
+            </div>
+
+            <!-- Password -->
+
+            <div class="input-group">
+              <label for="password"> Password </label>
+
+              <div class="input-field password-field">
+                <i class="fa-solid fa-lock"></i>
+
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  autocomplete="current-password"
+                />
+
+                <button
+                  type="button"
+                  class="toggle-password"
+                  id="togglePassword"
+                  aria-label="Show Password"
+                >
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              </div>
+
+              <p id="passwordMessage" class="field-message"></p>
+            </div>
+
+            <!-- Remember + Forgot Password -->
+
+            <div class="login-options">
+              <label class="remember-me">
+                <input type="checkbox" id="rememberMe" />
+
+                <span> Remember Me </span>
+              </label>
+
+              <a href="\forgot-password" id="forgotPassword"> Forgot Password? </a>
+            </div>
+
+            <!-- Login Button -->
+
+            <button type="submit" class="login-submit-btn" id="loginBtn">
+              <span> Login </span>
+
+              <i class="fa-solid fa-arrow-right"></i>
+            </button>
+
+            <!-- Success Message -->
+
+            <div id="successMessage" class="success-message">
+              <i class="fa-solid fa-circle-check"></i>
+
+              <span></span>
+            </div>
+
+            <!-- Error Message -->
+
+            <div id="errorMessage" class="error-message">
+              <i class="fa-solid fa-circle-exclamation"></i>
+
+              <span></span>
+            </div>
+
+            <!-- Divider -->
+
+            <div class="divider">
+              <span> or login with </span>
+            </div>
+
+            <!-- Social Login -->
+
+            <div class="social-buttons">
+              <button type="button" class="social-btn" id="googleLogin">
+                <img
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  alt="Google"
+                />
+
+                <span> Google </span>
+              </button>
+
+              <button type="button" class="social-btn" id="facebookLogin">
+                <i class="fa-brands fa-facebook"></i>
+
+                <span> Facebook </span>
+              </button>
+            </div>
+
+            <!-- Register -->
+
+            <p class="register-text">
+              Don't have an account?
+
+              <a href="{{ url_for('signup') }}"> Register </a>
+            </p>
+          </form>
+        </section>
+      </div>
     </main>
+
+    <!-- ======================================================
+       LOGIN JAVASCRIPT
+  ======================================================= -->
 
     <script src="{{ url_for('static', filename='js/login.js') }}"></script>
   </body>
