@@ -211,7 +211,39 @@ function init() {
 
   attachEventListeners();
 
+  loadHeaderProfileImage();
+
   loadListings();
+}
+
+async function loadHeaderProfileImage() {
+  const profileImage = document.getElementById("headerProfileImage");
+
+  if (!profileImage) return;
+
+  try {
+    const response = await fetch("/api/provider/profile", {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    const data = await response.json().catch(() => ({}));
+    const profile = data.profile;
+
+    if (!response.ok || data.success === false || !profile) return;
+
+    const images = Array.isArray(profile.profile_images)
+      ? profile.profile_images
+      : profile.profile_image
+        ? [profile.profile_image]
+        : [];
+    const imageUrl = images.find(
+      (image) => typeof image === "string" && image.trim(),
+    );
+
+    if (imageUrl) profileImage.src = imageUrl;
+  } catch (error) {
+    console.error("My Listings profile image error:", error);
+  }
 }
 
 /* ==========================================================

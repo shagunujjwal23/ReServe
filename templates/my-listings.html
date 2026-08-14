@@ -124,6 +124,7 @@
               <!-- Profile -->
               <button class="profile" type="button">
                 <img
+                  id="headerProfileImage"
                   src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
                   alt="Profile"
                 />

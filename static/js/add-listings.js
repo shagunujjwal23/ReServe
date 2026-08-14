@@ -178,16 +178,83 @@ document.addEventListener("DOMContentLoaded", () => {
   const expiryDate = document.getElementById("expiryDate");
   const availableUntil = document.getElementById("availableUntil");
 
-  const city = document.getElementById("city");
-  const landmark = document.getElementById("landmark");
   const pickupInstructions = document.getElementById("pickupInstructions");
+  const instructionCount = document.getElementById("instructionCount");
 
   const preparationGroup = document.getElementById("preparationGroup");
   const expiryGroup = document.getElementById("expiryGroup");
   const availableUntilGroup = document.getElementById("availableUntilGroup");
 
   // Pickup
-  const pickupAddress = document.getElementById("pickupAddress");
+  // The pickup address is now managed in the provider profile rather than
+  // exposed as editable fields in this form. Keep the values in detached
+  // inputs so the existing draft, validation, AI, and payload logic can use
+  // the same source of truth without depending on removed HTML elements.
+  const pickupAddress = document.createElement("input");
+  const city = document.createElement("input");
+  const landmark = document.createElement("input");
+  const businessName = document.getElementById("businessName");
+  const pickupLocationText = document.getElementById("pickupLocationText");
+  const profileImage = document.getElementById("profileImage");
+  let providerPickupLoaded = false;
+
+  async function loadProviderPickupProfile() {
+    try {
+      const response = await fetch("/api/provider/profile", {
+        credentials: "include",
+        headers: { Accept: "application/json" },
+      });
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok || data.success === false || !data.profile) {
+        throw new Error(data.message || "Unable to load your provider profile.");
+      }
+
+      const profile = data.profile;
+      pickupAddress.value = String(profile.address || "").trim();
+      city.value = String(profile.city || "").trim();
+      landmark.value = "";
+      providerPickupLoaded = Boolean(pickupAddress.value && city.value);
+
+      const images = Array.isArray(profile.profile_images)
+        ? profile.profile_images
+        : profile.profile_image
+          ? [profile.profile_image]
+          : [];
+      const profileImageUrl = images.find(
+        (image) => typeof image === "string" && image.trim(),
+      );
+
+      if (profileImage && profileImageUrl) {
+        profileImage.src = profileImageUrl;
+      }
+
+      if (businessName) {
+        businessName.textContent = profile.business_name || "Business location";
+      }
+
+      if (pickupLocationText) {
+        const location = [
+          profile.address,
+          profile.city,
+          profile.state,
+          profile.pincode,
+        ]
+          .map((value) => String(value || "").trim())
+          .filter(Boolean)
+          .join(", ");
+        pickupLocationText.textContent = location || "Set your location in Provider Profile";
+      }
+    } catch (error) {
+      console.error("Provider pickup profile error:", error);
+      if (businessName) businessName.textContent = "Provider profile required";
+      if (pickupLocationText) {
+        pickupLocationText.textContent = "Add your business address in Provider Profile";
+      }
+    }
+
+    updateReadiness();
+  }
 
   // Image
   const uploadArea = document.querySelector(".upload-area");
@@ -207,7 +274,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const quantityCheck = document.getElementById("quantityCheck");
   const prepCheck = document.getElementById("prepCheck");
   const expiryCheck = document.getElementById("expiryCheck");
-  const pickupCheck = document.getElementById("pickupCheck");
   const imageCheck = document.getElementById("imageCheck");
 
   // Draft
@@ -439,11 +505,23 @@ document.addEventListener("DOMContentLoaded", () => {
       hide(sellingPriceGroup);
 
       sellingPrice.required = false;
-
-      originalPrice.value = "";
-      sellingPrice.value = "";
     }
   }
+
+  // Number fields are easy to alter accidentally while scrolling the page.
+  // Keep entered values stable unless the provider deliberately types a new one.
+  [quantity, originalPrice, sellingPrice].forEach((field) => {
+    field.addEventListener(
+      "wheel",
+      (event) => {
+        if (document.activeElement === field) {
+          event.preventDefault();
+          field.blur();
+        }
+      },
+      { passive: false },
+    );
+  });
 
   /* ==========================================================
    EXPIRY HANDLING
@@ -495,6 +573,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const length = description.value.length;
 
     charCounter.textContent = `${length} / 300`;
+  }
+
+  function updateInstructionCounter() {
+    if (instructionCount) {
+      instructionCount.textContent = pickupInstructions.value.length;
+    }
   }
 
   /* ==========================================================
@@ -561,17 +645,14 @@ document.addEventListener("DOMContentLoaded", () => {
         unit.value !== "" &&
         (unit.value !== "Other" || otherUnit.value.trim() !== ""),
 
-      // 5. Pickup Information
-      pickup: pickupAddress.value.trim() !== "" && city.value.trim() !== "",
-
-      // 6. Expiry / Best Before
+      // 5. Expiry / Best Before
       expiry:
         availableUntil.value !== "" &&
         (hasExpiry.checked
           ? expiryDate.value !== ""
           : preparationTime.value !== ""),
 
-      // 7. Pricing & Listing Type
+      // 6. Pricing & Listing Type
       pricing:
         listingType.value !== "" &&
         (listingType.value === "donate" ||
@@ -580,12 +661,12 @@ document.addEventListener("DOMContentLoaded", () => {
             Number(sellingPrice.value) > 0)),
     };
 
-    // Update the 7 visual checklist items
+    // Update the visual checklist items. Pickup location belongs to the
+    // provider profile and is intentionally excluded from AI readiness.
     updateChecklistItem(foodNameCheck, checks.foodDetails);
     updateChecklistItem(categoryCheck, checks.description);
     updateChecklistItem(quantityCheck, checks.image);
     updateChecklistItem(prepCheck, checks.quantityUnit);
-    updateChecklistItem(pickupCheck, checks.pickup);
     updateChecklistItem(expiryCheck, checks.expiry);
     updateChecklistItem(imageCheck, checks.pricing);
 
@@ -600,7 +681,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update progress bar
     progressFill.style.width = `${percent}%`;
 
-    // Update 0/7 counter
+    // Update the completed counter
     const readinessCompleted = document.getElementById("readinessCompleted");
 
     if (readinessCompleted) {
@@ -826,10 +907,8 @@ document.addEventListener("DOMContentLoaded", () => {
     preparationTime.value = draft.preparationTime || "";
     expiryDate.value = draft.expiryDate || "";
     availableUntil.value = draft.availableUntil || "";
-    pickupAddress.value = draft.pickupAddress || "";
-    city.value = draft.city || "";
-    landmark.value = draft.landmark || "";
     pickupInstructions.value = draft.pickupInstructions || "";
+    updateInstructionCounter();
 
     // Restore image
     if (draft.imageData) {
@@ -1096,14 +1175,13 @@ document.addEventListener("DOMContentLoaded", () => {
        Pickup
     ------------------------- */
 
-    if (pickupAddress.value.trim() === "") {
-      invalidate(pickupAddress, "Pickup address is required.");
-    } else if (pickupAddress.value.trim().length < 10) {
-      invalidate(pickupAddress, "Address should be at least 10 characters.");
-    }
-
-    if (city.value === "") {
-      invalidate(city, "Please enter your city.");
+    if (!providerPickupLoaded) {
+      showToast(
+        "Add a complete business address in your Provider Profile before publishing.",
+        "error",
+        "Pickup Location Required",
+      );
+      isValid = false;
     }
 
     /* -------------------------
@@ -1154,8 +1232,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     form.reset();
 
-    city.value = "";
-    landmark.value = "";
     pickupInstructions.value = "";
 
     foodImage.value = "";
@@ -1357,21 +1433,8 @@ document.addEventListener("DOMContentLoaded", () => {
        PICKUP INFORMATION
     ================================================= */
 
-      city.value = listing.city || "";
-
-      landmark.value = listing.landmark || "";
-
       pickupInstructions.value = listing.pickup_instructions || "";
-
-      /* =================================================
-       ADDRESS
-    ================================================= */
-
-      pickupAddress.value = getBasePickupAddress(
-        listing.address || "",
-        listing.landmark || "",
-        listing.city || "",
-      );
+      updateInstructionCounter();
 
       /* =================================================
        EXISTING IMAGE
@@ -3106,6 +3169,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   description.addEventListener("input", updateCharacterCounter);
 
+  pickupInstructions.addEventListener("input", updateInstructionCounter);
+
   description.addEventListener("input", updateReadiness);
 
   foodName.addEventListener("input", updateCompletionBadge);
@@ -3202,23 +3267,27 @@ document.addEventListener("DOMContentLoaded", () => {
      INITIALIZE PAGE
   ========================================================== */
 
-  if (editMode && editListingId) {
-    // Load existing listing into the form
-    loadListingForEdit();
-  } else if (localStorage.getItem("reserveListingDraft")) {
-    draftNotification.classList.remove("hidden");
+  async function initializePage() {
+    await loadProviderPickupProfile();
 
-    updateDraftStatus(
-      "Draft Available",
-      "Restore your previous draft",
-      "ri-draft-line",
-    );
-  } else {
+    if (editMode && editListingId) {
+      // Load existing listing into the form after the profile pickup is ready.
+      loadListingForEdit();
+    } else if (localStorage.getItem("reserveListingDraft")) {
+      draftNotification.classList.remove("hidden");
+
+      updateDraftStatus(
+        "Draft Available",
+        "Restore your previous draft",
+        "ri-draft-line",
+      );
+    } else {
     toggleOtherCategory();
     toggleOtherUnit();
     toggleListingType();
     toggleExpiryFields();
     updateCharacterCounter();
+    updateInstructionCounter();
     updateCompletionBadge();
     updateReadiness();
     updatePreviewCard();
@@ -3230,5 +3299,8 @@ document.addEventListener("DOMContentLoaded", () => {
       "Start creating a new listing",
       "ri-file-add-line",
     );
+    }
   }
+
+  initializePage();
 });

@@ -29,8 +29,6 @@ REQUIRED_FIELDS = (
     "expiry_date",
     "pickup_start",
     "pickup_end",
-    "address",
-    "city",
     "description",
     "image",
 )
@@ -92,7 +90,18 @@ def get_provider_details(owner_id):
             or "Local Food Provider"
         )
 
+        profile_images = owner.get("profile_images", [])
         provider_image = (
+            next(
+                (
+                    image for image in profile_images
+                    if isinstance(image, str) and image.strip()
+                ),
+                "",
+            )
+            if isinstance(profile_images, list)
+            else ""
+        ) or (
             owner.get("profileImage")
             or owner.get("profile_image")
             or owner.get("image")
@@ -115,6 +124,36 @@ def get_provider_details(owner_id):
         print("MongoDB provider lookup error:", error)
 
         return default_provider
+
+
+def get_provider_pickup_location(owner_id):
+    """Return the pickup address stored in the authenticated provider profile."""
+
+    try:
+        users_collection = get_collection("users")
+
+        if users_collection is None:
+            return None
+
+        provider = users_collection.find_one({"_id": owner_id})
+
+        if not provider:
+            return None
+
+        address = str(provider.get("address", "")).strip()
+        city = str(provider.get("city", "")).strip()
+
+        if not address or not city:
+            return None
+
+        return {
+            "address": address,
+            "city": city,
+        }
+
+    except PyMongoError as error:
+        print("MongoDB provider pickup lookup error:", error)
+        return None
 
 
 # ==========================================================
@@ -165,6 +204,23 @@ def create_listing():
             "success": False,
             "message": "A valid JSON request body is required."
         }), 400
+
+    # Pickup fields are managed by the provider profile. Do not rely on values
+    # from the listing form, which no longer exposes editable location inputs.
+    pickup_location = get_provider_pickup_location(owner_id)
+
+    if pickup_location is None:
+        return jsonify({
+            "success": False,
+            "message": (
+                "Add a complete business address and city in your "
+                "provider profile before creating a listing."
+            )
+        }), 400
+
+    payload["address"] = pickup_location["address"]
+    payload["city"] = pickup_location["city"]
+    payload["landmark"] = ""
 
     # ==========================================================
     # 4. VALIDATE REQUIRED FIELDS
@@ -219,6 +275,11 @@ def create_listing():
         field: payload[field]
         for field in REQUIRED_FIELDS
     }
+
+    listing_document.update({
+        "address": pickup_location["address"],
+        "city": pickup_location["city"],
+    })
 
     listing_document.update({
 
@@ -1156,8 +1217,6 @@ def update_listing(listing_id):
         "expiry_date",
         "pickup_start",
         "pickup_end",
-        "address",
-        "city",
         "description",
         "image",
     )
@@ -1183,6 +1242,19 @@ def update_listing(listing_id):
             "missing_fields": missing_fields
         }), 400
 
+    # Keep edited listings in sync with the provider profile's pickup
+    # location, rather than accepting client-supplied address fields.
+    pickup_location = get_provider_pickup_location(owner_id)
+
+    if pickup_location is None:
+        return jsonify({
+            "success": False,
+            "message": (
+                "Add a complete business address and city in your "
+                "provider profile before updating a listing."
+            )
+        }), 400
+
     # ==========================================================
     # BUILD UPDATE DATA
     # ==========================================================
@@ -1200,6 +1272,10 @@ def update_listing(listing_id):
             value = value.strip()
 
         update_data[field] = value
+
+    update_data["address"] = pickup_location["address"]
+    update_data["city"] = pickup_location["city"]
+    update_data["landmark"] = ""
 
     update_data["updated_at"] = datetime.now(timezone.utc)
 
@@ -1619,4 +1695,3 @@ def delete_listing(listing_id):
         "success": True,
         "message": "Listing deleted successfully."
     }), 200
-
