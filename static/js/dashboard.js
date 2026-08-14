@@ -177,3 +177,77 @@ if (filterToggle && filterDropdown && impactChart) {
     filterToggle.classList.remove("open");
   });
 }
+
+/* ==========================================================
+   PROFILE DROPDOWN
+========================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  setupProfileDropdown();
+});
+
+/* ==========================================================
+   SETUP PROFILE DROPDOWN
+========================================================== */
+
+function setupProfileDropdown() {
+  const profileMenuBtn = document.getElementById("profileMenuBtn");
+
+  const profileDropdown = document.getElementById("profileDropdown");
+
+  const profileWrapper = document.querySelector(".profile-wrapper");
+
+  if (!profileMenuBtn || !profileDropdown || !profileWrapper) {
+    return;
+  }
+
+  /* --------------------------------------------------------
+     TOGGLE DROPDOWN
+  -------------------------------------------------------- */
+
+  profileMenuBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    const isHidden = profileDropdown.classList.contains("hidden");
+
+    if (isHidden) {
+      profileDropdown.classList.remove("hidden");
+
+      profileWrapper.classList.add("active");
+    } else {
+      profileDropdown.classList.add("hidden");
+
+      profileWrapper.classList.remove("active");
+    }
+  });
+
+  /* --------------------------------------------------------
+     PREVENT DROPDOWN CLICK FROM CLOSING IMMEDIATELY
+  -------------------------------------------------------- */
+
+  profileDropdown.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+
+  /* --------------------------------------------------------
+     CLOSE WHEN CLICKING OUTSIDE
+  -------------------------------------------------------- */
+
+  document.addEventListener("click", () => {
+    profileDropdown.classList.add("hidden");
+
+    profileWrapper.classList.remove("active");
+  });
+
+  /* --------------------------------------------------------
+     CLOSE WITH ESCAPE KEY
+  -------------------------------------------------------- */
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      profileDropdown.classList.add("hidden");
+
+      profileWrapper.classList.remove("active");
+    }
+  });
+}

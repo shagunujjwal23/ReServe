@@ -567,8 +567,8 @@ function setupSignupForm() {
       ==================================================== */
 
       setTimeout(() => {
-        redirectByRole(role);
-      }, 700);
+  window.location.href = data.redirect || redirectByRole(role);
+}, 700);
     } catch (error) {
       console.error("Signup error:", error);
 
@@ -595,11 +595,11 @@ function redirectByRole(role) {
     .toLowerCase();
 
   switch (normalizedRole) {
+
     /* Individual user */
     case "user":
     case "individual":
-      window.location.href = "/user-dashboard";
-      break;
+      return "/user-dashboard";
 
     /* Food provider */
     case "provider":
@@ -607,23 +607,19 @@ function redirectByRole(role) {
     case "food provider":
     case "donor":
     case "restaurant":
-      window.location.href = "/dashboard";
-      break;
+      return "/provider-profile";
 
     /* NGO */
     case "ngo":
-      window.location.href = "/ngo-dashboard";
-      break;
+      return "/ngo-dashboard";
 
     /* Admin */
     case "admin":
-      window.location.href = "/dashboard";
-      break;
+      return "/dashboard";
 
     /* Fallback */
     default:
-      window.location.href = "/user-dashboard";
-      break;
+      return "/user-dashboard";
   }
 }
 

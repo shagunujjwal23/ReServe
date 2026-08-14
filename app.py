@@ -74,6 +74,122 @@ def forgotpassword():
 def resetpassword():
     return render_template("reset-password.html")
 
+# ==========================================================
+# PROVIDER PROFILE
+# ==========================================================
+
+@app.route("/provider-profile")
+@login_required
+def provider_profile():
+    """Render the profile page for food providers."""
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    # ------------------------------------------------------
+    # CHECK PROVIDER ROLE
+    # ------------------------------------------------------
+
+    role = str(
+        user_record.get("role", "")
+    ).strip().lower()
+
+    if role not in {
+        "provider",
+        "food_provider",
+        "food provider",
+        "donor",
+        "restaurant",
+    }:
+        return redirect(url_for("home"))
+
+    # ------------------------------------------------------
+    # USER DATA
+    # ------------------------------------------------------
+
+    user = {
+        "id": str(user_record["_id"]),
+        "name": user_record.get("full_name", ""),
+        "email": user_record.get("email", ""),
+        "phone": user_record.get("phone", ""),
+        "role": role,
+
+        # Provider information
+        "business_name": user_record.get(
+            "business_name", ""
+        ),
+
+        "provider_type": user_record.get(
+            "provider_type", ""
+        ),
+
+        # Address
+        "address": user_record.get(
+            "address", ""
+        ),
+
+        "city": user_record.get(
+            "city", ""
+        ),
+
+        "state": user_record.get(
+            "state", ""
+        ),
+
+        "pincode": user_record.get(
+            "pincode", ""
+        ),
+
+        # About
+        "about": user_record.get(
+            "about", ""
+        ),
+
+        # Image
+        "profile_image": user_record.get(
+            "profile_image", ""
+        ),
+
+        # Optional
+        "website": user_record.get(
+            "website", ""
+        ),
+
+        "opening_time": user_record.get(
+            "opening_time", ""
+        ),
+
+        "closing_time": user_record.get(
+            "closing_time", ""
+        ),
+    }
+
+    return render_template(
+        "provider-profile.html",
+        user=user,
+    )
+
 # -----------------------------
 # DASHBOARD
 # -----------------------------
@@ -258,6 +374,126 @@ def listing_details(listing_id):
     return render_template(
         "listing-details.html",
         listing_id=listing_id
+    )
+
+# ==========================================================
+# DONOR PROFILE
+# ==========================================================
+
+@app.route("/donor-profile")
+@login_required
+def donor_profile():
+    """Render the profile page for food donors."""
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    # ------------------------------------------------------
+    # CHECK DONOR / PROVIDER ROLE
+    # ------------------------------------------------------
+
+    role = str(
+        user_record.get("role", "")
+    ).strip().lower()
+
+    if role not in {
+        "provider",
+        "food_provider",
+        "food provider",
+        "donor",
+        "restaurant",
+    }:
+        return redirect(url_for("home"))
+
+    # ------------------------------------------------------
+    # USER DATA
+    # ------------------------------------------------------
+
+    user = {
+        "id": str(user_record["_id"]),
+        "name": user_record.get("full_name", ""),
+        "email": user_record.get("email", ""),
+        "phone": user_record.get("phone", ""),
+        "role": role,
+
+        # Provider / Donor information
+        "business_name": user_record.get(
+            "business_name", ""
+        ),
+
+        "provider_type": user_record.get(
+            "provider_type", ""
+        ),
+
+        "provider_id": user_record.get(
+            "provider_id", ""
+        ),
+
+        # Address
+        "address": user_record.get(
+            "address", ""
+        ),
+
+        "city": user_record.get(
+            "city", ""
+        ),
+
+        "state": user_record.get(
+            "state", ""
+        ),
+
+        "pincode": user_record.get(
+            "pincode", ""
+        ),
+
+        # About
+        "about": user_record.get(
+            "about", ""
+        ),
+
+        # Profile image
+        "profile_image": user_record.get(
+            "profile_image", ""
+        ),
+
+        # Optional
+        "website": user_record.get(
+            "website", ""
+        ),
+
+        "opening_time": user_record.get(
+            "opening_time", ""
+        ),
+
+        "closing_time": user_record.get(
+            "closing_time", ""
+        ),
+    }
+
+    return render_template(
+        "donor-profile.html",
+        user=user,
     )
 
 if __name__ == "__main__":

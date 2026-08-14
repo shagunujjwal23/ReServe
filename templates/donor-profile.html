@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Profile | ReServe</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Donor Profile CSS -->
+    <link
+      href="{{ url_for('static', filename='css/donor-profile.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- ==========================================================
+         HEADER
+    =========================================================== -->
+
+    <header class="profile-header">
+      <div class="header-container">
+        <!-- Logo -->
+        <a class="logo" href="{{ url_for('home') }}">
+          <div class="logo-icon">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+
+          <div class="logo-text">
+            <span>ReServe</span>
+            <small>From Surplus to Solution</small>
+          </div>
+        </a>
+
+        <!-- Account -->
+        <div class="header-account">
+          <div class="header-avatar">
+            <img id="headerProfileImage" src="" alt="Business profile" />
+
+            <i id="headerAvatarFallback" class="fa-solid fa-store"></i>
+          </div>
+
+          <div class="header-account-info">
+            <strong id="headerBusinessName">Business Name</strong>
+            <span>Business</span>
+          </div>
+
+          <i class="fa-solid fa-chevron-down account-chevron"></i>
+        </div>
+      </div>
+    </header>
+
+    <!-- ==========================================================
+         MAIN
+    =========================================================== -->
+
+    <main class="profile-page">
+      <div class="profile-container">
+        <!-- ======================================================
+             PAGE INTRO
+        ======================================================= -->
+
+        <section class="profile-intro">
+          <div class="intro-content">
+            <h1>Business Profile</h1>
+
+            <p>
+              Manage your business information and preferences to build trust
+              and receive more requests.
+            </p>
+          </div>
+        </section>
+
+        <!-- ======================================================
+             MAIN BUSINESS PROFILE CARD
+        ======================================================= -->
+
+        <section class="business-profile-card">
+          <!-- ====================================================
+               TOP PROFILE AREA
+          ===================================================== -->
+
+          <div class="business-profile-main">
+            <!-- ==================================================
+                 LEFT SIDE
+            =================================================== -->
+
+            <div class="business-overview">
+              <!-- Business Image -->
+              <div class="business-avatar-wrapper">
+                <div class="business-avatar">
+                  <img id="profileImage" src="" alt="Business image" />
+
+                  <div
+                    class="business-avatar-fallback"
+                    id="profileAvatarFallback"
+                  >
+                    <i class="fa-solid fa-store"></i>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  class="change-image-btn"
+                  id="changeImageBtn"
+                  aria-label="Change business image"
+                >
+                  <i class="fa-solid fa-camera"></i>
+                </button>
+              </div>
+
+              <!-- Business Details -->
+              <div class="business-overview-content">
+                <!-- Business Name -->
+                <div class="business-title-row">
+                  <h2 id="businessName">Business Name</h2>
+
+                  <span class="verified-badge">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Verified
+                  </span>
+                </div>
+
+                <!-- Location / Joined -->
+                <div class="business-meta">
+                  <span>
+                    <i class="fa-solid fa-location-dot"></i>
+
+                    <span id="profileLocation"> Location </span>
+                  </span>
+
+                  <span class="meta-divider">•</span>
+
+                  <span>
+                    <i class="fa-regular fa-calendar"></i>
+
+                    Joined on
+                    <span id="joinedDate"> — </span>
+                  </span>
+                </div>
+
+                <!-- About -->
+                <p class="business-about" id="profileAbout">—</p>
+
+                <!-- Business Images -->
+                <div class="business-images" id="businessImages">
+                  <!-- Images generated by JavaScript -->
+                </div>
+
+                <!-- Actions -->
+                <div class="business-actions">
+                  <button
+                    type="button"
+                    class="edit-profile-btn"
+                    id="editProfileBtn"
+                  >
+                    <i class="fa-solid fa-pen"></i>
+                    Edit Profile
+                  </button>
+
+                  <button
+                    type="button"
+                    class="change-password-btn"
+                    id="changePasswordBtn"
+                  >
+                    <i class="fa-solid fa-lock"></i>
+                    Change Password
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==================================================
+                 RIGHT SIDE BUSINESS INFORMATION
+            =================================================== -->
+
+            <div class="business-information">
+              <!-- Contact Person -->
+              <div class="information-row">
+                <div class="information-icon">
+                  <i class="fa-regular fa-user"></i>
+                </div>
+
+                <div class="information-label">Contact Person</div>
+
+                <strong id="contactPerson"> — </strong>
+              </div>
+
+              <!-- Phone -->
+              <div class="information-row">
+                <div class="information-icon">
+                  <i class="fa-solid fa-phone"></i>
+                </div>
+
+                <div class="information-label">Phone</div>
+
+                <strong id="contactPhone"> — </strong>
+              </div>
+
+              <!-- Email -->
+              <div class="information-row">
+                <div class="information-icon">
+                  <i class="fa-regular fa-envelope"></i>
+                </div>
+
+                <div class="information-label">Email</div>
+
+                <strong id="contactEmail"> — </strong>
+              </div>
+
+              <!-- Business Type -->
+              <div class="information-row">
+                <div class="information-icon">
+                  <i class="fa-solid fa-briefcase"></i>
+                </div>
+
+                <div class="information-label">Business Type</div>
+
+                <strong id="businessType"> — </strong>
+              </div>
+
+              <!-- Business ID -->
+              <div class="information-row">
+                <div class="information-icon">
+                  <i class="fa-regular fa-id-card"></i>
+                </div>
+
+                <div class="information-label">Business ID</div>
+
+                <strong id="businessId"> — </strong>
+              </div>
+
+              <!-- Address -->
+              <div class="information-row address-information-row">
+                <div class="information-icon">
+                  <i class="fa-solid fa-location-dot"></i>
+                </div>
+
+                <div class="information-label">Address</div>
+
+                <strong id="contactAddress"> — </strong>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======================================================
+             LOWER INFORMATION GRID
+        ======================================================= -->
+
+        <div class="profile-information-grid">
+          <!-- ====================================================
+               ABOUT YOUR BUSINESS
+          ===================================================== -->
+
+          <section class="information-card">
+            <div class="information-card-header">
+              <div class="card-header-icon">
+                <i class="fa-solid fa-store"></i>
+              </div>
+
+              <div>
+                <h2>About Your Business</h2>
+
+                <p>Information customers and organizations can see.</p>
+              </div>
+            </div>
+
+            <div class="information-list">
+              <!-- Business Name -->
+              <div class="detail-row">
+                <span> Business Name </span>
+
+                <strong id="organizationBusinessName"> — </strong>
+              </div>
+
+              <!-- Website -->
+              <div class="detail-row">
+                <span>
+                  Website
+                </span>
+
+                <strong id="preferenceWebsite"> — </strong>
+              </div>
+
+              <!-- Cuisine -->
+              <div class="detail-row">
+                <span> Cuisine Type </span>
+
+                <strong id="organizationCuisine" class="multiline-value">
+                  —
+                </strong>
+              </div>
+
+              <!-- Serving Areas -->
+              <div class="detail-row">
+                <span> Serving Areas </span>
+
+                <strong id="organizationServingAreas" class="multiline-value">
+                  —
+                </strong>
+              </div>
+            </div>
+          </section>
+
+          <!-- ====================================================
+               PREFERENCES
+          ===================================================== -->
+
+          <section class="information-card">
+            <div class="information-card-header">
+              <div class="card-header-icon">
+                <i class="fa-solid fa-sliders"></i>
+              </div>
+
+              <div>
+                <h2>Your Preferences</h2>
+
+                <p>Your availability and business preferences.</p>
+              </div>
+            </div>
+
+            <div class="information-list">
+              <!-- Working Days -->
+              <div class="detail-row">
+                <span>
+                  <i class="fa-regular fa-calendar"></i>
+                  Working Days
+                </span>
+
+                <strong id="preferenceWorkingDays" class="multiline-value">
+                  —
+                </strong>
+              </div>
+
+              <!-- Opening Time -->
+              <div class="detail-row">
+                <span>
+                  <i class="fa-regular fa-clock"></i>
+                  Opening Time
+                </span>
+
+                <strong id="preferenceOpeningTime"> — </strong>
+              </div>
+
+              <!-- Closing Time -->
+              <div class="detail-row">
+                <span>
+                  <i class="fa-regular fa-clock"></i>
+                  Closing Time
+                </span>
+
+                <strong id="preferenceClosingTime"> — </strong>
+              </div>
+
+              <!-- City -->
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-city"></i>
+                  City
+                </span>
+
+                <strong id="preferenceCity"> — </strong>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- ======================================================
+             IMPACT SECTION
+        ======================================================= -->
+
+        <section class="impact-banner">
+          <div class="impact-icon">
+            <i class="fa-solid fa-hand-holding-heart"></i>
+          </div>
+
+          <div class="impact-content">
+            <h2>Together, we're reducing food waste.</h2>
+
+            <p>
+              Your business can help give surplus food a second chance while
+              making a meaningful difference in the community.
+            </p>
+          </div>
+
+          <div class="impact-decoration">
+            <i class="fa-solid fa-seedling"></i>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- ==========================================================
+         HIDDEN PROFILE IMAGE INPUT
+    =========================================================== -->
+
+    <input
+      type="file"
+      id="profileImageInput"
+      accept="image/jpeg,image/png,image/webp"
+      hidden
+    />
+
+    <!-- ==========================================================
+         JAVASCRIPT
+    =========================================================== -->
+
+    <script src="{{ url_for('static', filename='js/donor-profile.js') }}"></script>
+  </body>
+</html>

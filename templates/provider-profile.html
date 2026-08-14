@@ -1,0 +1,746 @@
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Complete Provider Profile | ReServe</title>
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      rel="stylesheet"
+    />
+    <!-- Provider Profile CSS -->
+    <link
+      href="{{ url_for('static', filename='css/provider-profile.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- ======================================================
+       HEADER
+  ======================================================= -->
+    <header class="profile-header">
+      <div class="header-container">
+        <!-- Logo -->
+        <a class="logo" href="{{ url_for('home') }}">
+          <div class="logo-icon">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+          <div class="logo-text">
+            <span>ReServe</span>
+            <small>From Surplus to Solution</small>
+          </div>
+        </a>
+        <!-- Exit -->
+        <a class="exit-btn" href="{{ url_for('auth.logout') }}">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Exit</span>
+        </a>
+      </div>
+    </header>
+    <!-- ======================================================
+       MAIN
+  ======================================================= -->
+    <main class="profile-page">
+      <div class="profile-container">
+        <!-- ==================================================
+           INTRO
+      =================================================== -->
+        <section class="profile-intro">
+          <div class="intro-icon">
+            <i class="fa-solid fa-store"></i>
+          </div>
+          <div class="intro-content">
+            <span class="eyebrow"> PROVIDER SETUP </span>
+            <h1>Complete Your Provider Profile</h1>
+            <p>
+              Tell us about your business so we can create your provider profile
+              on ReServe.
+            </p>
+          </div>
+        </section>
+        <!-- ==================================================
+           FORM
+      =================================================== -->
+        <form id="providerProfileForm" novalidate="">
+          <div class="profile-grid">
+            <div class="profile-column left-column">
+              <section class="profile-section business-info-section">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fa-solid fa-building"></i>
+                  </div>
+                  <div>
+                    <h2>Business Information</h2>
+                    <p>Basic information about your food business.</p>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <!-- Business Name -->
+                  <div class="form-group">
+                    <label for="businessName">
+                      Business / Provider Name
+                      <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-store"></i>
+                      <input
+                        autocomplete="organization"
+                        id="businessName"
+                        name="business_name"
+                        placeholder="Enter your business name"
+                        type="text"
+                      />
+                    </div>
+                    <p class="field-message" id="businessNameMessage"></p>
+                  </div>
+                  <!-- Provider Type -->
+                  <div class="form-group">
+                    <label for="providerType">
+                      Provider Type
+                      <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper select-wrapper">
+                      <i class="fa-solid fa-utensils"></i>
+                      <select id="providerType" name="provider_type">
+                        <option value="" disabled>Select provider type</option>
+                        <option value="restaurant">Restaurant</option>
+                        <option value="cafe">Cafe</option>
+                        <option value="bakery">Bakery</option>
+                        <option value="hotel">Hotel</option>
+                        <option value="catering">Catering Service</option>
+                        <option value="cloud_kitchen">Cloud Kitchen</option>
+                        <option value="food_shop">Food Shop</option>
+                        <option value="other">Other</option>
+                      </select>
+                      <i class="fa-solid fa-chevron-down select-arrow"></i>
+                    </div>
+                    <p class="field-message" id="providerTypeMessage"></p>
+                  </div>
+
+                  <!-- Phone -->
+                  <div class="form-group">
+                    <label for="phone">
+                      Phone Number
+                      <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper readonly-field">
+                      <i class="fa-solid fa-phone"></i>
+                      <input id="phone" name="phone" readonly="" type="tel" />
+                      <i class="fa-solid fa-lock field-lock"></i>
+                    </div>
+                    <small class="field-hint">
+                      Phone number linked to your ReServe account.
+                    </small>
+                  </div>
+                  <!-- Email -->
+                  <div class="form-group">
+                    <label for="email">
+                      Email Address
+                      <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper readonly-field">
+                      <i class="fa-solid fa-envelope"></i>
+                      <input id="email" name="email" readonly="" type="email" />
+                      <i class="fa-solid fa-lock field-lock"></i>
+                    </div>
+                    <small class="field-hint">
+                      Your registered account email cannot be changed here.
+                    </small>
+                  </div>
+                  <!-- Provider ID -->
+                  <div class="form-group">
+                    <label for="providerId"> ReServe Provider ID </label>
+                    <div class="input-wrapper readonly-field">
+                      <i class="fa-solid fa-id-card"></i>
+                      <input
+                        id="providerId"
+                        name="provider_id"
+                        placeholder="Generated by ReServe"
+                        readonly=""
+                        type="text"
+                      />
+                      <i class="fa-solid fa-lock field-lock"></i>
+                    </div>
+                    <small class="field-hint">
+                      Your unique provider identification number.
+                    </small>
+                  </div>
+                  <!-- Other Provider Type -->
+                  <div
+                    class="form-group full-width other-provider-group"
+                    hidden=""
+                    id="otherProviderTypeGroup"
+                  >
+                    <label for="otherProviderType">
+                      Specify Provider Type
+
+                      <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-pen"></i>
+                      <input
+                        id="otherProviderType"
+                        maxlength="100"
+                        name="other_provider_type"
+                        placeholder="Enter your provider type"
+                        type="text"
+                      />
+                    </div>
+                    <p class="field-message" id="otherProviderTypeMessage"></p>
+                  </div>
+                </div>
+              </section>
+              <section class="profile-section provider-details-section">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                  </div>
+                  <div>
+                    <h2>Provider Details</h2>
+                    <p>Tell users about the food you provide.</p>
+                  </div>
+                </div>
+                <div class="provider-details-content">
+                  <!-- About -->
+                  <div class="form-group">
+                    <label for="about">
+                      About Your Business
+
+                      <span class="required">*</span>
+                    </label>
+                    <div class="textarea-container">
+                      <textarea
+                        id="about"
+                        maxlength="500"
+                        name="about"
+                        placeholder="Tell users about your business, the food you provide, and your commitment to reducing food waste..."
+                        rows="4"
+                      ></textarea>
+                      <span id="aboutCounter"> 0 / 500 </span>
+                    </div>
+                    <p class="field-message" id="aboutMessage"></p>
+                  </div>
+                  <!-- Website -->
+                  <div class="form-group">
+                    <label for="website">
+                      Website
+
+                      <span class="optional"> Optional </span>
+                    </label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-link"></i>
+                      <input
+                        id="website"
+                        name="website"
+                        placeholder="https://your-website.com"
+                        type="url"
+                      />
+                    </div>
+                  </div>
+                  <!-- ==================================================
+   CUISINE TYPE
+=================================================== -->
+
+                  <div class="form-group full-width">
+                    <label>
+                      Cuisine Type
+                      <span class="required">*</span>
+                      <small>Select one or more</small>
+                    </label>
+
+                    <div class="category-grid" id="cuisineTypes">
+                      <!-- Indian -->
+                      <label class="category-option">
+                        <input
+                          type="checkbox"
+                          name="cuisine_types"
+                          value="indian"
+                        />
+
+                        <span>
+                          <i class="fa-solid fa-bowl-food"></i>
+                          Indian
+                        </span>
+                      </label>
+
+                      <!-- Chinese -->
+                      <label class="category-option">
+                        <input
+                          type="checkbox"
+                          name="cuisine_types"
+                          value="chinese"
+                        />
+
+                        <span>
+                          <i class="fa-solid fa-bowl-rice"></i>
+                          Chinese
+                        </span>
+                      </label>
+
+                      <!-- Italian -->
+                      <label class="category-option">
+                        <input
+                          type="checkbox"
+                          name="cuisine_types"
+                          value="italian"
+                        />
+
+                        <span>
+                          <i class="fa-solid fa-pizza-slice"></i>
+                          Italian
+                        </span>
+                      </label>
+
+                      <!-- Continental -->
+                      <label class="category-option">
+                        <input
+                          type="checkbox"
+                          name="cuisine_types"
+                          value="continental"
+                        />
+
+                        <span>
+                          <i class="fa-solid fa-utensils"></i>
+                          Continental
+                        </span>
+                      </label>
+
+                      <!-- Mexican -->
+                      <label class="category-option">
+                        <input
+                          type="checkbox"
+                          name="cuisine_types"
+                          value="mexican"
+                        />
+
+                        <span>
+                          <i class="fa-solid fa-pepper-hot"></i>
+                          Mexican
+                        </span>
+                      </label>
+
+                      <!-- South Indian -->
+                      <label class="category-option">
+                        <input
+                          type="checkbox"
+                          name="cuisine_types"
+                          value="south_indian"
+                        />
+
+                        <span>
+                          <i class="fa-solid fa-bowl-food"></i>
+                          South Indian
+                        </span>
+                      </label>
+
+                      <!-- Bakery -->
+                      <label class="category-option">
+                        <input
+                          type="checkbox"
+                          name="cuisine_types"
+                          value="bakery"
+                        />
+
+                        <span>
+                          <i class="fa-solid fa-bread-slice"></i>
+                          Bakery
+                        </span>
+                      </label>
+
+                      <label class="category-option">
+                        <input
+                          type="checkbox"
+                          name="cuisine_types"
+                          value="deserts"
+                        />
+
+                        <span>
+                          <i class="fa-solid fa-ice-cream"></i>
+                          Deserts
+                        </span>
+                      </label>
+
+                      <!-- Other -->
+                      <label class="category-option">
+                        <input
+                          type="checkbox"
+                          id="otherCuisineCheckbox"
+                          name="cuisine_types"
+                          value="other"
+                        />
+
+                        <span>
+                          <i class="fa-solid fa-ellipsis"></i>
+                          Other
+                        </span>
+                      </label>
+
+                      <!-- Other Cuisine Type -->
+                      <div
+                        class="form-group full-width other-cuisine-group"
+                        id="otherCuisineGroup"
+                      >
+                        <label for="otherCuisine">
+                          Specify Other Cuisine
+                          <span class="required">*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+                          <i class="fa-solid fa-utensils"></i>
+
+                          <input
+                            type="text"
+                            id="otherCuisine"
+                            name="other_cuisine"
+                            placeholder="Select Other above to enter your cuisine type"
+                            maxlength="80"
+                            disabled
+                          />
+                        </div>
+
+                        <small class="field-hint">
+                          Select "Other" above to enter a cuisine type not
+                          listed.
+                        </small>
+
+                        <p id="otherCuisineMessage" class="field-message"></p>
+                      </div>
+                    </div>
+
+                    <p id="cuisineTypeMessage" class="field-message"></p>
+                  </div>
+                </div>
+              </section>
+            </div>
+            <div class="profile-column right-column">
+              <section class="profile-section address-section">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                  </div>
+                  <div>
+                    <h2>Business Address</h2>
+                    <p>Add the location where food will be available.</p>
+                  </div>
+                </div>
+                <div class="form-grid">
+                  <!-- Complete Address -->
+                  <div class="form-group full-width">
+                    <label for="address">
+                      Complete Address
+
+                      <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper textarea-wrapper">
+                      <i class="fa-solid fa-location-dot"></i>
+                      <textarea
+                        id="address"
+                        name="address"
+                        placeholder="Enter complete business address"
+                        rows="3"
+                      ></textarea>
+                    </div>
+                    <p class="field-message" id="addressMessage"></p>
+                  </div>
+
+                  <!-- City -->
+                  <div class="form-group">
+                    <label for="city">
+                      City
+
+                      <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-city"></i>
+                      <input
+                        id="city"
+                        name="city"
+                        placeholder="Enter city"
+                        type="text"
+                      />
+                    </div>
+                    <p class="field-message" id="cityMessage"></p>
+                  </div>
+                  <!-- State -->
+                  <div class="form-group">
+                    <label for="state">
+                      State
+
+                      <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-map"></i>
+                      <input
+                        id="state"
+                        name="state"
+                        placeholder="Enter state"
+                        type="text"
+                      />
+                    </div>
+                    <p class="field-message" id="stateMessage"></p>
+                  </div>
+                  <!-- Pincode -->
+                  <div class="form-group">
+                    <label for="pincode">
+                      Pincode
+
+                      <span class="required">*</span>
+                    </label>
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-location-crosshairs"></i>
+                      <input
+                        id="pincode"
+                        inputmode="numeric"
+                        maxlength="6"
+                        name="pincode"
+                        placeholder="6-digit pincode"
+                        type="text"
+                      />
+                    </div>
+                    <p class="field-message" id="pincodeMessage"></p>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="servingAreas">
+                      Serving Areas
+                      <span class="optional">Optional</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-location-dot"></i>
+
+                      <input
+                        type="text"
+                        id="servingAreas"
+                        name="serving_areas"
+                        placeholder="e.g. Indiranagar, HSR Layout, Koramangala"
+                        maxlength="250"
+                      />
+                    </div>
+
+                    <small class="field-hint">
+                      Areas where you can provide or distribute food.
+                    </small>
+
+                    <div id="servingAreasMessage" class="field-message"></div>
+                  </div>
+                </div>
+              </section>
+              <section class="profile-section timings-section">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fa-regular fa-clock"></i>
+                  </div>
+                  <div>
+                    <h2>Business Timings</h2>
+                    <p>Let users know when your business is open.</p>
+                  </div>
+                </div>
+
+                <div class="form-group full-width">
+                  <label>
+                    Working Days
+                    <span class="required">*</span>
+                  </label>
+
+                  <div class="working-days-grid">
+                    <label class="day-option">
+                      <input
+                        type="checkbox"
+                        name="working_days"
+                        value="Monday"
+                      />
+                      <span>Monday</span>
+                    </label>
+
+                    <label class="day-option">
+                      <input
+                        type="checkbox"
+                        name="working_days"
+                        value="Tuesday"
+                      />
+                      <span>Tuesday</span>
+                    </label>
+
+                    <label class="day-option">
+                      <input
+                        type="checkbox"
+                        name="working_days"
+                        value="Wednesday"
+                      />
+                      <span>Wednesday</span>
+                    </label>
+
+                    <label class="day-option">
+                      <input
+                        type="checkbox"
+                        name="working_days"
+                        value="Thursday"
+                      />
+                      <span>Thursday</span>
+                    </label>
+
+                    <label class="day-option">
+                      <input
+                        type="checkbox"
+                        name="working_days"
+                        value="Friday"
+                      />
+                      <span>Friday</span>
+                    </label>
+
+                    <label class="day-option">
+                      <input
+                        type="checkbox"
+                        name="working_days"
+                        value="Saturday"
+                      />
+                      <span>Saturday</span>
+                    </label>
+
+                    <label class="day-option">
+                      <input
+                        type="checkbox"
+                        name="working_days"
+                        value="Sunday"
+                      />
+                      <span>Sunday</span>
+                    </label>
+                  </div>
+
+                  <small class="field-hint">
+                    Select all days when your business operates.
+                  </small>
+
+                  <div id="workingDaysMessage" class="field-message"></div>
+                </div>
+
+                <div class="timings-grid">
+                  <!-- Opening -->
+                  <div class="form-group">
+                    <label for="openingTime">
+                      Opening Time
+
+                      <span class="required"> * </span>
+                    </label>
+                    <div class="input-wrapper">
+                      <i class="fa-regular fa-clock"></i>
+                      <input id="openingTime" name="opening_time" type="time" />
+                    </div>
+                    <p class="field-message" id="openingTimeMessage"></p>
+                  </div>
+                  <!-- Closing -->
+                  <div class="form-group">
+                    <label for="closingTime">
+                      Closing Time
+
+                      <span class="required"> * </span>
+                    </label>
+                    <div class="input-wrapper">
+                      <i class="fa-regular fa-clock"></i>
+                      <input id="closingTime" name="closing_time" type="time" />
+                    </div>
+                    <p class="field-message" id="closingTimeMessage"></p>
+                  </div>
+                </div>
+                <small class="timing-hint">
+                  Timings help users know when they can contact or visit you.
+                </small>
+              </section>
+              <section class="profile-section images-section">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fa-regular fa-images"></i>
+                  </div>
+                  <div>
+                    <h2>Business Images</h2>
+                    <p>Showcase your business and food.</p>
+                  </div>
+                </div>
+                <div class="image-upload-area">
+                  <div class="image-upload-info">
+                    <div class="upload-icon">
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <h3>Upload Business Images</h3>
+                    <p>
+                      Add up to 5 images of your business, food or pickup
+                      location.
+                    </p>
+                    <span>
+                      Accepted formats: JPG, JPEG, PNG, WEBP. Maximum 5MB per
+                      image.
+                    </span>
+                    <input
+                      accept="image/jpeg,image/png,image/webp"
+                      hidden=""
+                      id="businessImages"
+                      multiple=""
+                      name="business_images"
+                      type="file"
+                    />
+                    <button
+                      class="choose-images-btn"
+                      id="chooseImagesBtn"
+                      type="button"
+                    >
+                      <i class="fa-solid fa-plus"></i>
+
+                      Add Images
+                    </button>
+                  </div>
+
+                  <!-- Preview -->
+                  <div class="image-preview" id="imagePreview"></div>
+                </div>
+                <p class="field-message" id="imageMessage"></p>
+              </section>
+            </div>
+          </div>
+          <!-- ==================================================
+             FORM MESSAGES
+        =================================================== -->
+          <div class="form-message success-message" id="successMessage">
+            <i class="fa-solid fa-circle-check"></i>
+            <span></span>
+          </div>
+          <div class="form-message error-message" id="errorMessage">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span></span>
+          </div>
+          <!-- ==================================================
+             ACTIONS
+        =================================================== -->
+          <div class="form-actions">
+            <div class="skip-action">
+              <a class="skip-btn" href="{{ url_for('auth.logout') }}">
+                Skip for Now
+              </a>
+              <small>
+                You can complete your profile later from the dashboard.
+              </small>
+            </div>
+            <div class="save-action">
+              <button class="save-btn" id="saveProfileBtn" type="submit">
+                <span> Save &amp; Continue </span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+              <small> Save your profile and go to dashboard. </small>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+    <!-- ======================================================
+       JAVASCRIPT
+  ======================================================= -->
+    <script src="{{ url_for('static', filename='js/provider-profile.js') }}"></script>
+  </body>
+</html>

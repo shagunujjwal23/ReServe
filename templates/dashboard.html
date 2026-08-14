@@ -36,7 +36,7 @@
         <div class="sidebar-brand">
           <div class="logo-wrapper">
             <img
-               src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
               alt="ReServe Logo"
             />
           </div>
@@ -141,21 +141,46 @@
               </button>
 
               <!-- Profile -->
+              <div class="profile-wrapper">
+                <button class="profile" type="button" id="profileMenuBtn">
+                  <img
+                    src="{{ url_for('static', filename='images/avatars/default.png') }}"
+                    alt="Profile"
+                    id="headerProfileImage"
+                  />
 
-              <button class="profile" type="button">
-                <img
-                  src="{{ url_for('static', filename='images/avatars/default.png') }}"
-                  alt="Profile"
-                />
+                  <div class="profile-info">
+                    <h4>{{ user.business_name or user.name }}</h4>
 
-                <div class="profile-info">
-                  <h4>{{ user.name }}</h4>
+                    <p>{{ user.role | replace('_', ' ') | title }}</p>
+                  </div>
 
-                  <p>{{ user.role }}</p>
+                  <i class="ri-arrow-down-s-line"></i>
+                </button>
+
+                <!-- Profile Dropdown -->
+                <div class="profile-dropdown hidden" id="profileDropdown">
+                  <!-- My Profile -->
+                  <a href="/donor-profile">
+                    <i class="ri-user-line"></i>
+                    <span>My Profile</span>
+                  </a>
+
+                  <!-- Settings -->
+                  <a href="/settings">
+                    <i class="ri-settings-3-line"></i>
+                    <span>Settings</span>
+                  </a>
+
+                  <div class="dropdown-divider"></div>
+
+                  <!-- Logout -->
+                  <a href="{{ url_for('auth.logout') }}">
+                    <i class="ri-logout-box-r-line"></i>
+                    <span>Logout</span>
+                  </a>
                 </div>
-
-                <i class="ri-arrow-down-s-line"></i>
-              </button>
+              </div>
             </div>
           </header>
 
@@ -183,7 +208,7 @@
               </p>
 
               <div class="hero-buttons">
-                <a href="#" class="primary-btn">
+                <a href="\add-listings" class="primary-btn">
                   <i class="ri-add-line"></i>
                   <span>Add Food Listing</span>
                 </a>

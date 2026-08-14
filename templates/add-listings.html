@@ -686,89 +686,77 @@
                          SECTION 03 : PICKUP DETAILS
                     =================================================== -->
 
-                    <section class="form-card">
+                    <section class="form-card pickup-section">
                       <div class="card-header">
                         <div class="section-content">
                           <h2>
                             <i class="ri-map-pin-line"></i>
-                            Pickup Details
+                            Pickup Information
                           </h2>
 
                           <p>
-                            Add your pickup location and upload a food image.
+                            Pickup location is automatically synced from your
+                            provider profile.
                           </p>
                         </div>
                       </div>
 
-                      <div class="form-grid">
-                        <!-- Pickup Address -->
+                      <!-- Pickup Location Card -->
 
-                        <div class="form-group full-width">
-                          <label>
-                            Pickup Address
-                            <span>*</span>
-                          </label>
+                      <div class="pickup-info-bar">
+                        <div class="pickup-info-left">
+                          <div class="pickup-icon">
+                            <i class="ri-map-pin-line"></i>
+                          </div>
 
-                          <textarea
-                            id="pickupAddress"
-                            name="pickupAddress"
-                            rows="3"
-                            placeholder="Enter complete pickup address with nearby landmark."
-                            required
-                          ></textarea>
+                          <div class="pickup-details">
+                            <strong id="businessName"
+                              >Loading business...</strong
+                            >
 
-                          <small class="field-helper">
-                            Include a nearby landmark for easier pickup.
-                          </small>
-                        </div>
-
-                        <!-- City -->
-
-                        <div class="form-group">
-                          <label for="city">
-                            City
-                            <span class="required">*</span>
-                          </label>
-
-                          <div class="input-wrapper">
-                            <input
-                              type="text"
-                              id="city"
-                              placeholder="e.g., Lucknow"
-                              required
-                            />
+                            <span id="pickupLocationText">
+                              Loading location...
+                            </span>
                           </div>
                         </div>
 
-                        <!-- Landmark -->
+                        <a href="/provider-profile" class="edit-location-btn">
+                          <i class="ri-edit-line"></i>
+                          Edit
+                        </a>
+                      </div>
 
-                        <div class="form-group">
-                          <label for="landmark"> Nearby Landmark </label>
-
-                          <div class="input-wrapper">
-                            <input
-                              type="text"
-                              id="landmark"
-                              placeholder="e.g., Opposite Phoenix Mall"
-                            />
+                      <div class="pickup-instructions-card">
+                        <div class="instructions-header">
+                          <div class="instructions-icon">
+                            <i class="ri-information-line"></i>
                           </div>
+
+                          <div>
+                            <h4>Pickup Instructions</h4>
+                            <p>
+                              Optional details that help recipients find and
+                              collect the food.
+                            </p>
+                          </div>
+
+                          <span class="char-counter">
+                            <span id="instructionCount">0</span>/250
+                          </span>
                         </div>
 
-                        <!-- Pickup Instructions -->
+                        <textarea
+                          id="pickupInstructions"
+                          maxlength="250"
+                          placeholder="Example: Use Gate 2 entrance, parking available near reception, ask for kitchen staff on arrival."
+                        ></textarea>
 
-                        <div class="form-group">
-                          <label for="pickupInstructions">
-                            Pickup Instructions
-                          </label>
-
-                          <div class="textarea-wrapper">
-                            <textarea
-                              id="pickupInstructions"
-                              rows="3"
-                              maxlength="250"
-                              placeholder="Provide any special instructions for pickup (optional)."
-                            ></textarea>
-                          </div>
+                        <div class="instruction-tips">
+                          <i class="ri-lightbulb-flash-line"></i>
+                          <span>
+                            Add landmarks, gate numbers, parking details or
+                            contact instructions.
+                          </span>
                         </div>
                       </div>
                     </section>
@@ -830,7 +818,7 @@
 
                         <strong>
                           <span id="readinessCompleted"> 0 </span>
-                          /7
+                          /6
                         </strong>
                       </div>
 
@@ -857,12 +845,6 @@
                           <i class="ri-checkbox-circle-line"></i>
 
                           <span> Quantity & Unit </span>
-                        </div>
-
-                        <div class="check-item pending" id="pickupCheck">
-                          <i class="ri-checkbox-circle-line"></i>
-
-                          <span> Pickup Information </span>
                         </div>
 
                         <div class="check-item pending" id="expiryCheck">
