@@ -1,0 +1,188 @@
+/* ==========================================================
+   VEG FILTER TOGGLE
+========================================================== */
+
+.food-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 70px;
+}
+
+.food-switch {
+  position: relative;
+
+  width: 56px;
+  height: 30px;
+
+  display: inline-block;
+}
+
+.food-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.food-switch .slider {
+  position: absolute;
+  inset: 0;
+
+  cursor: pointer;
+
+  background: #d1d5db;
+
+  border-radius: 999px;
+
+  transition: all 0.3s ease;
+
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.food-switch .slider::before {
+  content: "";
+
+  position: absolute;
+
+  width: 24px;
+  height: 24px;
+
+  left: 3px;
+  top: 3px;
+
+  background: #ffffff;
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.08);
+
+  transition: all 0.3s ease;
+}
+
+
+/* ON STATE */
+
+.food-switch input:checked + .slider {
+  background: var(--primary);
+}
+
+.food-switch input:checked + .slider::before {
+  transform: translateX(26px);
+}
+
+
+/* HOVER */
+
+.food-switch:hover .slider {
+  filter: brightness(0.98);
+}
+
+
+/* FOCUS */
+
+.food-switch input:focus + .slider {
+  box-shadow:
+    0 0 0 4px rgba(22, 163, 74, 0.12);
+}
+
+/* ==========================================================
+   4 CARDS PER ROW
+========================================================== */
+
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 24px;
+}
+
+@media (max-width: 1400px) {
+  .listings-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .listings-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .listings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================
+   PROVIDER + FOOD NAME IN ONE ROW
+========================================================== */
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.food-name {
+    color: #0f172a;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.provider-name {
+    color: #64748b;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* ==========================================================
+   QUANTITY + TIME IN SAME ROW
+========================================================== */
+
+.info-inline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #64748b;
+  font-size: 0.7rem;
+}
+
+.info-item i {
+  font-size: 1rem;
+}
+
+.listings-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+}
+
+.provider-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.verified-icon {
+  color: #16a34a;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.provider-name {
+  color: #64748b;
+}

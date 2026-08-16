@@ -646,5 +646,50 @@ def user_view_profile():
         user=user
     )
 
+# ==========================================================
+# USER MARKETPLACE
+# ==========================================================
+
+@app.route("/marketplace")
+@login_required
+def marketplace():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    user = {
+        "name": user_record.get("full_name", ""),
+        "role": user_record.get("role", ""),
+        "profile_image": user_record.get("profile_image", "")
+    }
+
+    return render_template(
+        "marketplace.html",
+        user=user
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

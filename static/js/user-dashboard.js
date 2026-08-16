@@ -151,8 +151,58 @@ function setupEventListeners() {
 async function loadUserProfile() {
   try {
     /* ========================================================
-       1. TRY SAVED USER DATA FIRST
+       1. FETCH FRESH USER DATA FROM BACKEND FIRST
+       This prevents stale provider/restaurant profile images
+       from appearing on the user dashboard.
     ======================================================== */
+
+    const response = await fetch(`${API_BASE}/user/profile`, {
+      method: "GET",
+      credentials: "include",
+    });
+
+    if (response.ok) {
+      const data = await response.json().catch(() => ({}));
+
+      if (data.success && data.profile) {
+        currentUser = data.profile;
+        localStorage.setItem("user", JSON.stringify(currentUser));
+        updateUserProfile();
+        return;
+      }
+    }
+
+    /* ========================================================
+       2. FALL BACK TO SAVED USER DATA ONLY IF BACKEND FAILS
+    ======================================================== */
+
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+
+        if (parsedUser && typeof parsedUser === "object") {
+          currentUser = parsedUser;
+          updateUserProfile();
+          return;
+        }
+      } catch (error) {
+        console.warn("Invalid stored user data.");
+      }
+    }
+
+    if (!currentUser) {
+      currentUser = {
+        full_name: "User",
+        role: "User",
+        profile_image: null,
+      };
+
+      updateUserProfile();
+    }
+  } catch (error) {
+    console.error("Profile loading error:", error);
 
     const storedUser = localStorage.getItem("user");
 
@@ -168,60 +218,6 @@ async function loadUserProfile() {
         console.warn("Invalid stored user data.");
       }
     }
-
-    /* ========================================================
-       2. FETCH FRESH USER DATA FROM BACKEND
-    ======================================================== */
-
-    const response = await fetch(`${API_BASE}/user/profile`, {
-      method: "GET",
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      console.warn("Profile API unavailable. Using stored user data.");
-
-      return;
-    }
-
-    const data = await response.json();
-
-    if (!data.success || !data.profile) {
-      return;
-    }
-
-    const user = data.profile;
-
-    if (!user) {
-      return;
-    }
-
-    /* ========================================================
-       3. UPDATE CURRENT USER
-    ======================================================== */
-
-    currentUser = user;
-
-    /* ========================================================
-       4. SAVE FRESH USER DATA
-    ======================================================== */
-
-    localStorage.setItem("user", JSON.stringify(user));
-
-    /* ========================================================
-       5. UPDATE DASHBOARD
-    ======================================================== */
-
-    updateUserProfile();
-  } catch (error) {
-    console.error("Profile loading error:", error);
-
-    /*
-     * Do NOT replace the user with "User".
-     *
-     * If localStorage already loaded the user,
-     * keep that information.
-     */
 
     if (!currentUser) {
       currentUser = {
@@ -261,7 +257,8 @@ function updateUserProfile() {
   }
 
   if (elements.profileRole) {
-    elements.profileRole.textContent = "Community Member";
+    const role = currentUser.role || "User";
+    elements.profileRole.textContent = formatRole(role);
   }
 
   if (elements.profileImage) {
@@ -271,7 +268,7 @@ function updateUserProfile() {
         ? currentUser.profile_images[0]
         : currentUser.profile_image;
 
-    if (image) {
+    if (image && typeof image === "string" && image.trim()) {
       elements.profileImage.src = image;
     }
   }
@@ -315,9 +312,12 @@ async function loadUserLocation() {
     const data = await response.json();
 
     if (data.success && data.profile) {
+      console.log(data.profile);
+
       currentLocation = {
-        city: data.profile.city || "Unknown",
-        country: data.profile.state || "India",
+        area: data.profile.area || "",
+        city: data.profile.city || "",
+        state: data.profile.state || "",
         address: data.profile.address || "",
       };
 
@@ -343,10 +343,15 @@ async function loadUserLocation() {
 function updateLocationUI() {
   if (!currentLocation) return;
 
-  const city = currentLocation.city || "Unknown";
+  let locationText = "";
 
-  const state = currentLocation.country || "India";
-  const locationText = `${city}, ${state}`;
+  if (currentLocation.area && currentLocation.city) {
+    locationText = `${currentLocation.area}, ${currentLocation.city}`;
+  } else if (currentLocation.city) {
+    locationText = currentLocation.city;
+  } else {
+    locationText = "Location not set";
+  }
 
   if (elements.userLocation) {
     elements.userLocation.textContent = locationText;
@@ -400,7 +405,13 @@ async function loadRecommendedListings() {
 
     const data = await response.json();
 
-    recommendedListings = data.listings || [];
+    const allListings = data.listings || [];
+
+    const userCity = (currentLocation?.city || "").toLowerCase();
+
+    recommendedListings = allListings.filter((listing) => {
+      return listing.city && listing.city.toLowerCase() === userCity;
+    });
 
     renderRecommendedListings();
   } catch (error) {
@@ -420,9 +431,7 @@ async function loadNearbyListings() {
   showListingLoading(elements.nearbyFoodGrid);
 
   try {
-    const city = encodeURIComponent(currentLocation?.city || "");
-
-    const response = await fetch(`${API_BASE}/listings?city=${city}`, {
+    const response = await fetch(`${API_BASE}/listings`, {
       method: "GET",
       credentials: "include",
     });
@@ -433,7 +442,13 @@ async function loadNearbyListings() {
 
     const data = await response.json();
 
-    nearbyListings = data.listings || [];
+    const allListings = data.listings || [];
+
+    const userArea = (currentLocation?.area || "").toLowerCase();
+
+    nearbyListings = allListings.filter((listing) => {
+      return listing.area && listing.area.toLowerCase() === userArea;
+    });
 
     renderNearbyListings();
   } catch (error) {
@@ -556,20 +571,12 @@ function createFoodCard(listing) {
 
   /* ========================================================
      PROVIDER DISPLAY
+     Do not render the provider profile image inside the user
+     dashboard listing cards. We want the listing's food photo
+     to remain the main visual, not the restaurant avatar.
   ======================================================== */
 
-  let providerHTML = "";
-
-  if (providerImage) {
-    providerHTML = `
-      <img
-        class="food-provider-image"
-        src="${escapeAttribute(providerImage)}"
-        alt="${escapeAttribute(provider)}"
-        onerror="this.style.display='none'"
-      >
-    `;
-  }
+  const providerHTML = "";
 
   /* ========================================================
      CARD HTML
@@ -642,33 +649,11 @@ function createFoodCard(listing) {
       <div class="food-meta">
 
         ${
-          category
-            ? `
-              <span>
-                <i class="ri-restaurant-line"></i>
-                ${escapeHTML(category)}
-              </span>
-            `
-            : ""
-        }
-
-        ${
           quantity && unit
             ? `
               <span>
                 <i class="ri-archive-line"></i>
                 ${escapeHTML(quantity)} ${escapeHTML(unit)}
-              </span>
-            `
-            : ""
-        }
-
-        ${
-          city
-            ? `
-              <span>
-                <i class="ri-map-pin-line"></i>
-                ${escapeHTML(city)}
               </span>
             `
             : ""
@@ -688,27 +673,15 @@ function createFoodCard(listing) {
       </div>
 
 
-      <div class="food-card-bottom">
+     <div class="food-card-bottom">
 
-        <span
-          class="food-price ${listingType === "donate" ? "donation" : ""}"
-        >
+  <span
+    class="food-price ${listingType === "donate" ? "donation" : ""}"
+  >
+    ${listingType === "donate" ? "Free" : `₹${price}`}
+  </span>
 
-          ${listingType === "donate" ? "Free" : `₹${price}`}
-
-        </span>
-
-
-        <button
-          type="button"
-          class="view-details-btn"
-          data-id="${escapeAttribute(id)}"
-        >
-          View Details
-          <i class="ri-arrow-right-line"></i>
-        </button>
-
-      </div>
+</div>
 
     </div>
   `;
@@ -723,23 +696,6 @@ function createFoodCard(listing) {
     event.stopPropagation();
 
     toggleFavorite(id, favoriteBtn);
-  });
-
-  /* ========================================================
-     VIEW DETAILS BUTTON
-     
-     UPDATED ROUTE:
-     /listing/<listing_id>
-  ======================================================== */
-
-  const viewDetailsBtn = card.querySelector(".view-details-btn");
-
-  viewDetailsBtn?.addEventListener("click", (event) => {
-    event.stopPropagation();
-
-    if (!id) return;
-
-    window.location.href = `/listing/${encodeURIComponent(id)}`;
   });
 
   /* ========================================================

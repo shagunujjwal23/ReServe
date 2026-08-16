@@ -462,7 +462,7 @@ body {
 }
 
 .search-filter input {
-  width: 100%;
+  width: 90%;
   height: 44px;
 
   padding: 0 14px 0 40px;
@@ -1736,3 +1736,5 @@ body {
     right: 16px;
   }
 }
+
+

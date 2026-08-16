@@ -1478,3 +1478,16 @@ a {
     margin-left: 60px;
   }
 }
+
+.food-card {
+  cursor: pointer;
+}
+
+.food-card {
+  transition: all 0.3s ease;
+}
+
+.food-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}

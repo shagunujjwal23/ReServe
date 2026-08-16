@@ -440,7 +440,7 @@ def get_redirect_url(role):
         "user",
         "individual",
     }:
-        return "/user-dashboard"
+        return "/user-profile"
 
     # ------------------------------------------------------
     # FOOD PROVIDER

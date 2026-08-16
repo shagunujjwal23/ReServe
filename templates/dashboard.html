@@ -527,116 +527,11 @@
                 <p>Your latest surplus food listings.</p>
               </div>
 
-              <a href="manage-listings.html" class="view-all-btn">
-                Manage Listings
-              </a>
+              <a href="/my-listings" class="view-all-btn"> Manage Listings </a>
             </div>
 
-            <div class="listing-grid">
-              <!-- Listing Card -->
-              <a href="#" class="listing-card">
-                <div class="listing-image">
-                  <img
-                    src="{{ url_for('static', filename='images/foods/meal.jpg') }}"
-                    alt="Veg Meal Boxes"
-                    loading="lazy"
-                  />
-                </div>
-
-                <div class="listing-content">
-                  <div class="listing-title">
-                    <h3>Veg Meal Boxes</h3>
-                    <span class="food-type veg" title="Vegetarian"></span>
-                  </div>
-
-                  <div class="listing-info">
-                    <div class="info-row">
-                      <span>Remaining</span>
-                      <strong>18 / 50 Meals</strong>
-                    </div>
-
-                    <div class="info-row">
-                      <span>Accepted</span>
-                      <strong>32 Meals</strong>
-                    </div>
-
-                    <div class="info-row">
-                      <span>Available Until</span>
-                      <strong>Today • 6:00 PM</strong>
-                    </div>
-                  </div>
-                </div>
-              </a>
-
-              <!-- Listing Card -->
-              <a href="#" class="listing-card">
-                <div class="listing-image">
-                  <img
-                    src="{{ url_for('static', filename='images/foods/bread.jpg') }}"
-                    alt="Bread Packets"
-                    loading="lazy"
-                  />
-                </div>
-
-                <div class="listing-content">
-                  <div class="listing-title">
-                    <h3>Bread Packets</h3>
-                    <span class="food-type veg" title="Vegetarian"></span>
-                  </div>
-
-                  <div class="listing-info">
-                    <div class="info-row">
-                      <span>Remaining</span>
-                      <strong>12 / 25 Packs</strong>
-                    </div>
-
-                    <div class="info-row">
-                      <span>Accepted</span>
-                      <strong>13 Packs</strong>
-                    </div>
-
-                    <div class="info-row">
-                      <span>Available Until</span>
-                      <strong>Today • 2:30 PM</strong>
-                    </div>
-                  </div>
-                </div>
-              </a>
-
-              <!-- Listing Card -->
-              <a href="#" class="listing-card">
-                <div class="listing-image">
-                  <img
-                    src="{{ url_for('static', filename='images/foods/milk.jpg') }}"
-                    alt="Milk Bottles"
-                    loading="lazy"
-                  />
-                </div>
-
-                <div class="listing-content">
-                  <div class="listing-title">
-                    <h3>Milk Bottles</h3>
-                    <span class="food-type veg" title="Vegetarian"></span>
-                  </div>
-
-                  <div class="listing-info">
-                    <div class="info-row">
-                      <span>Remaining</span>
-                      <strong>8 / 20 Bottles</strong>
-                    </div>
-
-                    <div class="info-row">
-                      <span>Accepted</span>
-                      <strong>12 Bottles</strong>
-                    </div>
-
-                    <div class="info-row">
-                      <span>Available Until</span>
-                      <strong>Today • 12:00 PM</strong>
-                    </div>
-                  </div>
-                </div>
-              </a>
+            <div class="listing-grid" id="activeListingsContainer">
+              <!-- Listings loaded from JS -->
             </div>
           </section>
         </main>

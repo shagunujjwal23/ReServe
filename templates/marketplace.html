@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Marketplace | ReServe</title>
+
+    <!-- Remix Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css"
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Navbar CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/user-dashboard.css') }}"
+    />
+
+    <!-- Marketplace CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/marketplace.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/my-listings.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- =========================================================
+         NAVBAR
+    ========================================================== -->
+
+    <header class="user-navbar">
+      <!-- Logo -->
+      <a href="/user-dashboard" class="user-brand">
+        <div class="brand-logo">
+          <img
+            src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+            alt="ReServe Logo"
+          />
+        </div>
+
+        <div class="brand-text">
+          <h2>ReServe</h2>
+          <span>From Surplus to Solution.</span>
+        </div>
+      </a>
+
+      <!-- Navigation -->
+      <nav class="user-nav-links">
+        <a href="/user-dashboard">
+          <i class="ri-home-5-line"></i>
+          <span>Home</span>
+        </a>
+
+        <a href="/marketplace" class="active">
+          <i class="ri-search-line"></i>
+          <span>Explore Food</span>
+        </a>
+
+        <a href="/my-reservations">
+          <i class="ri-calendar-check-line"></i>
+          <span>My Reservations</span>
+        </a>
+
+        <a href="/favorites">
+          <i class="ri-heart-3-line"></i>
+          <span>Favorites</span>
+        </a>
+      </nav>
+
+      <!-- Right Actions -->
+      <div class="user-navbar-actions">
+        <!-- Notifications -->
+        <button
+          type="button"
+          class="navbar-icon-btn"
+          id="notificationBtn"
+          title="Notifications"
+        >
+          <i class="ri-notification-3-line"></i>
+
+          <span class="notification-badge" id="notificationCount"> 0 </span>
+        </button>
+
+        <!-- Messages -->
+        <button
+          type="button"
+          class="navbar-icon-btn"
+          id="messageBtn"
+          title="Messages"
+        >
+          <i class="ri-message-3-line"></i>
+
+          <span class="notification-badge" id="messageCount"> 0 </span>
+        </button>
+
+        <!-- Profile -->
+        <div class="user-profile-wrapper">
+          <button type="button" class="user-profile-btn" id="profileMenuBtn">
+            <div class="profile-avatar">
+              <img
+                id="profileImage"
+                src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                alt="Profile"
+              />
+            </div>
+
+            <div class="profile-info">
+              <strong id="profileName"> Loading... </strong>
+
+              <span id="profileRole"> User </span>
+            </div>
+
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
+
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown hidden" id="profileDropdown">
+            <a href="/user-view-profile">
+              <i class="ri-user-line"></i>
+              Profile
+            </a>
+
+            <a href="/settings">
+              <i class="ri-settings-3-line"></i>
+              Settings
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <button type="button" id="logoutBtn">
+              <i class="ri-logout-box-r-line"></i>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ======================================================
+     MAIN CONTENT
+======================================================= -->
+
+    <div class="main-content">
+      <main class="content-wrapper">
+        <!-- ==================================================
+         PAGE HEADER
+    =================================================== -->
+
+        <section class="page-header">
+          <div class="page-heading">
+            <h1>Explore Food</h1>
+
+            <p>
+              Discover affordable meals and food donations shared by
+              restaurants, bakeries, NGOs and community kitchens near you.
+            </p>
+          </div>
+        </section>
+
+        <!-- ==================================================
+         FILTER TOOLBAR
+    =================================================== -->
+
+        <section class="filter-toolbar">
+          <!-- Search -->
+          <div class="search-filter">
+            <i class="ri-search-line"></i>
+
+            <input
+              id="listingSearch"
+              type="text"
+              placeholder="Search food, provider or category..."
+            />
+          </div>
+
+          <!-- Category -->
+          <div class="filter-select">
+            <i class="ri-folder-line"></i>
+
+            <select id="categoryFilter">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+
+          <!-- Provider Filter -->
+          <div class="filter-select">
+            <i class="ri-store-2-line"></i>
+
+            <select id="providerFilter">
+              <option value="">All Partners</option>
+            </select>
+          </div>
+
+          <!-- Sort -->
+          <div class="filter-select">
+            <i class="ri-sort-desc"></i>
+
+            <select id="sortBy">
+              <option value="">Sort By</option>
+              <option value="newest">Newest First</option>
+              <option value="expiry">Expiring Soon</option>
+              <option value="priceLow">Price: Low to High</option>
+              <option value="priceHigh">Price: High to Low</option>
+            </select>
+          </div>
+
+          <div class="food-toggle-wrapper">
+            <label class="food-switch" title="Show Veg Only">
+              <input type="checkbox" id="vegOnlyToggle" />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <!-- Clear -->
+          <button id="clearFilters" class="secondary-btn" type="button">
+            <i class="ri-filter-off-line"></i>
+            Clear
+          </button>
+        </section>
+
+        <!-- ==================================================
+         LISTINGS SECTION
+    =================================================== -->
+
+        <section class="listings-section">
+          <!-- Listings Grid -->
+
+          <div class="listings-grid" id="listingsContainer">
+            <!-- Dynamic Listings -->
+          </div>
+
+          <!-- Empty State -->
+
+          <section class="empty-state hidden" id="emptyState">
+            <div class="empty-icon">
+              <i class="ri-inbox-2-line"></i>
+            </div>
+
+            <h2>No Listings Found</h2>
+
+            <p>
+              No food listings match your current filters. Try adjusting your
+              search criteria.
+            </p>
+          </section>
+
+          <!-- Loading State -->
+
+          <section class="loading-state" id="loadingState">
+            <div class="loader"></div>
+
+            <p>Loading available food listings...</p>
+          </section>
+        </section>
+
+        <!-- ==================================================
+         LISTING CARD TEMPLATE
+    =================================================== -->
+
+        <template id="listingTemplate">
+          <article class="listing-card" data-id="">
+            <!-- Food Image -->
+
+            <div class="listing-image-wrapper">
+              <img
+                class="food-image"
+                src="/static/images/food-placeholder.jpg"
+                alt="Food Image"
+              />
+
+              <span class="status-badge"> Available </span>
+            </div>
+
+            <!-- Card Body -->
+
+            <div class="listing-card-body">
+              <!-- Provider -->
+
+              <div class="title-row">
+                <h3 class="food-name">Food Name</h3>
+                <h4 class="provider-name">
+                  <span class="provider-text">Provider Name</span>
+                  <i class="ri-verified-badge-fill verified-icon"></i>
+                </h4>
+              </div>
+
+              <!-- Information -->
+
+              <div class="card-info-row info-inline">
+                <div class="info-item">
+                  <i class="ri-group-line"></i>
+                  <span class="quantity">10 Portions</span>
+                </div>
+
+                <div class="info-item">
+                  <i class="ri-time-line"></i>
+                  <span class="pickup-time">Pickup Before 6:00 PM</span>
+                </div>
+              </div>
+              <!-- Footer -->
+
+              <div class="listing-card-footer">
+                <div class="price-section">
+                  <span class="current-price"> ₹50 </span>
+
+                  <span class="old-price"> ₹100 </span>
+                </div>
+
+                <button type="button" class="card-btn view-btn">
+                  View Details
+                </button>
+              </div>
+            </div>
+          </article>
+        </template>
+      </main>
+
+      <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+      <script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
+    </div>
+  </body>
+</html>

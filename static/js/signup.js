@@ -599,7 +599,7 @@ function redirectByRole(role) {
     /* Individual user */
     case "user":
     case "individual":
-      return "/user-dashboard";
+      return "/user-profile";
 
     /* Food provider */
     case "provider":

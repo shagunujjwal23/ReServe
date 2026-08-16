@@ -207,7 +207,9 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok || data.success === false || !data.profile) {
-        throw new Error(data.message || "Unable to load your provider profile.");
+        throw new Error(
+          data.message || "Unable to load your provider profile.",
+        );
       }
 
       const profile = data.profile;
@@ -243,13 +245,15 @@ document.addEventListener("DOMContentLoaded", () => {
           .map((value) => String(value || "").trim())
           .filter(Boolean)
           .join(", ");
-        pickupLocationText.textContent = location || "Set your location in Provider Profile";
+        pickupLocationText.textContent =
+          location || "Set your location in Provider Profile";
       }
     } catch (error) {
       console.error("Provider pickup profile error:", error);
       if (businessName) businessName.textContent = "Provider profile required";
       if (pickupLocationText) {
-        pickupLocationText.textContent = "Add your business address in Provider Profile";
+        pickupLocationText.textContent =
+          "Add your business address in Provider Profile";
       }
     }
 
@@ -1286,7 +1290,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (aiLoadingScreen) {
-      aiLoadingScreen.style.display = "flex";
+      aiLoadingScreen.style.display = "none";
     }
   }
 
@@ -2358,7 +2362,7 @@ document.addEventListener("DOMContentLoaded", () => {
           quantityAdjustment,
       ),
     );
-    return Math.max(1, Math.round(price * (1 - discount)));
+    return Math.max(Math.ceil(price * 0.2), Math.round(price * (1 - discount)));
   }
 
   function calculatePriority(freshness, pickupUrgency, recovery, confidence) {
@@ -2492,27 +2496,25 @@ document.addEventListener("DOMContentLoaded", () => {
             ? "medium"
             : "low";
     const hero =
-      overall >= AI_LIMITS.excellent && recovery >= AI_LIMITS.excellent
+      overall >= 80 && recovery >= 75
         ? {
             title: "Listing Ready",
             description:
-              "Excellent freshness, quality, and recovery potential make this listing ready to reach nearby recipients.",
+              "This listing is well optimized and ready to reach nearby recipients.",
             status: "Ready",
           }
-        : overall >= AI_LIMITS.good
+        : overall >= 65
           ? {
-              title: "Almost Ready",
+              title: "Good to Publish",
               description:
-                "Small improvements can increase recovery and marketplace visibility.",
-              status: "Minor Improvements",
+                "Your listing is in good shape with only minor optimization opportunities.",
+              status: "Ready to Publish",
             }
-          : overall >= 55 &&
-              recovery >= AI_LIMITS.fair &&
-              priority !== "CRITICAL"
+          : overall >= 50
             ? {
                 title: "Improve Before Publishing",
                 description:
-                  "Improve pricing, food details, or pickup information before publishing.",
+                  "Add more details, improve pricing, or adjust pickup times.",
                 status: "Needs Attention",
               }
             : {
@@ -2891,13 +2893,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (previewCategory) {
-      previewCategory.textContent = category.value || "Category";
+      const selectedCategory =
+        category.value === "Other"
+          ? otherCategory.value.trim() || "Other"
+          : category.value || "Category";
+
+      previewCategory.textContent = selectedCategory;
     }
 
     if (previewListingImage) {
       if (previewImage.src && previewImage.src !== window.location.href) {
         previewListingImage.src = previewImage.src;
-
         previewListingImage.style.display = "block";
 
         const placeholder =
@@ -2918,19 +2924,22 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
   }
-
   /* =====================================================
    BUILD EDIT LISTING PAYLOAD
 ===================================================== */
 
   function buildEditListingPayload(imageUrl) {
     const selectedCategory =
-      category.value === "Other" ? otherCategory.value.trim() : category.value;
+      category.value === "Other"
+        ? otherCategory.value.trim() || "Food"
+        : category.value;
 
     const selectedUnit =
       unit.value === "Other" ? otherUnit.value.trim() : unit.value;
 
     const isDonation = listingType.value === "donate";
+
+    const analysis = generateAnalysis();
 
     const addressParts = [
       pickupAddress.value.trim(),
@@ -2976,18 +2985,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
       description: description.value.trim(),
 
-      image: imageUrl,
+      image: imageUrl || existingImageUrl,
 
       /*
        Preserve existing AI values.
     */
-      freshness_score: window.editExistingFreshnessScore || 0,
+      freshness_score:
+        analysis.insights.find((i) => i.title === "Freshness")?.score || 0,
 
-      recovery_probability: window.editExistingRecoveryProbability || 0,
+      recovery_probability: analysis.confidence.recovery || 0,
 
-      carbon_saved: window.editExistingCarbonSaved || 0,
+      carbon_saved: analysis.metrics.carbon || 0,
 
-      ai_recommendation: window.editExistingAIRecommendation || "",
+      ai_recommendation: analysis.recommendation || "",
     };
   }
 
@@ -2998,7 +3008,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reviewRefreshTimer = setTimeout(() => {
       aiResult = generateAnalysis();
       updateDashboard(aiResult);
-    }, 260);
+    }, 400);
   }
 
   function resetCreateListing() {
@@ -3135,8 +3145,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   quantity.addEventListener("input", updateReadiness);
 
-  description.addEventListener("input", updateReadiness);
-
   unit.addEventListener("change", updateReadiness);
 
   otherUnit.addEventListener("input", updateReadiness);
@@ -3271,8 +3279,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await loadProviderPickupProfile();
 
     if (editMode && editListingId) {
-      // Load existing listing into the form after the profile pickup is ready.
-      loadListingForEdit();
+      await loadListingForEdit();
     } else if (localStorage.getItem("reserveListingDraft")) {
       draftNotification.classList.remove("hidden");
 
@@ -3282,23 +3289,23 @@ document.addEventListener("DOMContentLoaded", () => {
         "ri-draft-line",
       );
     } else {
-    toggleOtherCategory();
-    toggleOtherUnit();
-    toggleListingType();
-    toggleExpiryFields();
-    updateCharacterCounter();
-    updateInstructionCounter();
-    updateCompletionBadge();
-    updateReadiness();
-    updatePreviewCard();
-    setDateMinimums();
-    updateAvailabilitySummary();
+      toggleOtherCategory();
+      toggleOtherUnit();
+      toggleListingType();
+      toggleExpiryFields();
+      updateCharacterCounter();
+      updateInstructionCounter();
+      updateCompletionBadge();
+      updateReadiness();
+      updatePreviewCard();
+      setDateMinimums();
+      updateAvailabilitySummary();
 
-    updateDraftStatus(
-      "No Draft",
-      "Start creating a new listing",
-      "ri-file-add-line",
-    );
+      updateDraftStatus(
+        "No Draft",
+        "Start creating a new listing",
+        "ri-file-add-line",
+      );
     }
   }
 
