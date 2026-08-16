@@ -186,7 +186,11 @@ async function loadUserProfile() {
 
     const data = await response.json();
 
-    const user = data.user || data;
+    if (!data.success || !data.profile) {
+      return;
+    }
+
+    const user = data.profile;
 
     if (!user) {
       return;
@@ -221,13 +225,21 @@ async function loadUserProfile() {
 
     if (!currentUser) {
       currentUser = {
-        name: "User",
+        full_name: "User",
         role: "User",
-        profileImage: null,
+        profile_image: null,
       };
 
       updateUserProfile();
     }
+
+    currentLocation = {
+      city: "Unknown",
+      country: "India",
+      address: "",
+    };
+
+    updateLocationUI();
   }
 }
 
@@ -238,29 +250,30 @@ async function loadUserProfile() {
 function updateUserProfile() {
   if (!currentUser) return;
 
-  const name =
-    currentUser.name ||
-    currentUser.username ||
-    currentUser.fullName ||
-    currentUser.full_name ||
-    "User";
-
-  const role = currentUser.role || "User";
+  const name = currentUser.full_name || "User";
 
   if (elements.profileName) {
     elements.profileName.textContent = name;
   }
 
-  if (elements.profileRole) {
-    elements.profileRole.textContent = formatRole(role);
-  }
-
   if (elements.welcomeUserName) {
-    elements.welcomeUserName.textContent = getFirstName(name);
+    elements.welcomeUserName.textContent = name.split(" ")[0];
   }
 
-  if (elements.profileImage && currentUser.profileImage) {
-    elements.profileImage.src = currentUser.profileImage;
+  if (elements.profileRole) {
+    elements.profileRole.textContent = "Community Member";
+  }
+
+  if (elements.profileImage) {
+    const image =
+      Array.isArray(currentUser.profile_images) &&
+      currentUser.profile_images.length
+        ? currentUser.profile_images[0]
+        : currentUser.profile_image;
+
+    if (image) {
+      elements.profileImage.src = image;
+    }
   }
 }
 
@@ -289,18 +302,30 @@ function formatRole(role) {
 ========================================================== */
 
 async function loadUserLocation() {
-  const savedLocation = localStorage.getItem("reserveUserLocation");
+  try {
+    const response = await fetch(`${API_BASE}/user/profile`, {
+      method: "GET",
+      credentials: "include",
+    });
 
-  if (savedLocation) {
-    try {
-      currentLocation = JSON.parse(savedLocation);
+    if (!response.ok) {
+      throw new Error("Unable to load profile");
+    }
+
+    const data = await response.json();
+
+    if (data.success && data.profile) {
+      currentLocation = {
+        city: data.profile.city || "Unknown",
+        country: data.profile.state || "India",
+        address: data.profile.address || "",
+      };
 
       updateLocationUI();
-
       return;
-    } catch (error) {
-      console.warn("Invalid saved location");
     }
+  } catch (error) {
+    console.error("Location load error:", error);
   }
 
   currentLocation = {
@@ -320,9 +345,8 @@ function updateLocationUI() {
 
   const city = currentLocation.city || "Unknown";
 
-  const country = currentLocation.country || "India";
-
-  const locationText = `${city}, ${country}`;
+  const state = currentLocation.country || "India";
+  const locationText = `${city}, ${state}`;
 
   if (elements.userLocation) {
     elements.userLocation.textContent = locationText;

@@ -1253,6 +1253,139 @@ def update_provider_profile():
     }), 200
 
 # ==========================================================
+# GET USER PROFILE
+# ==========================================================
+
+@auth.route("/api/user/profile", methods=["GET"])
+def get_user_profile():
+
+    if "user_id" not in session:
+        return jsonify({
+            "success": False,
+            "message": "Please log in first."
+        }), 401
+
+    user = get_current_user()
+
+    if user is None:
+        return jsonify({
+            "success": False,
+            "message": "User not found."
+        }), 404
+
+    profile = {
+        "id": f"RSV-{str(user['_id'])[-6:].upper()}",
+        "full_name": user.get("full_name", ""),
+        "email": user.get("email", ""),
+        "phone": user.get("phone", ""),
+        "address": user.get("address", ""),
+        "city": user.get("city", ""),
+        "state": user.get("state", ""),
+        "pincode": user.get("pincode", ""),
+        "pickup_area": user.get("pickup_area", ""),
+        "profile_image": user.get("profile_image", ""),
+        "created_at": (
+            user.get("created_at").isoformat()
+            if user.get("created_at")
+            else None
+        )
+    }
+
+    return jsonify({
+        "success": True,
+        "profile": profile
+    }), 200
+
+# ==========================================================
+# UPDATE USER PROFILE
+# ==========================================================
+
+@auth.route("/api/user/profile", methods=["PUT"])
+def update_user_profile():
+
+    if "user_id" not in session:
+        return jsonify({
+            "success": False,
+            "message": "Please log in first."
+        }), 401
+
+    payload = request.get_json(silent=True)
+
+    if not isinstance(payload, dict):
+        return jsonify({
+            "success": False,
+            "message": "Valid JSON required."
+        }), 400
+
+    required_fields = (
+        "full_name",
+        "address",
+        "city",
+        "state",
+        "pincode",
+    )
+
+    missing_fields = _missing_fields(
+        payload,
+        required_fields
+    )
+
+    if missing_fields:
+        return jsonify({
+            "success": False,
+            "message": "Please complete all required fields.",
+            "missing_fields": missing_fields
+        }), 400
+
+    pincode = str(payload["pincode"]).strip()
+
+    if not pincode.isdigit() or len(pincode) != 6:
+        return jsonify({
+            "success": False,
+            "message": "Enter a valid 6-digit pincode."
+        }), 400
+
+    update_data = {
+        "full_name": payload["full_name"].strip(),
+        "address": payload["address"].strip(),
+        "city": payload["city"].strip(),
+        "state": payload["state"].strip(),
+        "pincode": pincode,
+        "pickup_area": payload.get(
+            "pickup_area",
+            ""
+        ).strip(),
+        "profile_updated_at": datetime.now(timezone.utc)
+    }
+
+    if payload.get("profile_image"):
+        update_data["profile_image"] = payload["profile_image"]
+
+    try:
+
+        users_collection = get_collection("users")
+
+        users_collection.update_one(
+            {
+                "_id": ObjectId(session["user_id"])
+            },
+            {
+                "$set": update_data
+            }
+        )
+
+    except PyMongoError:
+        return jsonify({
+            "success": False,
+            "message": "Unable to update profile."
+        }), 500
+
+    return jsonify({
+        "success": True,
+        "message": "Profile updated successfully."
+    }), 200
+
+# ==========================================================
 # LOGOUT
 # ==========================================================
 

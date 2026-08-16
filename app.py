@@ -496,5 +496,155 @@ def donor_profile():
         user=user,
     )
 
+@app.route("/user-profile")
+@login_required
+def user_profile():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    created_at = user_record.get("created_at")
+
+    member_since = ""
+
+    if created_at:
+        member_since = created_at.strftime("%d %b %Y")
+
+    user = {
+        "id": f"RSV-{str(user_record['_id'])[-6:].upper()}",
+        "member_since": member_since,
+        "name": user_record.get("full_name", ""),
+        "email": user_record.get("email", ""),
+        "phone": user_record.get("phone", ""),
+        "profile_image": user_record.get("profile_image", ""),
+        "address": user_record.get("address", ""),
+        "city": user_record.get("city", ""),
+        "state": user_record.get("state", ""),
+        "pincode": user_record.get("pincode", ""),
+        "pickup_area": user_record.get("pickup_area", "")
+    }
+
+    return render_template(
+        "user-profile.html",
+        user=user
+    )
+
+# ==========================================================
+# USER VIEW PROFILE
+# ==========================================================
+
+@app.route("/user-view-profile")
+@login_required
+def user_view_profile():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    created_at = user_record.get("created_at")
+
+    member_since = ""
+
+    if created_at:
+        member_since = created_at.strftime("%d %b %Y")
+
+    user = {
+        "id": f"RSV-{str(user_record['_id'])[-6:].upper()}",
+        "member_since": member_since,
+
+        "full_name": user_record.get(
+            "full_name",
+            ""
+        ),
+
+        "email": user_record.get(
+            "email",
+            ""
+        ),
+
+        "phone": user_record.get(
+            "phone",
+            ""
+        ),
+
+        "profile_image": user_record.get(
+            "profile_image",
+            ""
+        ),
+
+        "address": user_record.get(
+            "address",
+            ""
+        ),
+
+        "city": user_record.get(
+            "city",
+            ""
+        ),
+
+        "state": user_record.get(
+            "state",
+            ""
+        ),
+
+        "pincode": user_record.get(
+            "pincode",
+            ""
+        ),
+
+        "pickup_area": user_record.get(
+            "pickup_area",
+            ""
+        ),
+    }
+
+    return render_template(
+        "user-view-profile.html",
+        user=user
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

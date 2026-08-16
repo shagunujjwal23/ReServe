@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Complete User Profile | ReServe</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- User Profile CSS -->
+    <link
+      href="{{ url_for('static', filename='css/user-profile.css') }}"
+      rel="stylesheet"
+    />
+
+    <link
+      href="{{ url_for('static', filename='css/provider-profile.css') }}"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
+
+    <header class="profile-header">
+      <div class="header-container">
+        <a class="logo" href="{{ url_for('home') }}">
+          <div class="logo-icon">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+
+          <div class="logo-text">
+            <span>ReServe</span>
+            <small>From Surplus to Solution</small>
+          </div>
+        </a>
+
+        <a class="exit-btn" href="{{ url_for('auth.logout') }}">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Exit</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- ======================================================
+         MAIN
+    ======================================================= -->
+
+    <main class="profile-page">
+      <div class="profile-container">
+        <!-- ==================================================
+             INTRO
+        =================================================== -->
+
+        <section class="profile-intro">
+          <div class="intro-content">
+            <span class="eyebrow">USER SETUP</span>
+
+            <h1>Complete Your Profile</h1>
+
+            <p>
+              Add your basic information and address details to personalize your
+              ReServe experience.
+            </p>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             FORM
+        =================================================== -->
+
+        <form id="userProfileForm" novalidate>
+          <div class="profile-grid">
+            <!-- LEFT COLUMN -->
+
+            <div class="profile-column left-column">
+              <!-- ==========================================
+                   PERSONAL INFORMATION
+              =========================================== -->
+
+              <section class="profile-section personal-info-section">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+
+                  <div>
+                    <h2>Personal Information</h2>
+                    <p>Your basic account information.</p>
+                  </div>
+                </div>
+
+                <!-- NEW LAYOUT -->
+                <div class="profile-info-layout">
+                  <!-- LEFT SIDE IMAGE -->
+                  <div class="profile-left">
+                    <div class="profile-picture-wrapper">
+                      <div class="profile-picture-preview">
+                        <img
+                          id="profilePreview"
+                          src=""
+                          alt="Profile Preview"
+                          hidden
+                        />
+
+                        <div
+                          id="profilePlaceholder"
+                          class="profile-placeholder"
+                        >
+                          <i class="fa-solid fa-user"></i>
+                        </div>
+                      </div>
+
+                      <label for="profileImage" class="camera-upload-btn">
+                        <i class="fa-solid fa-camera"></i>
+                      </label>
+                    </div>
+
+                    <input
+                      type="file"
+                      id="profileImage"
+                      name="profile_image"
+                      accept="image/jpeg,image/png,image/webp"
+                      hidden
+                    />
+                  </div>
+
+                  <!-- RIGHT SIDE DETAILS -->
+                  <div class="profile-right">
+                    <div class="form-grid personal-grid">
+                      <!-- Full Name -->
+                      <div class="form-group">
+                        <label for="fullName">
+                          Full Name
+                          <span class="required">*</span>
+                        </label>
+
+                        <div class="input-wrapper">
+                          <i class="fa-solid fa-user"></i>
+
+                          <input
+                            type="text"
+                            id="fullName"
+                            name="full_name"
+                            placeholder="Enter your full name"
+                          />
+                        </div>
+
+                        <p class="field-message" id="fullNameMessage"></p>
+                      </div>
+
+                      <!-- Phone -->
+                      <div class="form-group">
+                        <label for="phone">
+                          Phone Number
+                          <span class="required">*</span>
+                        </label>
+
+                        <div class="input-wrapper readonly-field">
+                          <i class="fa-solid fa-phone"></i>
+
+                          <input type="tel" id="phone" readonly />
+
+                          <i class="fa-solid fa-lock field-lock"></i>
+                        </div>
+                      </div>
+
+                      <!-- Email -->
+                      <div class="form-group full-width">
+                        <label for="email">
+                          Email Address
+                          <span class="required">*</span>
+                        </label>
+
+                        <div class="input-wrapper readonly-field">
+                          <i class="fa-solid fa-envelope"></i>
+
+                          <input type="email" id="email" readonly />
+
+                          <i class="fa-solid fa-lock field-lock"></i>
+                        </div>
+                      </div>
+
+                      <!-- User ID -->
+                      <div class="form-group">
+                        <label for="userId">ReServe User ID</label>
+
+                        <div class="input-wrapper readonly-field">
+                          <i class="fa-solid fa-id-card"></i>
+
+                          <input
+                            type="text"
+                            id="userId"
+                            value="{{ user.id }}"
+                            readonly
+                          />
+
+                          <i class="fa-solid fa-lock field-lock"></i>
+                        </div>
+                      </div>
+
+                      <!-- Member Since -->
+                      <div class="form-group member-since-group">
+                        <label for="memberSince">Member Since</label>
+
+                        <div class="input-wrapper readonly-field">
+                          <i class="fa-solid fa-calendar"></i>
+
+                          <input
+                            type="text"
+                            id="memberSince"
+                            value="{{ user.member_since }}"
+                            readonly
+                          />
+
+                          <i class="fa-solid fa-lock field-lock"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- RIGHT COLUMN -->
+
+            <div class="profile-column right-column">
+              <!-- ==========================================
+                   ADDRESS INFORMATION
+              =========================================== -->
+
+              <section class="profile-section address-section">
+                <div class="section-header">
+                  <div class="section-icon">
+                    <i class="fa-solid fa-location-dot"></i>
+                  </div>
+
+                  <div>
+                    <h2>Address Information</h2>
+                    <p>Used for food pickup and delivery coordination.</p>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <!-- Address -->
+
+                  <div class="form-group full-width">
+                    <label for="address">
+                      Complete Address
+                      <span class="required">*</span>
+                    </label>
+
+                    <div class="input-wrapper textarea-wrapper">
+                      <i class="fa-solid fa-location-dot"></i>
+
+                      <textarea
+                        id="address"
+                        name="address"
+                        rows="3"
+                        placeholder="Enter your complete address"
+                      ></textarea>
+                    </div>
+
+                    <p class="field-message" id="addressMessage"></p>
+                  </div>
+
+                  <!-- City -->
+
+                  <div class="form-group">
+                    <label for="city">
+                      City
+                      <span class="required">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-city"></i>
+
+                      <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        placeholder="Enter city"
+                      />
+                    </div>
+
+                    <p class="field-message" id="cityMessage"></p>
+                  </div>
+
+                  <!-- State -->
+
+                  <div class="form-group">
+                    <label for="state">
+                      State
+                      <span class="required">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-map"></i>
+
+                      <input
+                        type="text"
+                        id="state"
+                        name="state"
+                        placeholder="Enter state"
+                      />
+                    </div>
+
+                    <p class="field-message" id="stateMessage"></p>
+                  </div>
+
+                  <!-- Pincode -->
+
+                  <div class="form-group">
+                    <label for="pincode">
+                      Pincode
+                      <span class="required">*</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-location-crosshairs"></i>
+
+                      <input
+                        type="text"
+                        id="pincode"
+                        name="pincode"
+                        maxlength="6"
+                        inputmode="numeric"
+                        placeholder="6-digit pincode"
+                      />
+                    </div>
+
+                    <p class="field-message" id="pincodeMessage"></p>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="pickupArea">
+                      Preferred Pickup Area
+                      <span class="optional">Optional</span>
+                    </label>
+
+                    <div class="input-wrapper">
+                      <i class="fa-solid fa-location-dot"></i>
+
+                      <input
+                        type="text"
+                        id="pickupArea"
+                        name="pickup_area"
+                        placeholder="e.g. Gomti Nagar, Aliganj, Hazratganj"
+                        maxlength="100"
+                      />
+                    </div>
+
+                    <small class="field-hint">
+                      Area where you usually prefer to collect food listings.
+                    </small>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <!-- ==================================================
+               FORM MESSAGES
+          =================================================== -->
+
+          <div class="form-message success-message" id="successMessage">
+            <i class="fa-solid fa-circle-check"></i>
+            <span></span>
+          </div>
+
+          <div class="form-message error-message" id="errorMessage">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span></span>
+          </div>
+
+          <!-- ==================================================
+               ACTIONS
+          =================================================== -->
+
+          <div class="form-actions">
+            <div class="skip-action">
+              <a class="skip-btn" href="{{ url_for('auth.logout') }}">
+                Skip for Now
+              </a>
+
+              <small> You can complete your profile later. </small>
+            </div>
+
+            <div class="save-action">
+              <button class="save-btn" id="saveProfileBtn" type="submit">
+                <span>Save & Continue</span>
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+
+              <small> Save your profile and continue. </small>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <!-- ======================================================
+         JAVASCRIPT
+    ======================================================= -->
+
+    <script src="{{ url_for('static', filename='js/user-profile.js') }}"></script>
+  </body>
+</html>

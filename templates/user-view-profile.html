@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>My Profile | ReServe</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/user-view-profile.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- ======================================================
+         HEADER
+    ======================================================= -->
+
+    <header class="profile-header">
+      <div class="header-container">
+        <a href="{{ url_for('home') }}" class="logo">
+          <div class="logo-icon">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+
+          <div class="logo-text">
+            <span>ReServe</span>
+            <small>From Surplus to Solution</small>
+          </div>
+        </a>
+
+        <a href="/user-dashboard" class="back-btn">
+          <i class="fa-solid fa-arrow-left"></i>
+          Dashboard
+        </a>
+      </div>
+    </header>
+
+    <!-- ======================================================
+         MAIN
+    ======================================================= -->
+
+    <main class="profile-page">
+      <div class="profile-container">
+        <!-- ==================================================
+             INTRO SECTION
+        =================================================== -->
+
+        <section class="profile-intro">
+          <div class="intro-content">
+            <h1>My Profile</h1>
+
+            <p>
+              View and manage your personal information, account details, and
+              location preferences.
+            </p>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             PROFILE CARD
+        =================================================== -->
+
+        <section class="user-profile-card">
+          <div class="user-profile-main">
+            <!-- LEFT SIDE -->
+
+            <div class="user-overview">
+              <div class="profile-image-wrapper">
+                <div class="profile-image">
+                  <img id="profileImage" src="" alt="Profile Image" />
+
+                  <div class="profile-image-fallback" id="profileFallback">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="profile-details">
+                <div class="user-title-row">
+                  <h2 id="fullName">Loading...</h2>
+
+                  <span class="verified-badge">
+                    <i class="fa-solid fa-circle-check"></i>
+                    Verified Member
+                  </span>
+                </div>
+
+                <div class="profile-meta">
+                  <span>
+                    <i class="fa-solid fa-phone"></i>
+                    <span id="phone">-</span>
+                  </span>
+
+                  <span class="meta-divider">•</span>
+
+                  <span>
+                    <i class="fa-solid fa-envelope"></i>
+                    <span id="email">-</span>
+                  </span>
+                </div>
+
+                <div class="profile-meta">
+                  <span>
+                    <i class="fa-solid fa-id-card"></i>
+                    User ID:
+                    <span id="userId">-</span>
+                  </span>
+
+                  <span class="meta-divider">•</span>
+
+                  <span>
+                    <i class="fa-solid fa-calendar"></i>
+                    Joined:
+                    <span id="memberSince">-</span>
+                  </span>
+                </div>
+
+                <p class="profile-about">
+                  Thank you for being a part of the ReServe community and
+                  helping reduce food waste through responsible food recovery.
+                </p>
+
+                <div class="profile-actions">
+                  <a href="/user-profile" class="edit-profile-btn">
+                    <i class="fa-solid fa-pen"></i>
+                    Edit Profile
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             STATS SECTION
+        =================================================== -->
+
+        <section class="stats-grid">
+          <div class="stat-card">
+            <i class="fa-solid fa-bowl-food"></i>
+            <h3>Active</h3>
+            <span>Community Member</span>
+          </div>
+
+          <div class="stat-card">
+            <i class="fa-solid fa-leaf"></i>
+            <h3>Eco Friendly</h3>
+            <span>Reducing Food Waste</span>
+          </div>
+
+          <div class="stat-card">
+            <i class="fa-solid fa-heart"></i>
+            <h3>ReServe</h3>
+            <span>Food Recovery Network</span>
+          </div>
+        </section>
+
+        <!-- ==================================================
+             INFORMATION GRID
+        =================================================== -->
+
+        <div class="profile-information-grid">
+          <!-- ACCOUNT INFORMATION -->
+
+          <section class="information-card">
+            <div class="information-card-header">
+              <div class="card-icon">
+                <i class="fa-solid fa-user"></i>
+              </div>
+
+              <div>
+                <h2>Account Information</h2>
+                <p>Your ReServe account details.</p>
+              </div>
+            </div>
+
+            <div class="information-list">
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-user"></i>
+                  Full Name
+                </span>
+
+                <strong id="accountName">-</strong>
+              </div>
+
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-envelope"></i>
+                  Email
+                </span>
+
+                <strong id="accountEmail">-</strong>
+              </div>
+
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-phone"></i>
+                  Phone Number
+                </span>
+
+                <strong id="accountPhone">-</strong>
+              </div>
+
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-id-card"></i>
+                  User ID
+                </span>
+
+                <strong id="accountUserId">-</strong>
+              </div>
+            </div>
+          </section>
+
+          <!-- ADDRESS INFORMATION -->
+
+          <section class="information-card">
+            <div class="information-card-header">
+              <div class="card-icon">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+
+              <div>
+                <h2>Address Information</h2>
+                <p>Your registered location details.</p>
+              </div>
+            </div>
+
+            <div class="information-list">
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-location-dot"></i>
+                  Address
+                </span>
+
+                <strong id="address">-</strong>
+              </div>
+
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-city"></i>
+                  City
+                </span>
+
+                <strong id="city">-</strong>
+              </div>
+
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-map"></i>
+                  State
+                </span>
+
+                <strong id="state">-</strong>
+              </div>
+
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-location-crosshairs"></i>
+                  Pincode
+                </span>
+
+                <strong id="pincode">-</strong>
+              </div>
+
+              <div class="detail-row">
+                <span>
+                  <i class="fa-solid fa-map-pin"></i>
+                  Pickup Area
+                </span>
+
+                <strong id="pickupArea">-</strong>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- ==================================================
+             IMPACT SECTION
+        =================================================== -->
+
+        <section class="impact-banner">
+          <div class="impact-icon">
+            <i class="fa-solid fa-hand-holding-heart"></i>
+          </div>
+
+          <div class="impact-content">
+            <h2>Together, we're reducing food waste.</h2>
+
+            <p>
+              Every food reservation helps prevent waste and supports a more
+              sustainable community. Thank you for being part of the ReServe
+              movement.
+            </p>
+          </div>
+
+          <div class="impact-decoration">
+            <i class="fa-solid fa-seedling"></i>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/user-view-profile.js') }}"></script>
+  </body>
+</html>
