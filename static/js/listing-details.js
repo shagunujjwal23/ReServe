@@ -100,6 +100,7 @@ async function loadListing() {
      * and direct {...}
      */
     currentListing = result.listing || result;
+    console.log(JSON.stringify(currentListing, null, 2));
 
     if (!currentListing) {
       throw new Error("Listing data not found.");
@@ -172,7 +173,7 @@ function renderBasicInformation(listing) {
     "providerName",
     getValue(
       listing,
-      ["providerName", "ownerName", "sellerName"],
+      ["provider_name", "providerName", "ownerName", "sellerName"],
       "Food Provider",
     ),
   );
@@ -181,7 +182,7 @@ function renderBasicInformation(listing) {
     "providerCardName",
     getValue(
       listing,
-      ["providerName", "ownerName", "sellerName"],
+      ["provider_name", "providerName", "ownerName", "sellerName"],
       "Food Provider",
     ),
   );
@@ -295,10 +296,6 @@ function renderPickupInformation(listing) {
     getValue(listing, ["pickupAddress", "address"], "Not specified"),
   );
 
-  const landmark = getValue(listing, ["landmark", "pickupLandmark"], null);
-
-  setText("pickupLandmark", landmark || "No landmark provided");
-
   const pickupDate = getValue(
     listing,
     ["pickupDate", "pickup_date", "date", "pickup_start"],
@@ -310,11 +307,16 @@ function renderPickupInformation(listing) {
 
   const instructions = getValue(
     listing,
-    ["pickupInstructions", "instructions"],
+    [
+      "pickupInstructions",
+      "instructions",
+      "pickup_instructions",
+      "specialInstructions",
+    ],
     null,
   );
 
-  setText("pickupInstructions", instructions || "Don't ring the bell");
+  setText("pickupInstructions", instructions || "No special instructions.");
 
   /* ========================================================
      WHY FOOD IS AVAILABLE
@@ -352,7 +354,7 @@ function renderProviderInformation(listing) {
     "providerName",
     getValue(
       listing,
-      ["providerName", "ownerName", "sellerName"],
+      ["provider_name", "providerName", "ownerName", "sellerName"],
       "Food Provider",
     ),
   );
@@ -361,7 +363,7 @@ function renderProviderInformation(listing) {
     "providerCardName",
     getValue(
       listing,
-      ["providerName", "ownerName", "sellerName"],
+      ["provider_name", "providerName", "ownerName", "sellerName"],
       "Food Provider",
     ),
   );
@@ -418,7 +420,6 @@ function renderProviderInformation(listing) {
 ========================================================== */
 
 function renderAIInformation(listing) {
-
   /*
    * Get AI result from the listing.
    * Supports different possible backend structures.
@@ -437,8 +438,7 @@ function renderAIInformation(listing) {
 
   const freshnessScore =
     aiResult?.insights?.find(
-      (item) =>
-        item.title?.toLowerCase() === "freshness"
+      (item) => item.title?.toLowerCase() === "freshness",
     )?.score ??
     aiResult?.freshnessScore ??
     aiResult?.freshness_score ??
@@ -447,11 +447,8 @@ function renderAIInformation(listing) {
 
   setText(
     "aiFreshnessScore",
-    freshnessScore !== null
-      ? `${Number(freshnessScore)}%`
-      : "—"
+    freshnessScore !== null ? `${Number(freshnessScore)}%` : "—",
   );
-
 
   /* ========================================================
      RECOVERY PROBABILITY
@@ -466,11 +463,8 @@ function renderAIInformation(listing) {
 
   setText(
     "aiRecoveryProbability",
-    recoveryProbability !== null
-      ? `${Number(recoveryProbability)}%`
-      : "—"
+    recoveryProbability !== null ? `${Number(recoveryProbability)}%` : "—",
   );
-
 
   /* ========================================================
      CARBON SAVED
@@ -485,23 +479,18 @@ function renderAIInformation(listing) {
 
   setText(
     "aiCarbonSaved",
-    carbonSaved !== null
-      ? `${Number(carbonSaved)} kg`
-      : "—"
+    carbonSaved !== null ? `${Number(carbonSaved)} kg` : "—",
   );
-
 
   /* ========================================================
      USER VIEW
      Do NOT show owner recommendations here.
   ======================================================== */
 
-  const verificationElement =
-    document.getElementById("aiRecommendation");
+  const verificationElement = document.getElementById("aiRecommendation");
 
   if (verificationElement) {
-    verificationElement.textContent =
-      "Verified listing • AI analyzed";
+    verificationElement.textContent = "Verified listing • AI analyzed";
   }
 }
 

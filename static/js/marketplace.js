@@ -21,6 +21,7 @@ const listingTemplate = document.getElementById("listingTemplate");
 const listingSearch = document.getElementById("listingSearch");
 const categoryFilter = document.getElementById("categoryFilter");
 const providerFilter = document.getElementById("providerFilter");
+const locationFilter = document.getElementById("locationFilter");
 const sortBy = document.getElementById("sortBy");
 const vegOnlyToggle = document.getElementById("vegOnlyToggle");
 const clearFilters = document.getElementById("clearFilters");
@@ -96,6 +97,7 @@ async function loadListings() {
 
     populateCategoryFilter();
     populateProviderFilter();
+    populateLocationFilter();
     applyFilters();
   } catch (error) {
     console.error(error);
@@ -120,7 +122,7 @@ function normalizeListing(listing) {
 
     category: listing.category || "Other",
 
-    foodType: (listing.food_type || "").toLowerCase(),
+    foodType: (listing.food_type || "").trim().toLowerCase(),
 
     quantity:
       listing.quantity && listing.unit
@@ -180,6 +182,8 @@ function applyFilters() {
 
   const providerValue = providerFilter.value;
 
+  const locationValue = locationFilter.value;
+
   const sortValue = sortBy.value;
 
   const vegOnly = vegOnlyToggle.checked;
@@ -196,9 +200,18 @@ function applyFilters() {
     const matchesProvider =
       !providerValue || listing.providerName === providerValue;
 
-    const matchesVeg = !vegOnly || listing.foodType === "veg";
+    const matchesLocation =
+      !locationValue || listing.providerLocation === locationValue;
 
-    return matchesSearch && matchesCategory && matchesProvider && matchesVeg;
+    const matchesVeg = !vegOnly || listing.foodType.includes("veg");
+
+    return (
+      matchesSearch &&
+      matchesCategory &&
+      matchesProvider &&
+      matchesLocation &&
+      matchesVeg
+    );
   });
 
   sortListings(sortValue);
@@ -259,7 +272,7 @@ function renderListings() {
 
     clone.querySelector(".food-name").textContent = listing.title;
 
-  clone.querySelector(".provider-name").innerHTML = `
+    clone.querySelector(".provider-name").innerHTML = `
   <span class="provider-text">${listing.providerName}</span>
   <i class="ri-verified-badge-fill verified-icon"></i>
 `;
@@ -273,6 +286,12 @@ function renderListings() {
     clone.querySelector(".quantity").textContent = listing.quantity;
 
     clone.querySelector(".pickup-time").textContent = listing.pickupTime;
+
+    const locationElement = clone.querySelector(".listing-location");
+
+    if (locationElement) {
+      locationElement.textContent = listing.providerLocation;
+    }
 
     clone.querySelector(".status-badge").textContent = listing.status;
 
@@ -310,6 +329,8 @@ function attachEventListeners() {
 
   providerFilter?.addEventListener("change", applyFilters);
 
+  locationFilter?.addEventListener("change", applyFilters);
+
   sortBy?.addEventListener("change", applyFilters);
 
   vegOnlyToggle?.addEventListener("change", applyFilters);
@@ -325,6 +346,7 @@ function resetFilters() {
   listingSearch.value = "";
   categoryFilter.value = "";
   providerFilter.value = "";
+  locationFilter.value = "";
   sortBy.value = "";
   vegOnlyToggle.checked = false;
 
@@ -391,5 +413,24 @@ function populateProviderFilter() {
     option.textContent = provider;
 
     providerFilter.appendChild(option);
+  });
+}
+
+function populateLocationFilter() {
+  const locations = [
+    ...new Set(
+      listings.map((listing) => listing.providerLocation).filter(Boolean),
+    ),
+  ];
+
+  locationFilter.innerHTML = '<option value="">All Locations</option>';
+
+  locations.forEach((location) => {
+    const option = document.createElement("option");
+
+    option.value = location;
+    option.textContent = location;
+
+    locationFilter.appendChild(option);
   });
 }

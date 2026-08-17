@@ -2786,10 +2786,10 @@ body {
    INSTRUCTIONS - FULL WIDTH
 ========================================================== */
 
-#pickupInstructionsRow {
-  grid-column: 1 / -1;
+#pickupInstructionsRow,
+.full-width {
+    grid-column: 1 / -1;
 }
-
 
 /* ==========================================================
    EXTRA SPACE BETWEEN PICKUP ITEMS
@@ -2966,3 +2966,10 @@ body {
   overflow: hidden;
 }
 
+.listing-short-description{
+    display:none;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}

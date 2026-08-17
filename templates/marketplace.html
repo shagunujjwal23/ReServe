@@ -207,6 +207,17 @@
             </select>
           </div>
 
+          <!-- Location Filter -->
+          <div class="filter-select">
+            <i class="ri-map-pin-line"></i>
+
+            <select id="locationFilter">
+              <option value="">All Locations</option>
+
+              <!-- Dynamic Locations -->
+            </select>
+          </div>
+
           <!-- Sort -->
           <div class="filter-select">
             <i class="ri-sort-desc"></i>
@@ -220,18 +231,23 @@
             </select>
           </div>
 
-          <div class="food-toggle-wrapper">
-            <label class="food-switch" title="Show Veg Only">
-              <input type="checkbox" id="vegOnlyToggle" />
-              <span class="slider"></span>
-            </label>
-          </div>
+          <div class="filter-actions">
+            <div class="food-toggle-wrapper">
+              <label class="food-switch" title="Show Veg Only">
+                <input type="checkbox" id="vegOnlyToggle" />
+                <span class="slider"></span>
+              </label>
+            </div>
 
-          <!-- Clear -->
-          <button id="clearFilters" class="secondary-btn" type="button">
-            <i class="ri-filter-off-line"></i>
-            Clear
-          </button>
+            <button
+              id="clearFilters"
+              class="filter-reset-btn"
+              type="button"
+              title="Clear Filters"
+            >
+              <i class="ri-filter-off-line"></i>
+            </button>
+          </div>
         </section>
 
         <!-- ==================================================

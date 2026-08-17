@@ -186,3 +186,68 @@
 .provider-name {
   color: #64748b;
 }
+
+.filter-reset-btn {
+  width: 48px;
+  height: 48px;
+  border: 1px solid #dfe6e9;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.2rem;
+  color: #2d3748;
+
+  transition: all 0.2s ease;
+}
+
+.filter-reset-btn:hover {
+  background: #f5f7fa;
+  transform: translateY(-2px);
+}
+
+/* Search */
+.search-filter {
+    width: 320px !important;
+    flex: 0 0 320px !important;
+}
+
+/* Category */
+.filter-select:has(#categoryFilter) {
+    width: 180px;
+}
+
+/* Provider */
+.filter-select:has(#providerFilter) {
+    width: 180px;
+}
+
+/* Location */
+.filter-select:has(#locationFilter) {
+    width: 170px;
+}
+
+/* Sort */
+.filter-select:has(#sortBy) {
+    width: 170px;
+}
+
+.filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.food-toggle-wrapper {
+    min-width: auto;
+}
+
+.filter-reset-btn {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+}
