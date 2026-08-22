@@ -13,6 +13,72 @@ from config.database import get_collection
 listings = Blueprint("listings", __name__)
 
 
+@listings.route("/api/orders/place", methods=["POST"])
+def place_order():
+    """Create a reservation and reduce the listing's available quantity."""
+    try:
+        user_id = ObjectId(session.get("user_id", ""))
+    except (InvalidId, TypeError):
+        return jsonify({"success": False, "message": "Please log in to reserve food."}), 401
+
+    data = request.get_json(silent=True) or {}
+
+    try:
+        listing_id = ObjectId(data.get("listing_id"))
+        quantity = int(data.get("quantity", 0))
+    except (InvalidId, TypeError, ValueError):
+        return jsonify({"success": False, "message": "Invalid reservation details."}), 400
+
+    if quantity < 1:
+        return jsonify({"success": False, "message": "Quantity must be at least 1."}), 400
+
+    listings_collection = get_collection("food_listings")
+    orders_collection = get_collection("orders")
+
+    if listings_collection is None or orders_collection is None:
+        return jsonify({"success": False, "message": "MongoDB is currently unavailable."}), 503
+
+    try:
+        listing = listings_collection.find_one_and_update(
+            {"_id": listing_id, "status": "available", "quantity": {"$gte": quantity}},
+            {"$inc": {"quantity": -quantity, "reservations": quantity},
+             "$set": {"updated_at": datetime.now(timezone.utc)}},
+            return_document=True,
+        )
+    except PyMongoError as error:
+        print("MongoDB place order error:", error)
+        return jsonify({"success": False, "message": "Unable to place the reservation."}), 500
+
+    if listing is None:
+        return jsonify({"success": False, "message": "This listing is unavailable or does not have enough quantity."}), 409
+
+    order = {
+        "listing_id": listing_id,
+        "user_id": user_id,
+        "quantity": quantity,
+        "pickup_time": str(data.get("pickup_time", "")).strip(),
+        "instructions": str(data.get("instructions", "")).strip()[:200],
+        "status": "reserved",
+        "created_at": datetime.now(timezone.utc),
+    }
+
+    try:
+        result = orders_collection.insert_one(order)
+    except PyMongoError as error:
+        print("MongoDB order creation error:", error)
+        listings_collection.update_one(
+            {"_id": listing_id},
+            {"$inc": {"quantity": quantity, "reservations": -quantity}},
+        )
+        return jsonify({"success": False, "message": "Unable to place the reservation."}), 500
+
+    return jsonify({
+        "success": True,
+        "message": "Food reserved successfully!",
+        "order_id": str(result.inserted_id),
+    }), 201
+
+
 # ==========================================================
 # REQUIRED & OPTIONAL FIELDS
 # ==========================================================

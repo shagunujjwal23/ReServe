@@ -678,7 +678,7 @@ function setupReservationButton() {
    RESERVE LISTING
 ========================================================== */
 
-async function reserveListing() {
+function reserveListing() {
   if (!currentListing) {
     showToast("Listing information is not available.", "error");
 
@@ -707,51 +707,14 @@ async function reserveListing() {
     return;
   }
 
-  const originalButtonHTML = button.innerHTML;
+  const listingId = currentListing._id || currentListing.id || getListingId();
 
-  button.disabled = true;
-
-  button.innerHTML = `
-    <span>Reserving...</span>
-    <i class="ri-loader-4-line"></i>
-  `;
-
-  try {
-    const listingId = currentListing._id || currentListing.id || getListingId();
-
-    const response = await fetch(`${API_BASE_URL}/reservations`, {
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify({
-        listingId: listingId,
-        quantity: quantity,
-      }),
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.message || "Reservation failed.");
-    }
-
-    showToast("Food reserved successfully!", "success");
-
-    setTimeout(() => {
-      window.location.href = "/my-reservations";
-    }, 900);
-  } catch (error) {
-    console.error("Reservation error:", error);
-
-    showToast(error.message || "Unable to reserve this food.", "error");
-
-    button.disabled = false;
-
-    button.innerHTML = originalButtonHTML;
+  if (!listingId) {
+    showToast("Listing information is not available.", "error");
+    return;
   }
+
+  window.location.href = `/place-order/${encodeURIComponent(listingId)}?quantity=${encodeURIComponent(quantity)}`;
 }
 
 /* ==========================================================

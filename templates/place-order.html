@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Place Your Order | ReServe</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Place Order CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/place-order.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="page-wrapper">
+      <!-- =====================================================
+           NAVBAR
+      ====================================================== -->
+
+      <header class="user-navbar">
+        <!-- BRAND -->
+
+        <a href="/user-dashboard" class="user-brand">
+          <div class="brand-logo">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe Logo"
+            />
+          </div>
+
+          <div class="brand-text">
+            <h2>ReServe</h2>
+            <span>From Surplus to Solution.</span>
+          </div>
+        </a>
+
+        <!-- NAVIGATION -->
+
+        <nav class="user-nav-links">
+          <a href="/user-dashboard">
+            <i class="ri-home-5-line"></i>
+            <span>Home</span>
+          </a>
+
+          <a href="/explore-food">
+            <i class="ri-search-line"></i>
+            <span>Explore Food</span>
+          </a>
+
+          <a href="/my-reservations">
+            <i class="ri-calendar-check-line"></i>
+            <span>My Reservations</span>
+          </a>
+
+          <a href="/messages">
+            <i class="ri-message-3-line"></i>
+            <span>Messages</span>
+          </a>
+        </nav>
+
+        <!-- NAVBAR ACTIONS -->
+
+        <div class="user-navbar-actions">
+          <!-- NOTIFICATIONS -->
+
+          <button
+            type="button"
+            class="navbar-icon-btn"
+            id="notificationBtn"
+            title="Notifications"
+          >
+            <i class="ri-notification-3-line"></i>
+
+            <span class="notification-badge" id="notificationCount"> 0 </span>
+          </button>
+
+          <!-- PROFILE -->
+
+          <div class="user-profile-wrapper">
+            <button type="button" class="user-profile-btn" id="profileMenuBtn">
+              <div class="profile-avatar">
+                <img
+                  id="profileImage"
+                  src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                  alt="Profile"
+                />
+              </div>
+
+              <div class="profile-info">
+                <strong id="profileName"> Loading... </strong>
+
+                <span id="profileRole"> User </span>
+              </div>
+
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+
+            <!-- PROFILE DROPDOWN -->
+
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <a href="/user-profile">
+                <i class="ri-user-line"></i>
+                Profile
+              </a>
+
+              <a href="/settings">
+                <i class="ri-settings-3-line"></i>
+                Settings
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <button type="button" id="logoutBtn">
+                <i class="ri-logout-box-r-line"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =====================================================
+           MAIN CONTENT
+      ====================================================== -->
+
+      <main class="place-order-page">
+        <!-- PAGE HEADER -->
+
+        <section class="page-header">
+          <a href="#" class="back-btn" id="backToListing">
+            <i class="ri-arrow-left-line"></i>
+            <span>Back to Food Details</span>
+          </a>
+
+          <h1>Place Your Order</h1>
+
+          <p>Provide pickup details to reserve this food.</p>
+        </section>
+
+        <!-- =================================================
+             LOADING
+        ================================================== -->
+
+        <div class="order-loading" id="orderLoading">
+          <i class="ri-loader-4-line"></i>
+
+          <span> Loading food details... </span>
+        </div>
+
+        <!-- =================================================
+             ERROR
+        ================================================== -->
+
+        <div class="order-error hidden" id="orderError">
+          <i class="ri-error-warning-line"></i>
+
+          <h2>Unable to load order details</h2>
+
+          <p id="orderErrorMessage">Something went wrong.</p>
+
+          <a href="/explore-food"> Back to Explore Food </a>
+        </div>
+
+        <!-- =================================================
+             MAIN ORDER LAYOUT
+        ================================================== -->
+
+        <div class="place-order-layout">
+          <!-- =================================================
+               LEFT CONTENT
+          ================================================= -->
+
+          <div class="order-content">
+            <!-- =================================================
+                 1. FOOD SELECTED
+            ================================================= -->
+
+            <section class="order-section food-selected-section">
+              <div class="section-heading">
+                <span class="step-number"> 1 </span>
+
+                <h2>Food Selected</h2>
+              </div>
+
+              <div class="food-selected-card">
+                <!-- FOOD IMAGE -->
+
+                <div class="food-image-wrapper">
+                  <img
+                    id="foodImage"
+                    src="/static/images/food-placeholder.jpg"
+                    alt="Food Image"
+                  />
+                </div>
+
+                <!-- FOOD INFORMATION -->
+
+                <div class="food-details">
+                  <div class="food-title-row">
+                    <h2 id="foodName">Loading...</h2>
+
+                    <span class="food-type-badge" id="foodTypeBadge">
+                      <i class="ri-leaf-line"></i>
+
+                      <span id="foodType"> Vegetarian </span>
+                    </span>
+                  </div>
+
+                  <p class="provider-line">
+                    by
+                    <strong id="providerName"> Food Provider </strong>
+                  </p>
+
+                  <div class="verified-provider">
+                    <i class="ri-checkbox-circle-fill"></i>
+
+                    <span> Verified Provider </span>
+                  </div>
+                </div>
+
+                <!-- PRICE -->
+
+                <div class="food-price">
+                  <strong id="unitPrice"> ₹0 </strong>
+
+                  <span id="priceUnit"> per unit </span>
+                </div>
+              </div>
+            </section>
+
+            <!-- =================================================
+                 2. QUANTITY
+            ================================================== -->
+
+            <section class="order-section quantity-section">
+              <div class="section-heading">
+                <span class="step-number"> 2 </span>
+
+                <h2>Quantity</h2>
+              </div>
+
+              <div class="quantity-content">
+                <div class="quantity-description">
+                  <p id="quantityQuestion">
+                    How many units would you like to reserve?
+                  </p>
+
+                  <span id="servesText">
+                    Available quantity will be shown here.
+                  </span>
+                </div>
+
+                <div class="quantity-right">
+                  <div class="quantity-control">
+                    <button
+                      type="button"
+                      id="decreaseQty"
+                      aria-label="Decrease quantity"
+                    >
+                      <i class="ri-subtract-line"></i>
+                    </button>
+
+                    <input
+                      type="number"
+                      id="quantity"
+                      value="1"
+                      min="1"
+                      step="1"
+                      aria-label="Quantity"
+                    />
+
+                    <button
+                      type="button"
+                      id="increaseQty"
+                      aria-label="Increase quantity"
+                    >
+                      <i class="ri-add-line"></i>
+                    </button>
+                  </div>
+
+                  <span class="available-info" id="availableInfo">
+                    0 Available
+                  </span>
+                </div>
+              </div>
+            </section>
+
+            <!-- =================================================
+                 3. PICKUP DETAILS
+            ================================================== -->
+
+            <section class="order-section pickup-section">
+              <div class="section-heading">
+                <span class="step-number"> 3 </span>
+
+                <h2>Pickup Details</h2>
+              </div>
+
+              <div class="pickup-grid">
+                <!-- PICKUP DATE -->
+
+                <div class="pickup-field">
+                  <label>Pickup Date</label>
+
+                  <div class="pickup-select-wrapper">
+                    <i class="ri-calendar-line"></i>
+
+                    <select id="pickupDate" aria-label="Select pickup date">
+                      <option value="">Select a pickup date</option>
+                    </select>
+
+                    <i class="ri-arrow-down-s-line"></i>
+                  </div>
+                </div>
+
+                <!-- PICKUP TIME -->
+
+                <div class="pickup-field">
+                  <label> Pickup Time </label>
+
+                  <div class="pickup-time-selector">
+                    <div class="pickup-select-wrapper">
+                      <i class="ri-time-line"></i>
+
+                      <select id="pickupTime" aria-label="Select pickup time">
+                        <option value="">Select a pickup time</option>
+                      </select>
+
+                      <i class="ri-arrow-down-s-line"></i>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- PICKUP LOCATION -->
+
+                <div class="pickup-field full-width">
+                  <label> Pickup Location </label>
+
+                  <div class="pickup-location">
+                    <div class="location-icon">
+                      <i class="ri-map-pin-line"></i>
+                    </div>
+
+                    <div class="location-details">
+                      <strong id="pickupProvider"> Food Provider </strong>
+
+                      <span id="pickupAddress"> Loading address... </span>
+                    </div>
+
+                    <button type="button" class="map-btn" id="viewMapBtn">
+                      <i class="ri-map-line"></i>
+
+                      <span> View Map </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- PICKUP NOTICE -->
+
+              <div class="pickup-notice">
+                <i class="ri-information-line"></i>
+
+                <span>
+                  Please reach on time. Your reservation will be held for 15
+                  minutes after the selected pickup time.
+                </span>
+              </div>
+            </section>
+
+            <!-- =================================================
+                 4. SPECIAL INSTRUCTIONS
+            ================================================== -->
+
+            <section class="order-section instructions-section">
+              <div class="section-heading">
+                <span class="step-number"> 4 </span>
+
+                <h2>
+                  Special Instructions
+                  <span> (Optional) </span>
+                </h2>
+              </div>
+
+              <div class="instructions-wrapper">
+                <textarea
+                  id="instructions"
+                  maxlength="200"
+                  placeholder="Add any instructions for the provider..."
+                ></textarea>
+
+                <span class="character-count" id="characterCount"> 0/200 </span>
+              </div>
+            </section>
+
+            <!-- =================================================
+                 SAFETY / TRUST STRIP
+            ================================================== -->
+
+            <section class="trust-strip">
+              <div class="trust-item">
+                <div class="trust-icon">
+                  <i class="ri-shield-check-line"></i>
+                </div>
+
+                <div>
+                  <strong> Safe & Secure </strong>
+
+                  <span> Your information is protected </span>
+                </div>
+              </div>
+
+              <div class="trust-divider"></div>
+
+              <div class="trust-item">
+                <div class="trust-icon">
+                  <i class="ri-leaf-line"></i>
+                </div>
+
+                <div>
+                  <strong> Reduce Food Waste </strong>
+
+                  <span> Every reservation makes a difference </span>
+                </div>
+              </div>
+
+              <div class="trust-divider"></div>
+
+              <div class="trust-item">
+                <div class="trust-icon">
+                  <i class="ri-time-line"></i>
+                </div>
+
+                <div>
+                  <strong> On Time Pickup </strong>
+
+                  <span> Pick up your order as scheduled </span>
+                </div>
+              </div>
+
+              <div class="trust-divider"></div>
+
+              <div class="trust-item">
+                <div class="trust-icon">
+                  <i class="ri-group-line"></i>
+                </div>
+
+                <div>
+                  <strong> Support Community </strong>
+
+                  <span> Help those who need it most </span>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <!-- =================================================
+               RIGHT SIDEBAR
+          ================================================== -->
+
+          <aside class="order-sidebar">
+            <!-- =================================================
+                 ORDER SUMMARY
+            ================================================== -->
+
+            <section class="summary-card">
+              <div class="summary-heading">
+                <div class="summary-icon">
+                  <i class="ri-calendar-check-line"></i>
+                </div>
+
+                <h2>Order Summary</h2>
+              </div>
+
+              <!-- FOOD SUMMARY -->
+
+              <div class="summary-food-row">
+                <span id="summaryFoodName"> Food </span>
+
+                <strong>
+                  <span id="summaryQuantity"> 1 </span>
+
+                  <span id="summaryUnit"> Unit </span>
+                </strong>
+              </div>
+
+              <!-- SUBTOTAL -->
+
+              <div class="summary-row">
+                <span> Subtotal </span>
+
+                <strong id="subtotalAmount"> ₹0 </strong>
+              </div>
+
+              <div class="summary-divider"></div>
+
+              <!-- PLATFORM FEE -->
+
+              <div class="summary-row">
+                <span>
+                  Platform Fee
+
+                  <i
+                    class="ri-information-line"
+                    title="Platform service fee"
+                  ></i>
+                </span>
+
+                <strong id="platformFee"> ₹0 </strong>
+              </div>
+              <!-- COMMUNITY SUPPORT -->
+
+              <div class="community-support-section">
+                <!-- HEADER -->
+
+                <div class="community-support-header">
+                  <div class="community-support-title">
+                    <div class="community-support-icon">
+                      <i class="ri-leaf-line"></i>
+                    </div>
+
+                    <div>
+                      <strong>Support Community</strong>
+
+                      <span>
+                        Optional contribution to support food recovery.
+                      </span>
+                    </div>
+                  </div>
+
+                  <strong id="communitySupport">₹0</strong>
+                </div>
+
+                <!-- PRESET OPTIONS -->
+
+                <div class="support-options">
+                  <button type="button" class="support-option" data-support="5">
+                    ₹5
+                  </button>
+
+                  <button
+                    type="button"
+                    class="support-option"
+                    data-support="10"
+                  >
+                    ₹10
+                  </button>
+
+                  <button
+                    type="button"
+                    class="support-option"
+                    data-support="20"
+                  >
+                    ₹20
+                  </button>
+
+                  <button
+                    type="button"
+                    class="custom-support-btn"
+                    id="customSupportBtn"
+                    aria-label="Enter custom contribution"
+                    title="Custom contribution"
+                  >
+                    <i class="ri-edit-line"></i>
+                  </button>
+                </div>
+
+                <div
+                  class="custom-support-input hidden"
+                  id="customSupportInput"
+                >
+                  <label for="customSupportAmount"> Custom contribution </label>
+
+                  <div class="custom-amount-wrapper">
+                    <span>₹</span>
+
+                    <input
+                      type="number"
+                      id="customSupportAmount"
+                      min="5"
+                      max="500"
+                      step="1"
+                      placeholder="Enter amount"
+                    />
+
+                    <button
+                      type="button"
+                      id="applyCustomSupport"
+                      aria-label="Apply custom contribution"
+                    >
+                      <i class="ri-check-line"></i>
+                    </button>
+                  </div>
+
+                  <small>Minimum ₹5 · Maximum ₹500</small>
+                </div>
+              </div>
+
+              <div class="summary-divider"></div>
+
+              <!-- TOTAL -->
+
+              <div class="summary-total">
+                <span> Total Amount </span>
+
+                <strong id="totalAmount"> ₹0 </strong>
+              </div>
+
+              <!-- IMPACT -->
+
+              <div class="impact-card">
+                <i class="ri-leaf-line"></i>
+
+                <p>
+                  Thank you! Your reservation helps reduce food waste and
+                  support the community.
+                </p>
+              </div>
+
+              <!-- RESERVE BUTTON -->
+
+              <button type="button" id="placeOrderBtn" class="place-order-btn">
+                <span> Reserve Now </span>
+
+                <i class="ri-arrow-right-line"></i>
+              </button>
+
+              <!-- SECURE MESSAGE -->
+
+              <div class="secure-message">
+                <i class="ri-lock-line"></i>
+
+                <span> Secure & Safe Reservation </span>
+              </div>
+            </section>
+
+            <!-- =================================================
+                 FOOD SAFETY
+            ================================================== -->
+
+            <section class="safety-card">
+              <h3>Food Safety</h3>
+
+              <div class="safety-item">
+                <i class="ri-checkbox-circle-fill"></i>
+
+                <span> Freshly Prepared </span>
+              </div>
+
+              <div class="safety-item">
+                <i class="ri-verified-badge-fill"></i>
+
+                <span> Verified Provider </span>
+              </div>
+
+              <div class="safety-item">
+                <i class="ri-time-line"></i>
+
+                <span> Safe Pickup Window </span>
+              </div>
+
+              <div class="safety-item">
+                <i class="ri-shield-check-line"></i>
+
+                <span> Quality Checked </span>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </main>
+    </div>
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="{{ url_for('static', filename='js/place-order.js') }}"></script>
+  </body>
+</html>

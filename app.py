@@ -734,5 +734,50 @@ def requests_page():
         user=user
     )
 
+@app.route("/place-order/<listing_id>")
+@login_required
+def place_order(listing_id):
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+    listings_collection = get_collection("food_listings")
+
+    try:
+        user_record = users_collection.find_one(
+            {"_id": user_id}
+        )
+
+        listing = listings_collection.find_one(
+            {"_id": ObjectId(listing_id)}
+        )
+
+    except (InvalidId, TypeError):
+        abort(404)
+    except PyMongoError:
+        abort(503)
+
+    if not user_record or not listing:
+        abort(404)
+
+    user = {
+        "id": str(user_record["_id"]),
+        "name": user_record.get("full_name", ""),
+        "email": user_record.get("email", ""),
+        "phone": user_record.get("phone", "")
+    }
+
+    return render_template(
+        "place-order.html",
+        user=user,
+        listing_id=listing_id
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
