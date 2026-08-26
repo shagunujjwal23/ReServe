@@ -12,6 +12,7 @@ from config.database import get_collection, init_mongo
 from routes.auth import auth
 from routes.listings import listings
 from routes.upload import upload
+from routes.orders import orders
 
 app = Flask(__name__)
 load_dotenv()
@@ -21,7 +22,7 @@ init_mongo(app)
 app.register_blueprint(auth)
 app.register_blueprint(listings)
 app.register_blueprint(upload)
-
+app.register_blueprint(orders)
 
 def login_required(view):
     """Redirect anonymous or malformed sessions to the login page."""

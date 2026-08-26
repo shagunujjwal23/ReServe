@@ -743,7 +743,10 @@ async function placeOrder() {
       throw new Error(result.message || "Reservation failed.");
     }
 
-    showSuccess(result.message || "Food reserved successfully!");
+    showSuccess(
+      result.message ||
+        "Reservation request sent successfully. Please wait for the provider to accept it.",
+    );
 
     /* ------------------------------------------------------
        REDIRECT

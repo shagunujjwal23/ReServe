@@ -891,3 +891,387 @@ body {
     height: 180px;
   }
 }
+
+/* ==========================================================
+   REQUEST DETAILS MODAL
+========================================================== */
+
+.request-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px;
+}
+
+.request-modal.hidden {
+  display: none;
+}
+
+/* ==========================================================
+   OVERLAY
+========================================================== */
+
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+}
+
+/* ==========================================================
+   MODAL CONTENT
+========================================================== */
+
+.modal-content {
+  position: relative;
+  z-index: 2;
+
+  width: min(1100px, 92vw);
+
+  max-height: 82vh;
+
+  background: #ffffff;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 25px 60px rgba(15, 23, 42, 0.20);
+
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================
+   MODAL HEADER
+========================================================== */
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 20px 28px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h2 {
+  margin: 0;
+
+  font-size: 22px;
+  font-weight: 700;
+
+  color: #172033;
+}
+
+.close-modal {
+  width: 38px;
+  height: 38px;
+
+  border: 1px solid #e2e8f0;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #172033;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 21px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.close-modal:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+/* ==========================================================
+   MODAL BODY
+========================================================== */
+
+.modal-body {
+  padding: 0 28px 22px;
+
+  overflow-y: auto;
+}
+
+/* ==========================================================
+   DETAIL SECTION
+========================================================== */
+
+.detail-section {
+  padding: 20px 0;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.detail-section:last-of-type {
+  border-bottom: none;
+}
+
+.detail-section h3 {
+  margin: 0 0 18px;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #172033;
+}
+
+.detail-section p {
+  margin: 0;
+
+  font-size: 15px;
+  line-height: 1.6;
+
+  color: #475569;
+}
+
+/* ==========================================================
+   DETAIL GRID
+========================================================== */
+
+.detail-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+
+  gap: 20px 35px;
+}
+
+.detail-grid > div {
+  min-width: 0;
+}
+
+.detail-grid span {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 13px;
+  font-weight: 500;
+
+  color: #64748b;
+}
+
+.detail-grid strong {
+  display: block;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  color: #172033;
+
+  word-break: break-word;
+}
+
+/* ==========================================================
+   REQUESTER DETAILS
+   4 ITEMS IN ONE ROW
+========================================================== */
+
+.detail-section:nth-child(2) .detail-grid,
+.detail-section:nth-child(3) .detail-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* ==========================================================
+   STATUS
+========================================================== */
+
+#modalStatus {
+  display: inline-block;
+
+  padding: 5px 11px;
+
+  border-radius: 7px;
+
+  background: #f1f5f9;
+
+  font-size: 13px;
+}
+
+/* ==========================================================
+   MODAL ACTIONS
+========================================================== */
+
+.modal-actions {
+  display: flex;
+
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 12px;
+
+  padding-top: 20px;
+}
+
+/* ==========================================================
+   ACTION BUTTONS
+========================================================== */
+
+.modal-actions button {
+  min-height: 42px;
+
+  padding: 0 20px;
+
+  border: none;
+  border-radius: 8px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    opacity 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.modal-actions button:hover {
+  transform: translateY(-1px);
+}
+
+/* ==========================================================
+   ACCEPT
+========================================================== */
+
+.modal-actions .accept-btn {
+  background: #16a34a;
+  color: #ffffff;
+
+  box-shadow:
+    0 4px 10px rgba(22, 163, 74, 0.18);
+}
+
+.modal-actions .accept-btn:hover {
+  background: #15803d;
+}
+
+/* ==========================================================
+   REJECT
+========================================================== */
+
+.modal-actions .reject-btn {
+  background: #ef4444;
+  color: #ffffff;
+
+  box-shadow:
+    0 4px 10px rgba(239, 68, 68, 0.18);
+}
+
+.modal-actions .reject-btn:hover {
+  background: #dc2626;
+}
+
+/* ==========================================================
+   SCROLLBAR
+========================================================== */
+
+.modal-body::-webkit-scrollbar {
+  width: 7px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 900px) {
+
+  .modal-content {
+    width: 94vw;
+    max-height: 86vh;
+  }
+
+  .detail-section:nth-child(2) .detail-grid,
+  .detail-section:nth-child(3) .detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .detail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+
+  .request-modal {
+    padding: 15px;
+  }
+
+  .modal-content {
+    width: 96vw;
+    max-height: 90vh;
+    border-radius: 13px;
+  }
+
+  .modal-header {
+    padding: 17px 18px;
+  }
+
+  .modal-header h2 {
+    font-size: 19px;
+  }
+
+  .modal-body {
+    padding: 0 18px 18px;
+  }
+
+  .detail-section {
+    padding: 17px 0;
+  }
+
+  .detail-grid,
+  .detail-section:nth-child(2) .detail-grid,
+  .detail-section:nth-child(3) .detail-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .modal-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .modal-actions button {
+    width: 100%;
+  }
+}

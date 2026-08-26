@@ -1,7 +1,9 @@
 const requestsContainer = document.getElementById("requestsContainer");
 
 let allRequests = [];
-let currentFilter = "pending";
+
+// All requests should be visible when the page first opens.
+let currentFilter = "all";
 
 /* =========================================
    INIT
@@ -27,23 +29,34 @@ async function loadRequests() {
       </div>
     `;
 
-    const response = await fetch("/api/requests");
+    const response = await fetch("/api/requests", {
+      method: "GET",
+      credentials: "same-origin",
+      headers: {
+        Accept: "application/json",
+      },
+    });
 
     const data = await response.json();
 
-    allRequests = data.requests || [];
+    if (!response.ok) {
+      throw new Error(data.message || "Unable to load requests.");
+    }
+
+    allRequests = Array.isArray(data.requests) ? data.requests : [];
 
     updateCounters();
-
     renderRequests();
   } catch (error) {
-    console.error(error);
+    console.error("Load requests error:", error);
 
     requestsContainer.innerHTML = `
       <div class="empty-requests">
         <i class="ri-error-warning-line"></i>
         <h3>Unable to load requests</h3>
-        <p>Please try again later.</p>
+        <p>
+          ${error.message || "Please try again later."}
+        </p>
       </div>
     `;
   }
@@ -56,147 +69,260 @@ async function loadRequests() {
 function renderRequests() {
   let requests = [...allRequests];
 
+  /* -----------------------------------------
+     FILTER
+  ----------------------------------------- */
+
   if (currentFilter !== "all") {
     requests = requests.filter((request) => request.status === currentFilter);
   }
 
-  const searchValue = document
-    .getElementById("searchRequests")
-    .value.toLowerCase();
+  /* -----------------------------------------
+     SEARCH
+  ----------------------------------------- */
+
+  const searchInput = document.getElementById("searchRequests");
+
+  const searchValue = (searchInput?.value || "").trim().toLowerCase();
 
   if (searchValue) {
     requests = requests.filter((request) => {
+      const foodName = String(request.food_name || "").toLowerCase();
+
+      const requesterName = String(request.requester_name || "").toLowerCase();
+
+      const requestId = String(request.request_id || "").toLowerCase();
+
       return (
-        request.food_name.toLowerCase().includes(searchValue) ||
-        request.requester_name.toLowerCase().includes(searchValue) ||
-        request.request_id.toLowerCase().includes(searchValue)
+        foodName.includes(searchValue) ||
+        requesterName.includes(searchValue) ||
+        requestId.includes(searchValue)
       );
     });
   }
 
+  /* -----------------------------------------
+     EMPTY
+  ----------------------------------------- */
+
   if (!requests.length) {
     requestsContainer.innerHTML = `
       <div class="empty-requests">
+
         <i class="ri-inbox-line"></i>
+
         <h3>No Requests Found</h3>
-        <p>No requests match the selected filter.</p>
+
+        <p>
+          No requests match the selected filter.
+        </p>
+
       </div>
     `;
 
     return;
   }
 
+  /* -----------------------------------------
+     REQUEST CARDS
+  ----------------------------------------- */
+
   requestsContainer.innerHTML = requests
-    .map(
-      (request) => `
-      <div class="request-card ${request.status}"
-           data-id="${request._id}">
+    .map((request) => {
+      const status = request.status || "pending";
 
-        <div class="request-food">
+      const priority = request.priority || "normal";
 
-          <img
-            src="${request.image || "/static/images/food-placeholder.jpg"}"
-            alt="${request.food_name}"
-          />
+      return `
+        <div
+          class="request-card ${status}"
+          data-id="${request._id}"
+        >
 
-          <div class="request-food-details">
+          <!-- FOOD -->
 
-            <div class="request-header-row">
-              <h3>${request.food_name}</h3>
+          <div class="request-food">
 
-              <span class="priority ${request.priority}">
-                ${capitalize(request.priority)}
-              </span>
+            <img
+              src="${request.image || "/static/images/food-placeholder.jpg"}"
+              alt="${request.food_name || "Food Item"}"
+              onerror="
+                this.src='/static/images/food-placeholder.jpg'
+              "
+            />
+
+            <div class="request-food-details">
+
+              <div class="request-header-row">
+
+                <h3>
+                  ${request.food_name || "Food Item"}
+                </h3>
+
+                <span
+                  class="priority ${priority}"
+                >
+                  ${capitalize(priority)}
+                </span>
+
+              </div>
+
+              <div class="food-meta">
+
+                <span>
+                  Quantity:
+                  ${request.quantity || 0}
+                  ${request.unit || ""}
+                </span>
+
+                <span>
+                  Serves:
+                  ${request.serves || "-"}
+                </span>
+
+              </div>
+
+              <div class="request-user">
+
+                <i class="ri-user-line"></i>
+
+                <strong>
+                  ${request.requester_name || "User"}
+                </strong>
+
+                <span
+                  class="
+                    request-type
+                    ${request.requester_type || "individual"}
+                  "
+                >
+                  ${request.requester_type || "individual"}
+                </span>
+
+              </div>
+
+              <div class="distance">
+
+                <i class="ri-map-pin-line"></i>
+
+                ${request.distance || "Not available"}
+
+              </div>
+
             </div>
 
-            <div class="food-meta">
-              <span>Quantity: ${request.quantity}</span>
-              <span>Serves: ${request.serves}</span>
-            </div>
-
-            <div class="request-user">
-              <i class="ri-user-line"></i>
-
-              <strong>${request.requester_name}</strong>
-
-              <span class="request-type ${request.requester_type}">
-                ${request.requester_type}
-              </span>
-            </div>
-
-            <div class="distance">
-              <i class="ri-map-pin-line"></i>
-              ${request.distance}
-            </div>
           </div>
-        </div>
 
-        <div class="request-info">
 
-          <div class="info-item">
-            <i class="ri-hashtag"></i>
+          <!-- REQUEST INFORMATION -->
 
-            <div>
-              <span>Request ID</span>
-              <strong>${request.request_id}</strong>
+          <div class="request-info">
+
+            <div class="info-item">
+
+              <i class="ri-hashtag"></i>
+
+              <div>
+
+                <span>
+                  Request ID
+                </span>
+
+                <strong>
+                  ${request.request_id || "-"}
+                </strong>
+
+              </div>
+
             </div>
+
+
+            <div class="info-item">
+
+              <i class="ri-calendar-line"></i>
+
+              <div>
+
+                <span>
+                  Requested On
+                </span>
+
+                <strong>
+                  ${formatDate(request.created_at)}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <div class="info-item">
+
+              <i class="ri-time-line"></i>
+
+              <div>
+
+                <span>
+                  Pickup Time
+                </span>
+
+                <strong>
+                  ${request.pickup_time || "-"}
+                </strong>
+
+              </div>
+
+            </div>
+
           </div>
 
-          <div class="info-item">
-            <i class="ri-calendar-line"></i>
 
-            <div>
-              <span>Requested On</span>
-              <strong>${formatDate(request.created_at)}</strong>
-            </div>
-          </div>
+          <!-- ACTIONS -->
 
-          <div class="info-item">
-            <i class="ri-time-line"></i>
+          <div class="request-actions">
 
-            <div>
-              <span>Pickup Time</span>
-              <strong>${request.pickup_time}</strong>
-            </div>
-          </div>
-        </div>
-
-        <div class="request-actions">
-
-          <button
-            class="view-details-btn"
-            onclick="viewRequest('${request._id}')"
-          >
-            <i class="ri-eye-line"></i>
-            View Details
-          </button>
-
-          ${
-            request.status === "pending"
-              ? `
             <button
-              class="accept-btn"
-              onclick="acceptRequest('${request._id}')"
+              class="view-details-btn"
+              onclick="
+                viewRequest('${request._id}')
+              "
             >
-              <i class="ri-check-line"></i>
-              Accept
+              <i class="ri-eye-line"></i>
+              View Details
             </button>
 
-            <button
-              class="reject-btn"
-              onclick="rejectRequest('${request._id}')"
-            >
-              <i class="ri-close-line"></i>
-              Reject
-            </button>
-          `
-              : ""
-          }
+
+            ${
+              status === "pending"
+                ? `
+                  <button
+                    class="accept-btn"
+                    onclick="
+                      acceptRequest('${request._id}')
+                    "
+                  >
+                    <i class="ri-check-line"></i>
+                    Accept
+                  </button>
+
+                  <button
+                    class="reject-btn"
+                    onclick="
+                      rejectRequest('${request._id}')
+                    "
+                  >
+                    <i class="ri-close-line"></i>
+                    Reject
+                  </button>
+                `
+                : ""
+            }
+
+          </div>
 
         </div>
-      </div>
-    `,
-    )
+      `;
+    })
     .join("");
 }
 
@@ -207,13 +333,13 @@ function renderRequests() {
 function initializeFilters() {
   document.querySelectorAll(".filter-tab").forEach((tab) => {
     tab.addEventListener("click", () => {
-      document
-        .querySelectorAll(".filter-tab")
-        .forEach((btn) => btn.classList.remove("active"));
+      document.querySelectorAll(".filter-tab").forEach((btn) => {
+        btn.classList.remove("active");
+      });
 
       tab.classList.add("active");
 
-      currentFilter = tab.dataset.filter;
+      currentFilter = tab.dataset.filter || "all";
 
       renderRequests();
     });
@@ -227,6 +353,10 @@ function initializeFilters() {
 function initializeSearch() {
   const input = document.getElementById("searchRequests");
 
+  if (!input) {
+    return;
+  }
+
   input.addEventListener("input", renderRequests);
 }
 
@@ -236,20 +366,47 @@ function initializeSearch() {
 
 async function acceptRequest(requestId) {
   try {
-    const response = await fetch(`/api/requests/${requestId}/accept`, {
-      method: "POST",
-    });
+    const response = await fetch(
+      `/api/requests/${encodeURIComponent(requestId)}/accept`,
+      {
+        method: "POST",
 
-    if (!response.ok) throw new Error();
+        credentials: "same-origin",
+
+        headers: {
+          Accept: "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to accept request.");
+    }
 
     const request = allRequests.find((item) => item._id === requestId);
 
-    request.status = "accepted";
+    if (request) {
+      request.status = "accepted";
+    }
+
+    /* Close modal */
+
+    const requestModal = document.getElementById("requestModal");
+
+    if (requestModal) {
+      requestModal.classList.add("hidden");
+    }
 
     updateCounters();
     renderRequests();
+
+    alert(data.message || "Request accepted successfully.");
   } catch (error) {
-    alert("Failed to accept request");
+    console.error("Accept request error:", error);
+
+    alert(error.message || "Failed to accept request.");
   }
 }
 
@@ -259,20 +416,47 @@ async function acceptRequest(requestId) {
 
 async function rejectRequest(requestId) {
   try {
-    const response = await fetch(`/api/requests/${requestId}/reject`, {
-      method: "POST",
-    });
+    const response = await fetch(
+      `/api/requests/${encodeURIComponent(requestId)}/reject`,
+      {
+        method: "POST",
 
-    if (!response.ok) throw new Error();
+        credentials: "same-origin",
+
+        headers: {
+          Accept: "application/json",
+        },
+      },
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to reject request.");
+    }
 
     const request = allRequests.find((item) => item._id === requestId);
 
-    request.status = "rejected";
+    if (request) {
+      request.status = "rejected";
+    }
+
+    /* Close modal */
+
+    const requestModal = document.getElementById("requestModal");
+
+    if (requestModal) {
+      requestModal.classList.add("hidden");
+    }
 
     updateCounters();
     renderRequests();
+
+    alert(data.message || "Request rejected successfully.");
   } catch (error) {
-    alert("Failed to reject request");
+    console.error("Reject request error:", error);
+
+    alert(error.message || "Failed to reject request.");
   }
 }
 
@@ -283,63 +467,86 @@ async function rejectRequest(requestId) {
 function viewRequest(requestId) {
   const request = allRequests.find((item) => item._id === requestId);
 
-  if (!request) return;
+  if (!request) {
+    return;
+  }
 
   const modal = document.getElementById("requestModal");
 
+  if (!modal) {
+    return;
+  }
+
   modal.classList.remove("hidden");
 
-  // Request Info
-  document.getElementById("modalRequestId").textContent =
-    request.request_id || "-";
+  /* -----------------------------------------
+     REQUEST INFORMATION
+  ----------------------------------------- */
 
-  document.getElementById("modalRequestedOn").textContent = formatDate(
-    request.created_at,
+  setModalText("modalRequestId", request.request_id || "-");
+
+  setModalText("modalRequestedOn", formatDate(request.created_at));
+
+  setModalText("modalStatus", capitalize(request.status || "pending"));
+
+  /* -----------------------------------------
+     REQUESTER
+  ----------------------------------------- */
+
+  setModalText("modalRequesterName", request.requester_name || "-");
+
+  setModalText("modalRequesterType", request.requester_type || "-");
+
+  setModalText("modalDistance", request.distance || "-");
+
+  setModalText("modalPhone", request.phone || "-");
+
+  /* -----------------------------------------
+     FOOD
+  ----------------------------------------- */
+
+  setModalText("modalFoodName", request.food_name || "-");
+
+  setModalText("modalQuantity", request.quantity || "-");
+
+  setModalText("modalPeopleServed", request.serves || "-");
+
+  setModalText("modalPickupTime", request.pickup_time || "-");
+
+  /* -----------------------------------------
+     PURPOSE
+  ----------------------------------------- */
+
+  setModalText("modalPurpose", request.purpose || "Food reservation");
+
+  /* -----------------------------------------
+     INSTRUCTIONS
+  ----------------------------------------- */
+
+  setModalText(
+    "modalInstructions",
+    request.instructions || "No special instructions provided.",
   );
 
-  document.getElementById("modalStatus").textContent = capitalize(
-    request.status,
-  );
+  /* -----------------------------------------
+     MODAL BUTTONS
+  ----------------------------------------- */
 
-  // Requester
-  document.getElementById("modalRequesterName").textContent =
-    request.requester_name || "-";
+  const acceptButton = document.getElementById("modalAcceptBtn");
 
-  document.getElementById("modalRequesterType").textContent =
-    request.requester_type || "-";
+  const rejectButton = document.getElementById("modalRejectBtn");
 
-  document.getElementById("modalDistance").textContent =
-    request.distance || "-";
+  if (acceptButton) {
+    acceptButton.style.display = request.status === "pending" ? "" : "none";
 
-  document.getElementById("modalPhone").textContent = request.phone || "-";
+    acceptButton.onclick = () => acceptRequest(requestId);
+  }
 
-  // Food
-  document.getElementById("modalFoodName").textContent =
-    request.food_name || "-";
+  if (rejectButton) {
+    rejectButton.style.display = request.status === "pending" ? "" : "none";
 
-  document.getElementById("modalQuantity").textContent =
-    request.quantity || "-";
-
-  document.getElementById("modalPeopleServed").textContent =
-    request.serves || "-";
-
-  document.getElementById("modalPickupTime").textContent =
-    request.pickup_time || "-";
-
-  // Purpose
-  document.getElementById("modalPurpose").textContent =
-    request.purpose || "Not provided";
-
-  // Instructions
-  document.getElementById("modalInstructions").textContent =
-    request.instructions || "No special instructions provided.";
-
-  // Modal buttons
-  document.getElementById("modalAcceptBtn").onclick = () =>
-    acceptRequest(requestId);
-
-  document.getElementById("modalRejectBtn").onclick = () =>
-    rejectRequest(requestId);
+    rejectButton.onclick = () => rejectRequest(requestId);
+  }
 }
 
 /* =========================================
@@ -349,41 +556,20 @@ function viewRequest(requestId) {
 const modal = document.getElementById("requestModal");
 
 document.getElementById("closeRequestModal")?.addEventListener("click", () => {
-  modal.classList.add("hidden");
+  modal?.classList.add("hidden");
 });
 
 document.querySelector(".modal-overlay")?.addEventListener("click", () => {
-  modal.classList.add("hidden");
+  modal?.classList.add("hidden");
 });
-
-async function acceptRequest(requestId) {
-  try {
-    const response = await fetch(`/api/requests/${requestId}/accept`, {
-      method: "POST",
-    });
-
-    if (!response.ok) throw new Error();
-
-    const request = allRequests.find((item) => item._id === requestId);
-
-    if (request) {
-      request.status = "accepted";
-    }
-
-    document.getElementById("requestModal").classList.add("hidden");
-
-    updateCounters();
-    renderRequests();
-  } catch (error) {
-    alert("Failed to accept request");
-  }
-}
 
 /* =========================================
    COUNTERS
 ========================================= */
 
 function updateCounters() {
+  const all = allRequests.length;
+
   const pending = allRequests.filter((r) => r.status === "pending").length;
 
   const accepted = allRequests.filter((r) => r.status === "accepted").length;
@@ -392,26 +578,89 @@ function updateCounters() {
 
   const completed = allRequests.filter((r) => r.status === "completed").length;
 
-  document.querySelector('[data-filter="pending"] span').textContent = pending;
+  /* -----------------------------------------
+     ALL
+  ----------------------------------------- */
 
-  document.querySelector('[data-filter="accepted"] span').textContent =
-    accepted;
+  const allTab = document.querySelector('[data-filter="all"] span');
 
-  document.querySelector('[data-filter="rejected"] span').textContent =
-    rejected;
+  if (allTab) {
+    allTab.textContent = all;
+  }
 
-  document.querySelector('[data-filter="completed"] span').textContent =
-    completed;
+  /* -----------------------------------------
+     PENDING
+  ----------------------------------------- */
+
+  const pendingTab = document.querySelector('[data-filter="pending"] span');
+
+  if (pendingTab) {
+    pendingTab.textContent = pending;
+  }
+
+  /* -----------------------------------------
+     ACCEPTED
+  ----------------------------------------- */
+
+  const acceptedTab = document.querySelector('[data-filter="accepted"] span');
+
+  if (acceptedTab) {
+    acceptedTab.textContent = accepted;
+  }
+
+  /* -----------------------------------------
+     REJECTED
+  ----------------------------------------- */
+
+  const rejectedTab = document.querySelector('[data-filter="rejected"] span');
+
+  if (rejectedTab) {
+    rejectedTab.textContent = rejected;
+  }
+
+  /* -----------------------------------------
+     COMPLETED
+  ----------------------------------------- */
+
+  const completedTab = document.querySelector('[data-filter="completed"] span');
+
+  if (completedTab) {
+    completedTab.textContent = completed;
+  }
 }
 
 /* =========================================
    HELPERS
 ========================================= */
 
+function setModalText(elementId, value) {
+  const element = document.getElementById(elementId);
+
+  if (element) {
+    element.textContent = value ?? "-";
+  }
+}
+
 function capitalize(value) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  const text = String(value || "");
+
+  if (!text) {
+    return "";
+  }
+
+  return text.charAt(0).toUpperCase() + text.slice(1);
 }
 
 function formatDate(date) {
-  return new Date(date).toLocaleString();
+  if (!date) {
+    return "-";
+  }
+
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "-";
+  }
+
+  return parsedDate.toLocaleString("en-IN");
 }
