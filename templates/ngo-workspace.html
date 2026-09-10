@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NGO {{ view|title }} | ReServe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ngo-dashboard.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ngo-workspace.css') }}" />
+  </head>
+  <body data-view="{{ view }}">
+    <nav class="ngo-navbar">
+      <a href="/ngo-dashboard" class="ngo-brand"><div class="ngo-logo"><img src="{{ url_for('static', filename='images/reserve-logo.svg') }}" alt="ReServe" /></div><div class="ngo-brand-text"><h2>ReServe</h2><span>Food Rescue Platform</span></div></a>
+      <div class="ngo-nav-links">
+        <a href="/ngo-dashboard" class="ngo-nav-item"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+        <a href="/ngo-donations" class="ngo-nav-item {{ 'active' if view == 'available' }}"><i class="ri-hand-heart-line"></i><span>Available Donations</span></a>
+        <a href="/ngo-claims" class="ngo-nav-item {{ 'active' if view == 'claims' }}"><i class="ri-file-list-3-line"></i><span>My Donations</span></a>
+        <a href="/ngo-impact" class="ngo-nav-item {{ 'active' if view == 'impact' }}"><i class="ri-bar-chart-box-line"></i><span>Impact</span></a>
+        <a href="/ngo-profile" class="ngo-nav-item {{ 'active' if view == 'profile' }}"><i class="ri-user-line"></i><span>Profile</span></a>
+      </div>
+      <a class="ngo-logout" href="/logout"><i class="ri-logout-box-r-line"></i> Logout</a>
+    </nav>
+    <main class="ngo-workspace">
+      <header><span class="workspace-label">NGO OPERATIONS</span><h1 id="workspaceTitle">Loading…</h1><p id="workspaceIntro"></p></header>
+      <section id="workspaceContent" class="workspace-content"><div class="workspace-loading"><i class="ri-loader-4-line ri-spin"></i> Loading…</div></section>
+    </main>
+    <script src="{{ url_for('static', filename='js/ngo-workspace.js') }}"></script>
+  </body>
+</html>

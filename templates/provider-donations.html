@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Donations | ReServe</title>
+
+    <!-- Remix Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css"
+    />
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Existing ReServe CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/sidebar.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/provider-donations.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="dashboard">
+      <!-- =====================================================
+       SIDEBAR
+  ====================================================== -->
+
+      <aside class="sidebar">
+        <!-- Brand -->
+        <div class="sidebar-brand">
+          <div class="logo-wrapper">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe Logo"
+            />
+          </div>
+
+          <div class="brand-content">
+            <h2>ReServe</h2>
+            <p>Food Rescue Platform</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+          <a href="/dashboard">
+            <i class="ri-home-5-line"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="/add-listings">
+            <i class="ri-restaurant-line"></i>
+            <span>Add Listings</span>
+          </a>
+
+          <a href="/my-listings">
+            <i class="ri-store-2-line"></i>
+            <span>My Listings</span>
+          </a>
+
+          <a href="/provider-donations" class="active">
+            <i class="ri-hand-heart-line"></i>
+            <span>Donations</span>
+          </a>
+
+          <a href="/requests">
+            <i class="ri-file-list-3-line"></i>
+            <span>Requests</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-box-3-line"></i>
+            <span>Pickups</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-robot-2-line"></i>
+            <span>AI Insights</span>
+          </a>
+
+          <a href="#">
+            <i class="ri-bar-chart-box-line"></i>
+            <span>Analytics</span>
+          </a>
+        </nav>
+
+        <!-- Footer -->
+        <div class="sidebar-footer">
+          <a href="/logout">
+            <i class="ri-logout-box-r-line"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </aside>
+
+      <!-- =====================================================
+       MAIN CONTENT
+  ====================================================== -->
+
+      <div class="main-content">
+        <main class="content-wrapper">
+          <!-- =================================================
+           TOPBAR
+      ================================================== -->
+
+          <header class="topbar">
+            <!-- Search -->
+            <div class="search-filter">
+              <i class="ri-search-line"></i>
+
+              <input
+                id="donationSearch"
+                type="text"
+                placeholder="Search donations..."
+              />
+            </div>
+
+            <div class="topbar-right">
+              <!-- Notification -->
+              <button class="icon-btn" id="notificationBtn" type="button">
+                <i class="ri-notification-3-line"></i>
+
+                <span id="notificationCount" class="badge"> 3 </span>
+              </button>
+
+              <!-- Profile -->
+              <button class="profile" type="button">
+                <img
+                  id="headerProfileImage"
+                  src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
+                  alt="Profile"
+                />
+
+                <div>
+                  <h4>
+                    {{ user.business_name if user.business_name else user.name
+                    if user.name else 'Spice Bistro' }}
+                  </h4>
+
+                  <p>{{ user.role if user.role else 'Restaurant Owner' }}</p>
+                </div>
+
+                <i class="ri-arrow-down-s-line"></i>
+              </button>
+            </div>
+          </header>
+
+          <!-- =================================================
+           PAGE HEADER
+      ================================================== -->
+
+          <section class="page-header">
+            <div class="page-heading">
+              <div class="eyebrow">FOOD RESCUE</div>
+
+              <h1>Donations</h1>
+
+              <p>Turn your surplus food into meals for people who need them.</p>
+            </div>
+          </section>
+
+          <!-- =================================================
+           TABS
+      ================================================== -->
+
+          <section class="donation-tabs">
+            <button
+              type="button"
+              class="donation-tab active"
+              data-tab="surplus"
+            >
+              <i class="ri-restaurant-2-line"></i>
+              Surplus Food
+            </button>
+
+            <button type="button" class="donation-tab" data-tab="active">
+              <i class="ri-hand-heart-line"></i>
+              Active Donations
+            </button>
+
+            <button type="button" class="donation-tab" data-tab="history">
+              <i class="ri-history-line"></i>
+              Donation History
+            </button>
+          </section>
+
+          <!-- =================================================
+           SURPLUS FOOD
+      ================================================== -->
+
+          <section class="donation-panel active" id="surplusPanel">
+            <div class="panel-header">
+              <div>
+                <h2>Surplus Food</h2>
+
+                <p>
+                  These listings have completed their normal pickup window.
+                  Confirm the remaining quantity before offering the food to
+                  NGOs.
+                </p>
+              </div>
+            </div>
+
+            <div id="surplusListings" class="donation-grid">
+              <div class="loading-card">
+                <div class="loader"></div>
+                <p>Checking for surplus food...</p>
+              </div>
+            </div>
+
+            <!-- Empty -->
+            <div id="surplusEmpty" class="donation-empty hidden">
+              <div class="empty-icon">
+                <i class="ri-leaf-line"></i>
+              </div>
+
+              <h3>No surplus food right now</h3>
+
+              <p>
+                When a listing's normal pickup window ends, it will appear here
+                for surplus confirmation.
+              </p>
+            </div>
+          </section>
+
+          <!-- =================================================
+           ACTIVE DONATIONS
+      ================================================== -->
+
+          <section class="donation-panel" id="activePanel">
+            <div class="panel-header">
+              <div>
+                <h2>Active Donations</h2>
+
+                <p>Food currently available to or being collected by NGOs.</p>
+              </div>
+            </div>
+
+            <div id="activeDonations" class="donation-grid"></div>
+
+            <div id="activeEmpty" class="donation-empty hidden">
+              <div class="empty-icon">
+                <i class="ri-hand-heart-line"></i>
+              </div>
+
+              <h3>No active donations</h3>
+
+              <p>
+                Published donations will appear here until they are completed or
+                expire.
+              </p>
+            </div>
+          </section>
+
+          <!-- =================================================
+           DONATION HISTORY
+      ================================================== -->
+
+          <section class="donation-panel" id="historyPanel">
+            <div class="panel-header">
+              <div>
+                <h2>Donation History</h2>
+
+                <p>A record of your completed and expired food donations.</p>
+              </div>
+            </div>
+
+            <div id="donationHistory" class="donation-history"></div>
+
+            <div id="historyEmpty" class="donation-empty hidden">
+              <div class="empty-icon">
+                <i class="ri-history-line"></i>
+              </div>
+
+              <h3>No donation history</h3>
+
+              <p>Completed and expired donations will appear here.</p>
+            </div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <!-- =========================================================
+     SURPLUS / DONATION MODAL
+========================================================= -->
+
+    <dialog id="surplusDialog" class="surplus-dialog">
+      <form method="dialog" id="surplusForm">
+        <button
+          class="dialog-close"
+          value="cancel"
+          aria-label="Close"
+          type="button"
+          id="closeSurplusDialog"
+        >
+          <i class="ri-close-line"></i>
+        </button>
+
+        <!-- Header -->
+
+        <div class="dialog-header">
+          <div class="dialog-icon">
+            <i class="ri-hand-heart-line"></i>
+          </div>
+
+          <div>
+            <span>FOOD RESCUE</span>
+
+            <h2 id="surplusDialogTitle">Confirm Surplus</h2>
+          </div>
+        </div>
+
+        <p id="surplusDialogHelp" class="dialog-description">
+          Confirm how much food remains after the normal pickup window.
+        </p>
+
+        <input type="hidden" id="surplusListingId" />
+
+        <!-- Quantity -->
+
+        <div class="form-group">
+          <label for="surplusQuantity"> Remaining quantity </label>
+
+          <div class="quantity-input">
+            <input id="surplusQuantity" type="number" min="0" required />
+
+            <span id="surplusUnit"> portions </span>
+          </div>
+
+          <small> Enter the actual amount of food still available. </small>
+        </div>
+
+        <!-- Donation Fields -->
+
+        <div id="donationFields" class="donation-fields" hidden>
+          <div class="form-divider">
+            <span>NGO PICKUP</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="donationPickupStart"> Pickup starts </label>
+
+              <input id="donationPickupStart" type="datetime-local" />
+            </div>
+
+            <div class="form-group">
+              <label for="donationPickupEnd"> Pickup ends </label>
+
+              <input id="donationPickupEnd" type="datetime-local" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="donationInstructions">
+              Pickup instructions
+              <span>Optional</span>
+            </label>
+
+            <textarea
+              id="donationInstructions"
+              maxlength="250"
+              rows="3"
+              placeholder="Example: Please collect from the rear entrance."
+            ></textarea>
+
+            <small> Maximum 250 characters. </small>
+          </div>
+        </div>
+
+        <!-- Actions -->
+
+        <div class="dialog-actions">
+          <button type="button" class="secondary-btn" id="cancelSurplusBtn">
+            Cancel
+          </button>
+
+          <button type="button" class="primary-btn" id="confirmSurplusBtn">
+            Confirm Surplus
+          </button>
+
+          <button
+            type="button"
+            class="primary-btn"
+            id="publishDonationBtn"
+            hidden
+          >
+            <i class="ri-hand-heart-line"></i>
+            Publish to NGOs
+          </button>
+        </div>
+      </form>
+    </dialog>
+
+    <!-- =========================================================
+     TOAST
+========================================================= -->
+
+    <div class="reserve-toast" id="reserveToast">
+      <div class="toast-icon">
+        <i class="ri-check-line" id="toastIcon"></i>
+      </div>
+
+      <div class="toast-content">
+        <strong id="toastTitle"> Success </strong>
+
+        <span id="toastMessage"></span>
+      </div>
+
+      <button
+        type="button"
+        class="toast-close"
+        id="toastClose"
+        aria-label="Close notification"
+      >
+        <i class="ri-close-line"></i>
+      </button>
+    </div>
+
+    <!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+    <script src="{{ url_for('static', filename='js/provider-donations.js') }}"></script>
+  </body>
+</html>

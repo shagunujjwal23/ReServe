@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>NGO Dashboard | ReServe</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- NGO Dashboard CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/ngo-dashboard.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="ngo-dashboard">
+      <!-- =====================================================
+           NAVBAR
+      ====================================================== -->
+
+      <nav class="ngo-navbar">
+        <!-- Brand -->
+
+        <a href="/ngo-dashboard" class="ngo-brand">
+          <div class="ngo-logo">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe"
+            />
+          </div>
+
+          <div class="ngo-brand-text">
+            <h2>ReServe</h2>
+            <span>From Surplus to Solution</span>
+          </div>
+        </a>
+
+        <!-- Main Navigation -->
+
+        <div class="ngo-nav-links">
+          <a href="/ngo-dashboard" class="ngo-nav-item active">
+            <i class="ri-home-5-line"></i>
+            <span>Home</span>
+          </a>
+
+          <a href="/ngo-donations" class="ngo-nav-item">
+            <i class="ri-search-line"></i>
+            <span>Explore Food</span>
+          </a>
+
+          <a href="/ngo-claims" class="ngo-nav-item">
+            <i class="ri-calendar-check-line"></i>
+            <span>My Reservations</span>
+          </a>
+
+          <a href="#" class="ngo-nav-item">
+            <i class="ri-message-3-line"></i>
+            <span>Messages</span>
+          </a>
+        </div>
+
+        <!-- Right Navigation -->
+
+        <div class="ngo-nav-actions">
+          <!-- Notifications -->
+
+          <button type="button" class="ngo-icon-btn" title="Notifications">
+            <i class="ri-notification-3-line"></i>
+            <span class="ngo-badge">3</span>
+          </button>
+
+          <!-- Profile -->
+
+          <div class="ngo-profile-wrapper">
+            <button type="button" class="ngo-profile-btn" id="ngoProfileBtn">
+              <img
+                src="{{ url_for('static', filename='images/avatars/default.png') }}"
+                alt="Profile"
+              />
+
+              <div class="ngo-profile-info">
+                <strong>
+                  {{ user.organization_name or user.name or "NGO" }}
+                </strong>
+
+                <span>NGO</span>
+              </div>
+
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+
+            <div class="ngo-profile-dropdown hidden" id="ngoProfileDropdown">
+              <a href="/ngo-profile">
+                <i class="ri-user-line"></i>
+                Profile
+              </a>
+
+              <a href="/ngo-settings">
+                <i class="ri-settings-3-line"></i>
+                Settings
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <a href="{{ url_for('auth.logout') }}">
+                <i class="ri-logout-box-r-line"></i>
+                Logout
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <!-- =====================================================
+           MAIN CONTENT
+      ====================================================== -->
+
+      <main class="ngo-main">
+        <!-- =================================================
+             WELCOME HERO
+        ================================================== -->
+
+        <section class="ngo-hero">
+          <div class="ngo-hero-content">
+            <span class="hero-eyebrow"> NGO DASHBOARD </span>
+
+            <h1>
+              Welcome back,
+              <strong>
+                {{ user.organization_name or user.name or "NGO" }}!
+              </strong>
+            </h1>
+
+            <p>
+              Manage food requests, track your impact and help build a
+              hunger-free community.
+            </p>
+
+            <a href="/ngo-donations" class="hero-action-btn">
+              Continue Making an Impact
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+
+          <!-- Hero Image -->
+
+          <div class="ngo-hero-image">
+            <img
+              src="{{ url_for('static', filename='images/hero/ngo-dashboard-hero.png') }}"
+              alt="Food donation"
+            />
+          </div>
+
+          <!-- Hero Benefits -->
+
+          <div class="ngo-hero-benefits">
+            <div class="hero-benefit">
+              <div class="hero-benefit-icon">
+                <i class="ri-group-line"></i>
+              </div>
+
+              <p>
+                Receive and manage
+                <br />
+                food requests
+              </p>
+            </div>
+
+            <div class="hero-benefit">
+              <div class="hero-benefit-icon">
+                <i class="ri-leaf-line"></i>
+              </div>
+
+              <p>
+                Coordinate pickups and
+                <br />
+                distribute to communities
+              </p>
+            </div>
+
+            <div class="hero-benefit">
+              <div class="hero-benefit-icon">
+                <i class="ri-heart-line"></i>
+              </div>
+
+              <p>
+                Be a part of a sustainable
+                <br />
+                tomorrow
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================
+             TOP DASHBOARD GRID
+        ================================================== -->
+
+        <section class="ngo-top-grid">
+          <!-- ===============================================
+               RECENT CLAIMS
+          ================================================ -->
+
+          <section class="ngo-panel recent-claims-panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <div class="panel-icon">
+                  <i class="ri-file-list-3-line"></i>
+                </div>
+
+                <div>
+                  <h2>Recent Food Claims</h2>
+                </div>
+              </div>
+
+              <a href="/ngo-claims" class="panel-view-link">
+                View All
+                <i class="ri-arrow-right-line"></i>
+              </a>
+            </div>
+
+            <!-- Claims Table -->
+
+            <div class="claims-table-wrapper">
+              <table class="claims-table">
+                <thead>
+                  <tr>
+                    <th>Food Item</th>
+
+                    <th>Provider</th>
+
+                    <th>Quantity</th>
+
+                    <th>Pickup Date & Time</th>
+
+                    <th>Status</th>
+
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody id="recentClaimsTable">
+                  <!-- Dynamic rows loaded by JS -->
+
+                  <tr class="table-loading">
+                    <td colspan="6">
+                      <i class="ri-loader-4-line ri-spin"></i>
+
+                      Loading recent claims...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ===============================================
+               UPCOMING PICKUPS
+          ================================================ -->
+
+          <section class="ngo-panel pickups-panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <div class="panel-icon">
+                  <i class="ri-calendar-check-line"></i>
+                </div>
+
+                <div>
+                  <h2>Upcoming Pickups</h2>
+                </div>
+              </div>
+
+              <a href="/ngo-claims" class="panel-view-link">
+                View Calendar
+                <i class="ri-arrow-right-line"></i>
+              </a>
+            </div>
+
+            <!-- Pickup Timeline -->
+
+            <div class="pickup-timeline" id="upcomingPickups">
+              <div class="timeline-loading">
+                <i class="ri-loader-4-line ri-spin"></i>
+
+                <span> Loading upcoming pickups... </span>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <!-- =================================================
+             LOWER DASHBOARD GRID
+        ================================================== -->
+
+        <section class="ngo-bottom-grid">
+          <!-- ===============================================
+               FOOD COLLECTION TREND
+          ================================================ -->
+
+          <section class="ngo-panel collection-trend-panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <div class="panel-icon">
+                  <i class="ri-bar-chart-box-line"></i>
+                </div>
+
+                <div>
+                  <h2>Food Collection Trend</h2>
+                </div>
+              </div>
+
+              <select id="collectionPeriod" class="chart-period-select">
+                <option value="month">This Month</option>
+
+                <option value="week">This Week</option>
+
+                <option value="year">This Year</option>
+              </select>
+            </div>
+
+            <div class="collection-chart">
+              <div id="foodCollectionChart" class="chart-container">
+                <!-- Chart generated by JS -->
+
+                <div class="chart-placeholder">
+                  <i class="ri-bar-chart-line"></i>
+
+                  <span> Loading collection data... </span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===============================================
+               FOOD CATEGORY DISTRIBUTION
+          ================================================ -->
+
+          <section class="ngo-panel category-panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <div class="panel-icon">
+                  <i class="ri-pie-chart-2-line"></i>
+                </div>
+
+                <div>
+                  <h2>Food Category Distribution</h2>
+                </div>
+              </div>
+            </div>
+
+            <div class="category-content">
+              <!-- Donut Chart -->
+
+              <div class="category-chart">
+                <div class="donut-chart" id="categoryDonutChart">
+                  <div class="donut-center">
+                    <strong id="totalFoodCollected"> 0 </strong>
+
+                    <span> Units </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Category Legend -->
+
+              <div class="category-legend" id="categoryLegend">
+                <div class="legend-loading">
+                  <i class="ri-loader-4-line ri-spin"></i>
+
+                  Loading...
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===============================================
+               QUICK ACTIONS
+          ================================================ -->
+
+          <section class="ngo-panel quick-actions-panel">
+            <div class="panel-header">
+              <div class="panel-title-group">
+                <div class="panel-icon">
+                  <i class="ri-flashlight-line"></i>
+                </div>
+
+                <div>
+                  <h2>Quick Actions</h2>
+                </div>
+              </div>
+            </div>
+
+            <div class="quick-actions-grid">
+              <!-- Browse Food -->
+
+              <a href="/ngo-donations" class="quick-action-card">
+                <div class="quick-action-icon">
+                  <i class="ri-search-line"></i>
+                </div>
+
+                <div class="quick-action-content">
+                  <strong> Browse Available Food </strong>
+
+                  <span> Find food listings near you </span>
+                </div>
+
+                <i class="ri-arrow-right-s-line"></i>
+              </a>
+
+              <!-- My Claims -->
+
+              <a href="/ngo-claims" class="quick-action-card">
+                <div class="quick-action-icon">
+                  <i class="ri-calendar-check-line"></i>
+                </div>
+
+                <div class="quick-action-content">
+                  <strong> My Reservations </strong>
+
+                  <span> View and manage your claims </span>
+                </div>
+
+                <i class="ri-arrow-right-s-line"></i>
+              </a>
+
+              <!-- Impact -->
+
+              <a href="/ngo-impact" class="quick-action-card">
+                <div class="quick-action-icon">
+                  <i class="ri-bar-chart-box-line"></i>
+                </div>
+
+                <div class="quick-action-content">
+                  <strong> Generate Report </strong>
+
+                  <span> Track your food rescue impact </span>
+                </div>
+
+                <i class="ri-arrow-right-s-line"></i>
+              </a>
+
+              <!-- Messages -->
+
+              <a href="#" class="quick-action-card">
+                <div class="quick-action-icon">
+                  <i class="ri-message-3-line"></i>
+                </div>
+
+                <div class="quick-action-content">
+                  <strong> Messages </strong>
+
+                  <span> Chat with food providers </span>
+                </div>
+
+                <div class="quick-action-notification">3</div>
+
+                <i class="ri-arrow-right-s-line"></i>
+              </a>
+            </div>
+          </section>
+        </section>
+      </main>
+
+      <!-- =====================================================
+           FOOTER
+      ====================================================== -->
+
+      <footer class="ngo-footer">
+        <p>© 2026 ReServe. From Surplus to Solution.</p>
+
+        <div class="footer-links">
+          <a href="#"> Help </a>
+
+          <a href="#"> Privacy </a>
+
+          <a href="#"> Terms </a>
+        </div>
+      </footer>
+    </div>
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="{{ url_for('static', filename='js/ngo-dashboard.js') }}"></script>
+  </body>
+</html>

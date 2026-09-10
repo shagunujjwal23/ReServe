@@ -8,6 +8,7 @@ from flask import Blueprint, jsonify, request, session
 from pymongo.errors import PyMongoError
 
 from config.database import get_collection
+from services.lifecycle import refresh_lifecycle
 
 
 orders = Blueprint("orders", __name__)
@@ -48,6 +49,8 @@ def place_order():
     Quantity is reduced only after the donor/provider
     accepts the request.
     """
+
+    refresh_lifecycle()
 
     # ======================================================
     # CHECK LOGIN
@@ -741,6 +744,8 @@ def accept_request(request_id):
 
     Quantity is reduced ONLY here.
     """
+
+    refresh_lifecycle()
 
     provider_id = get_logged_in_user_id()
 

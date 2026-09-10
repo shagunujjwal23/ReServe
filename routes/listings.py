@@ -8,6 +8,7 @@ from flask import Blueprint, jsonify, request, session
 from pymongo.errors import PyMongoError
 
 from config.database import get_collection
+from services.lifecycle import _as_utc, normalize_datetime, refresh_lifecycle
 
 
 listings = Blueprint("listings", __name__)
@@ -244,6 +245,16 @@ def create_listing():
             "missing_fields": missing_fields
         }), 400
 
+    pickup_start = _as_utc(payload.get("pickup_start"))
+    pickup_end = _as_utc(payload.get("pickup_end"))
+    if not pickup_start or not pickup_end or pickup_end <= pickup_start:
+        return jsonify({
+            "success": False,
+            "message": "Provide a valid pickup start and end time."
+        }), 400
+    payload["pickup_start"] = normalize_datetime(payload["pickup_start"])
+    payload["pickup_end"] = normalize_datetime(payload["pickup_end"])
+
     # ==========================================================
     # 5. GET FOOD LISTINGS COLLECTION
     # ==========================================================
@@ -325,6 +336,9 @@ def create_listing():
         # Statistics
         "views": 0,
         "reservations": 0,
+        # Keep the original amount for surplus history; quantity continues to
+        # be the existing mutable amount remaining after accepted requests.
+        "original_quantity": payload["quantity"],
 
         # Timestamps
         "created_at": timestamp,
@@ -372,6 +386,8 @@ def create_listing():
 @listings.route("/api/listings", methods=["GET"])
 def get_public_listings():
     """Return all currently available public food listings."""
+
+    refresh_lifecycle()
 
     listings_collection = get_collection("food_listings")
 
@@ -581,6 +597,8 @@ def get_public_listings():
 @listings.route("/api/listings/my", methods=["GET"])
 def get_my_listings():
     """Return all food listings created by the logged-in user."""
+
+    refresh_lifecycle()
 
     session_user_id = session.get("user_id")
 
@@ -803,6 +821,8 @@ def get_listing(listing_id):
     This endpoint provides all information required by
     the individual user's listing-details page.
     """
+
+    refresh_lifecycle()
 
     # ==========================================================
     # VALIDATE LISTING ID
@@ -1085,6 +1105,8 @@ def get_listing(listing_id):
 def update_listing(listing_id):
     """Update a food listing owned by the currently logged-in user."""
 
+    refresh_lifecycle()
+
     session_user_id = session.get("user_id")
 
     if not session_user_id:
@@ -1170,6 +1192,12 @@ def update_listing(listing_id):
                 "permission to edit it."
             )
         }), 404
+
+    if str(existing_listing.get("status", "available")).lower() not in {"available", "paused"}:
+        return jsonify({
+            "success": False,
+            "message": "Only active or paused listings can be edited."
+        }), 409
 
     # ==========================================================
     # EDITABLE FIELDS
@@ -1271,6 +1299,16 @@ def update_listing(listing_id):
 
         update_data[field] = value
 
+    pickup_start = _as_utc(update_data.get("pickup_start"))
+    pickup_end = _as_utc(update_data.get("pickup_end"))
+    if not pickup_start or not pickup_end or pickup_end <= pickup_start:
+        return jsonify({
+            "success": False,
+            "message": "Provide a valid pickup start and end time."
+        }), 400
+    update_data["pickup_start"] = normalize_datetime(update_data["pickup_start"])
+    update_data["pickup_end"] = normalize_datetime(update_data["pickup_end"])
+
     update_data["address"] = pickup_location["address"]
     update_data["city"] = pickup_location["city"]
     update_data["landmark"] = ""
@@ -1333,6 +1371,8 @@ def update_listing(listing_id):
 )
 def toggle_pause_listing(listing_id):
     """Pause or resume a food listing."""
+
+    refresh_lifecycle()
 
     session_user_id = session.get("user_id")
 
@@ -1408,6 +1448,12 @@ def toggle_pause_listing(listing_id):
     current_status = str(
         listing.get("status", "available")
     ).strip().lower()
+
+    if current_status not in {"available", "paused"}:
+        return jsonify({
+            "success": False,
+            "message": "This listing can no longer be paused or resumed."
+        }), 409
 
     if current_status == "paused":
 
@@ -1570,6 +1616,14 @@ def duplicate_listing(listing_id):
     duplicate["views"] = 0
 
     duplicate["reservations"] = 0
+    duplicate["original_quantity"] = duplicate.get("quantity", 0)
+    for field in (
+        "surplus_quantity",
+        "pickup_window_ended_at",
+        "surplus_confirmed_at",
+        "donation_id",
+    ):
+        duplicate.pop(field, None)
 
     duplicate["created_at"] = timestamp
 
@@ -1659,6 +1713,17 @@ def delete_listing(listing_id):
 
     try:
 
+        existing = listings_collection.find_one({
+            "_id": listing_object_id,
+            "owner_id": owner_id
+        })
+
+        if existing and existing.get("donation_id"):
+            return jsonify({
+                "success": False,
+                "message": "Listings with donation history cannot be deleted."
+            }), 409
+
         result = listings_collection.delete_one({
             "_id": listing_object_id,
             "owner_id": owner_id
@@ -1693,4 +1758,3 @@ def delete_listing(listing_id):
         "success": True,
         "message": "Listing deleted successfully."
     }), 200
-

@@ -13,6 +13,8 @@ from routes.auth import auth
 from routes.listings import listings
 from routes.upload import upload
 from routes.orders import orders
+from routes.ngo import ngo
+from routes.donations import donations
 
 app = Flask(__name__)
 load_dotenv()
@@ -23,6 +25,8 @@ app.register_blueprint(auth)
 app.register_blueprint(listings)
 app.register_blueprint(upload)
 app.register_blueprint(orders)
+app.register_blueprint(ngo)
+app.register_blueprint(donations)
 
 def login_required(view):
     """Redirect anonymous or malformed sessions to the login page."""
@@ -779,6 +783,212 @@ def place_order(listing_id):
         user=user,
         listing_id=listing_id
     )
+
+# ==========================================================
+# NGO DASHBOARD
+# ==========================================================
+
+@app.route("/ngo-dashboard")
+@login_required
+def ngo_dashboard():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    # ------------------------------------------------------
+    # CHECK NGO ROLE
+    # ------------------------------------------------------
+
+    role = str(
+        user_record.get("role", "")
+    ).strip().lower()
+
+    if role != "ngo":
+        return redirect(url_for("home"))
+
+    # ------------------------------------------------------
+    # USER DATA
+    # ------------------------------------------------------
+
+    user = {
+        "id": str(user_record["_id"]),
+
+        "name": user_record.get(
+            "full_name",
+            ""
+        ),
+
+        "email": user_record.get(
+            "email",
+            ""
+        ),
+
+        "phone": user_record.get(
+            "phone",
+            ""
+        ),
+
+        "role": role,
+
+        "organization_name": user_record.get(
+            "organization_name",
+            user_record.get(
+                "full_name",
+                "NGO"
+            )
+        ),
+
+        "profile_image": user_record.get(
+            "profile_image",
+            ""
+        ),
+    }
+
+    return render_template(
+        "ngo-dashboard.html",
+        user=user
+    )
+
+
+def _render_ngo_workspace(view):
+    """Render a lightweight NGO page using the same session/role protection."""
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user = users_collection.find_one({
+            "_id": user_id
+        })
+    except PyMongoError:
+        abort(503)
+
+    if user is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    if str(user.get("role", "")).strip().lower() != "ngo":
+        return redirect(url_for("home"))
+
+    return render_template(
+        "ngo-workspace.html",
+        view=view,
+        user=user
+    )
+
+# ==========================================================
+# PROVIDER DONATIONS
+# ==========================================================
+
+@app.route("/provider-donations")
+@login_required
+def provider_donations_page():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    role = str(
+        user_record.get("role", "")
+    ).strip().lower()
+
+    if role not in {
+        "provider",
+        "food_provider",
+        "food provider",
+        "donor",
+        "restaurant",
+    }:
+        return redirect(url_for("home"))
+
+    user = {
+        "id": str(user_record["_id"]),
+        "name": user_record.get("full_name", ""),
+        "role": role,
+        "business_name": user_record.get("business_name", ""),
+        "profile_image": user_record.get("profile_image", ""),
+    }
+
+    return render_template(
+        "provider-donations.html",
+        user=user
+    )
+
+@app.route("/ngo-donations")
+@login_required
+def ngo_available_donations_page():
+    return _render_ngo_workspace("available")
+
+
+@app.route("/ngo-claims")
+@login_required
+def ngo_claims_page():
+    return _render_ngo_workspace("claims")
+
+
+@app.route("/ngo-impact")
+@login_required
+def ngo_impact_page():
+    return _render_ngo_workspace("impact")
+
+
+@app.route("/ngo-profile")
+@login_required
+def ngo_profile_page():
+    return _render_ngo_workspace("profile")
 
 if __name__ == "__main__":
     app.run(debug=True)

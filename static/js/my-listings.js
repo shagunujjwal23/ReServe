@@ -9,6 +9,45 @@
 const MY_LISTINGS_API = "/api/listings/my";
 
 /* ==========================================================
+   SURPLUS FOOD / NGO DONATION (V1 additive panel)
+========================================================== */
+
+document.addEventListener("DOMContentLoaded", () => {
+  const panel = document.getElementById("surplusListings");
+  const dialog = document.getElementById("surplusDialog");
+  if (!panel || !dialog) return;
+  const $ = (id) => document.getElementById(id);
+  const escapeText = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;",'"':"&quot;"}[char]));
+  let active = null;
+
+  async function loadSurplus() {
+    try {
+      const response = await fetch("/api/provider/surplus", {credentials:"same-origin"});
+      const data = await response.json();
+      const records = data.surplus || [];
+      panel.innerHTML = records.length ? records.map(item => `<article class="surplus-card"><h3>${escapeText(item.food_title)}</h3><p>${escapeText(item.quantity)} ${escapeText(item.unit)} currently unallocated</p><p>${item.surplus_quantity === null || item.surplus_quantity === undefined ? 'Awaiting provider confirmation' : `${escapeText(item.surplus_quantity)} confirmed for donation`}</p>${item.donation_id ? '<p><strong>Donation published</strong></p>' : `<button class="primary-btn surplus-action" data-id="${item.id}">${item.surplus_quantity === null || item.surplus_quantity === undefined ? 'Confirm Remaining Food' : 'Publish Donation'}</button>`}</article>`).join("") : '<p>No surplus food awaiting action.</p>';
+      panel.querySelectorAll('.surplus-action').forEach(button => button.addEventListener('click', () => open(records.find(item => item.id === button.dataset.id))));
+    } catch (error) { panel.innerHTML = '<p>Unable to load surplus food.</p>'; }
+  }
+  function open(item) {
+    active=item; $('surplusListingId').value=item.id; $('surplusQuantity').max=item.quantity; $('surplusQuantity').value=item.surplus_quantity ?? '';
+    const confirmed=item.surplus_quantity !== null && item.surplus_quantity !== undefined;
+    $('surplusDialogTitle').textContent=confirmed?'Publish NGO Donation':'Confirm Remaining Food';
+    $('surplusDialogHelp').textContent=confirmed?'Set a short pickup window for verified NGOs.':`Confirm the actual surplus, from 0 to ${item.quantity} ${item.unit}.`;
+    $('surplusQuantity').disabled=confirmed; $('donationFields').hidden=!confirmed; $('confirmSurplusBtn').hidden=confirmed; $('publishDonationBtn').hidden=!confirmed; dialog.showModal();
+  }
+  $('confirmSurplusBtn').addEventListener('click', async () => {
+    const amount=Number($('surplusQuantity').value); if(!Number.isInteger(amount)||amount<0||amount>Number(active.quantity)) return alert('Enter a valid remaining quantity.');
+    const response=await fetch(`/api/listings/${encodeURIComponent(active.id)}/confirm-surplus`,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({surplus_quantity:amount})}); const data=await response.json(); if(!response.ok)return alert(data.message||'Unable to confirm surplus.'); dialog.close(); loadSurplus(); if(typeof loadListings==='function') loadListings();
+  });
+  $('publishDonationBtn').addEventListener('click', async () => {
+    const payload={donation_pickup_start:$('donationPickupStart').value,donation_pickup_end:$('donationPickupEnd').value,donation_instructions:$('donationInstructions').value};
+    const response=await fetch(`/api/listings/${encodeURIComponent(active.id)}/donate`,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const data=await response.json(); if(!response.ok)return alert(data.message||'Unable to publish donation.'); dialog.close(); loadSurplus();
+  });
+  loadSurplus();
+});
+
+/* ==========================================================
    Global State
 ========================================================== */
 
@@ -295,7 +334,7 @@ async function loadListings() {
     ------------------------------------------------------ */
 
     listings = Array.isArray(data.listings)
-      ? data.listings.map(normalizeListing)
+      ? data.listings.map(normalizeListing).filter((listing) => listing.rawStatus !== "surplus_pending")
       : [];
 
     filteredListings = [...listings];
@@ -352,6 +391,7 @@ function normalizeListing(listing) {
 
     /* Status */
 
+    rawStatus: String(listing.status || "available").toLowerCase(),
     status: formatStatus(listing.status),
 
     /* Location */
@@ -430,6 +470,9 @@ function formatStatus(status) {
 
     case "paused":
       return "Paused";
+
+    case "surplus_pending":
+      return "Surplus Pending";
 
     default:
       return normalized.charAt(0).toUpperCase() + normalized.slice(1);
