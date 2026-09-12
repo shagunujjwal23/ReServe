@@ -1,0 +1,738 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>My Claims | ReServe</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Page CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/ngo-claims.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- =========================================================
+       NAVBAR
+  ========================================================== -->
+
+    <nav class="ngo-navbar">
+      <!-- Brand -->
+
+      <a href="/ngo-dashboard" class="ngo-brand">
+        <div class="ngo-logo">
+          <img
+            src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+            alt="ReServe"
+          />
+        </div>
+
+        <div class="ngo-brand-text">
+          <h2>ReServe</h2>
+          <span>From Surplus to Solution</span>
+        </div>
+      </a>
+
+      <!-- Navigation -->
+
+      <div class="ngo-nav-links">
+        <a href="/ngo-dashboard" class="ngo-nav-item">
+          <i class="ri-home-5-line"></i>
+          <span>Home</span>
+        </a>
+
+        <a href="/ngo-explore-food" class="ngo-nav-item">
+          <i class="ri-search-line"></i>
+          <span>Explore Food</span>
+        </a>
+
+        <a href="/ngo-claims" class="ngo-nav-item active">
+          <i class="ri-calendar-check-line"></i>
+          <span>My Claims</span>
+        </a>
+
+        <a href="#" class="ngo-nav-item">
+          <i class="ri-heart-line"></i>
+          <span>Community Support</span>
+        </a>
+
+        <a href="#" class="ngo-nav-item">
+          <i class="ri-message-3-line"></i>
+          <span>Messages</span>
+        </a>
+      </div>
+
+      <!-- Right Actions -->
+
+      <div class="ngo-nav-actions">
+        <!-- Notifications -->
+
+        <button
+          type="button"
+          class="ngo-icon-btn"
+          id="notificationBtn"
+          title="Notifications"
+          aria-label="Notifications"
+        >
+          <i class="ri-notification-3-line"></i>
+
+          <span class="ngo-badge">3</span>
+        </button>
+
+        <!-- Profile -->
+
+        <div class="ngo-profile-wrapper">
+          <button type="button" class="ngo-profile-btn" id="ngoProfileBtn">
+            <div class="ngo-profile-avatar">
+              {% if user and user.profile_image %}
+
+              <img src="{{ user.profile_image }}" alt="Profile" />
+
+              {% else %}
+
+              <img
+                src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                alt="Profile"
+              />
+
+              {% endif %}
+            </div>
+
+            <div class="ngo-profile-info">
+              <strong>
+                {{ user.organization_name or user.name or "NGO" }}
+              </strong>
+
+              <span>NGO</span>
+            </div>
+
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
+
+          <!-- Profile Dropdown -->
+
+          <div class="ngo-profile-dropdown hidden" id="ngoProfileDropdown">
+            <a href="/ngo-profile">
+              <i class="ri-user-line"></i>
+
+              <span>Profile</span>
+            </a>
+
+            <a href="/ngo-settings">
+              <i class="ri-settings-3-line"></i>
+
+              <span>Settings</span>
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="{{ url_for('auth.logout') }}">
+              <i class="ri-logout-box-r-line"></i>
+
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================================================
+       MAIN CONTENT
+  ========================================================== -->
+
+    <main class="main-content">
+      <!-- =======================================================
+         HERO
+    ======================================================== -->
+
+      <section class="claims-hero">
+        <div class="claims-hero-content">
+          <span class="claims-eyebrow"> MY CLAIMS </span>
+
+          <h1>
+            Track.
+            <span>Collect.</span>
+            Create Change.
+          </h1>
+
+          <p>
+            Manage your food claims and see how each one helps reduce food waste
+            and support communities.
+          </p>
+        </div>
+
+        <!-- Hero Image -->
+
+        <div class="claims-hero-image">
+          <img
+            src="{{ url_for('static', filename='images/hero/ngo-dashboard-hero.png') }}"
+            alt="Food donation"
+          />
+        </div>
+
+        <!-- Hero Benefits -->
+
+        <div class="claims-hero-benefits">
+          <div class="hero-benefit">
+            <div class="hero-benefit-icon">
+              <i class="ri-leaf-line"></i>
+            </div>
+
+            <span> Track your impact </span>
+          </div>
+
+          <div class="hero-benefit">
+            <div class="hero-benefit-icon">
+              <i class="ri-team-line"></i>
+            </div>
+
+            <span> Help communities in need </span>
+          </div>
+
+          <div class="hero-benefit">
+            <div class="hero-benefit-icon">
+              <i class="ri-heart-3-line"></i>
+            </div>
+
+            <span> Reduce food waste </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+         CLAIM CONTROLS
+    ======================================================== -->
+
+      <section class="claims-controls">
+        <!-- Status Tabs -->
+
+        <div class="claim-tabs">
+          <button type="button" class="claim-tab active" data-status="all">
+            <i class="ri-list-check-3"></i>
+
+            <span>All Claims</span>
+
+            <span class="tab-count" id="allCount"> 0 </span>
+          </button>
+
+          <button type="button" class="claim-tab" data-status="pending">
+            <i class="ri-time-line"></i>
+
+            <span>Pending</span>
+
+            <span class="tab-count" id="pendingCount"> 0 </span>
+          </button>
+
+          <button type="button" class="claim-tab" data-status="confirmed">
+            <i class="ri-checkbox-circle-line"></i>
+
+            <span>Confirmed</span>
+
+            <span class="tab-count" id="confirmedCount"> 0 </span>
+          </button>
+
+          <button type="button" class="claim-tab" data-status="picked_up">
+            <i class="ri-truck-line"></i>
+
+            <span>Picked Up</span>
+
+            <span class="tab-count" id="pickedUpCount"> 0 </span>
+          </button>
+
+          <button type="button" class="claim-tab" data-status="completed">
+            <i class="ri-checkbox-circle-fill"></i>
+
+            <span>Completed</span>
+
+            <span class="tab-count" id="completedCount"> 0 </span>
+          </button>
+
+          <button type="button" class="claim-tab" data-status="cancelled">
+            <i class="ri-close-circle-line"></i>
+
+            <span>Cancelled</span>
+
+            <span class="tab-count" id="cancelledCount"> 0 </span>
+          </button>
+        </div>
+
+        <!-- Search + Sort -->
+
+        <div class="claims-tools">
+          <div class="claims-search">
+            <i class="ri-search-line"></i>
+
+            <input
+              type="text"
+              id="claimSearch"
+              placeholder="Search your claims..."
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="claims-sort">
+            <i class="ri-arrow-up-down-line"></i>
+
+            <select id="claimSort">
+              <option value="newest">Newest First</option>
+
+              <option value="oldest">Oldest First</option>
+
+              <option value="pickup">Upcoming Pickup</option>
+            </select>
+
+            <i class="ri-arrow-down-s-line"></i>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+         CLAIMS LAYOUT
+    ======================================================== -->
+
+      <section class="claims-layout">
+        <!-- =====================================================
+           LEFT — CLAIM LIST
+      ====================================================== -->
+
+        <div class="claims-list-section">
+          <!-- Loading -->
+
+          <div class="claims-loading hidden" id="claimsLoading">
+            <div class="loading-spinner"></div>
+
+            <p>Loading your claims...</p>
+          </div>
+
+          <!-- Empty State -->
+
+          <div class="claims-empty hidden" id="claimsEmpty">
+            <div class="empty-icon">
+              <i class="ri-inbox-line"></i>
+            </div>
+
+            <h3>No claims found</h3>
+
+            <p>You don't have any claims matching your current filters.</p>
+
+            <a href="/ngo-explore-food" class="empty-explore-btn">
+              <i class="ri-search-line"></i>
+              Explore Food
+            </a>
+          </div>
+
+          <!-- Claims Container -->
+
+          <div class="claims-list" id="claimsList">
+            <!-- Claims will be inserted by JavaScript -->
+          </div>
+        </div>
+
+        <!-- =====================================================
+           RIGHT SIDEBAR
+      ====================================================== -->
+
+        <aside class="claims-sidebar">
+          <!-- ===================================================
+             CLAIM SUMMARY
+        ==================================================== -->
+
+          <div class="sidebar-card claim-summary-card">
+            <div class="sidebar-card-header">
+              <div class="sidebar-title">
+                <div class="sidebar-title-icon">
+                  <i class="ri-calendar-check-line"></i>
+                </div>
+
+                <h2>Claim Summary</h2>
+              </div>
+
+              <select id="summaryPeriod" class="summary-period">
+                <option value="month">This Month</option>
+
+                <option value="all">All Time</option>
+              </select>
+            </div>
+
+            <!-- Donut -->
+
+            <div class="summary-content">
+              <div class="summary-donut" id="summaryDonut">
+                <div class="summary-donut-inner">
+                  <strong id="totalClaims"> 0 </strong>
+
+                  <span> Claims </span>
+                </div>
+              </div>
+
+              <!-- Summary Legend -->
+
+              <div class="summary-legend">
+                <div class="legend-item">
+                  <span class="legend-dot pending"></span>
+
+                  <span class="legend-label"> Pending </span>
+
+                  <strong id="summaryPending"> 0 </strong>
+                </div>
+
+                <div class="legend-item">
+                  <span class="legend-dot confirmed"></span>
+
+                  <span class="legend-label"> Confirmed </span>
+
+                  <strong id="summaryConfirmed"> 0 </strong>
+                </div>
+
+                <div class="legend-item">
+                  <span class="legend-dot completed"></span>
+
+                  <span class="legend-label"> Completed </span>
+
+                  <strong id="summaryCompleted"> 0 </strong>
+                </div>
+
+                <div class="legend-item">
+                  <span class="legend-dot cancelled"></span>
+
+                  <span class="legend-label"> Cancelled </span>
+
+                  <strong id="summaryCancelled"> 0 </strong>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================
+             UPCOMING PICKUPS
+        ==================================================== -->
+
+          <div class="sidebar-card upcoming-card">
+            <div class="sidebar-card-header">
+              <div class="sidebar-title">
+                <div class="sidebar-title-icon">
+                  <i class="ri-calendar-event-line"></i>
+                </div>
+
+                <h2>Upcoming Pickups</h2>
+              </div>
+
+              <a href="#" class="view-calendar">
+                View Calendar
+                <i class="ri-arrow-right-line"></i>
+              </a>
+            </div>
+
+            <div class="upcoming-pickups" id="upcomingPickups">
+              <!-- Upcoming pickups inserted by JS -->
+
+              <div class="upcoming-empty">
+                <i class="ri-calendar-line"></i>
+
+                <p>No upcoming pickups</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================
+             NEED HELP
+        ==================================================== -->
+
+          <div class="sidebar-card help-card">
+            <div class="help-icon">
+              <i class="ri-customer-service-2-line"></i>
+            </div>
+
+            <div class="help-content">
+              <h3>Need Help?</h3>
+
+              <p>
+                Contact our support team for any assistance with your claims.
+              </p>
+            </div>
+
+            <a href="#" class="support-btn"> Get Support </a>
+          </div>
+        </aside>
+      </section>
+    </main>
+
+    <!-- =========================================================
+       CLAIM DETAILS MODAL
+  ========================================================== -->
+
+    <div class="claim-modal hidden" id="claimDetailsModal">
+      <div class="claim-modal-overlay"></div>
+
+      <div class="claim-modal-content">
+        <!-- Modal Header -->
+
+        <div class="claim-modal-header">
+          <div>
+            <span class="modal-eyebrow"> CLAIM DETAILS </span>
+
+            <h2 id="modalClaimTitle">Food Claim</h2>
+          </div>
+
+          <button
+            type="button"
+            class="modal-close-btn"
+            id="closeClaimDetails"
+            aria-label="Close"
+          >
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <!-- Modal Body -->
+
+        <div class="claim-modal-body">
+          <!-- Food Image -->
+
+          <div class="modal-food-image">
+            <img
+              id="modalClaimImage"
+              src="/static/images/food-placeholder.jpg"
+              alt="Food"
+            />
+          </div>
+
+          <!-- Details -->
+
+          <div class="modal-claim-details">
+            <div class="modal-category-row">
+              <span class="modal-category" id="modalClaimCategory">
+                Meals
+              </span>
+
+              <span class="modal-status" id="modalClaimStatus">
+                Confirmed
+              </span>
+            </div>
+
+            <div class="modal-detail-item">
+              <i class="ri-store-2-line"></i>
+
+              <div>
+                <span> Provider </span>
+
+                <strong id="modalClaimProvider"> Provider </strong>
+              </div>
+            </div>
+
+            <div class="modal-detail-item">
+              <i class="ri-map-pin-line"></i>
+
+              <div>
+                <span> Pickup Location </span>
+
+                <strong id="modalClaimLocation"> Location </strong>
+              </div>
+            </div>
+
+            <div class="modal-detail-item">
+              <i class="ri-calendar-line"></i>
+
+              <div>
+                <span> Pickup Time </span>
+
+                <strong id="modalClaimPickup"> Pickup time </strong>
+              </div>
+            </div>
+
+            <div class="modal-detail-item">
+              <i class="ri-box-3-line"></i>
+
+              <div>
+                <span> Claimed Quantity </span>
+
+                <strong id="modalClaimQuantity"> 0 units </strong>
+              </div>
+            </div>
+
+            <div class="modal-instructions" id="modalClaimInstructionsWrapper">
+              <span> Pickup Instructions </span>
+
+              <p id="modalClaimInstructions">No special instructions.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+
+        <div class="claim-modal-footer">
+          <button
+            type="button"
+            class="modal-secondary-btn"
+            id="closeClaimDetailsBottom"
+          >
+            Close
+          </button>
+
+          <button
+            type="button"
+            class="modal-primary-btn hidden"
+            id="pickupClaimBtn"
+          >
+            <i class="ri-check-line"></i>
+            Mark as Picked Up
+          </button>
+
+          <button
+            type="button"
+            class="modal-primary-btn hidden"
+            id="completeClaimBtn"
+          >
+            <i class="ri-checkbox-circle-line"></i>
+            Mark as Completed
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+       NOTIFICATION PANEL
+  ========================================================== -->
+
+    <div class="notification-panel hidden" id="notificationPanel">
+      <div class="notification-panel-header">
+        <h3>Notifications</h3>
+
+        <button
+          type="button"
+          id="closeNotificationPanel"
+          aria-label="Close notifications"
+        >
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div class="notification-list" id="notificationList">
+        <div class="notification-empty">
+          <i class="ri-notification-3-line"></i>
+
+          <p>No new notifications</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+       CLAIM CARD TEMPLATE
+  ========================================================== -->
+
+    <template id="claimCardTemplate">
+      <article class="claim-card" data-claim-id="">
+        <!-- Food Image -->
+
+        <div class="claim-card-image">
+          <img
+            class="claim-image"
+            src="/static/images/food-placeholder.jpg"
+            alt="Food"
+          />
+        </div>
+
+        <!-- Main Information -->
+
+        <div class="claim-card-info">
+          <!-- Category + Title -->
+
+          <div class="claim-card-title-row">
+            <div>
+              <span class="claim-category"> Meals </span>
+
+              <h3 class="claim-food-title">Food Name</h3>
+            </div>
+          </div>
+
+          <!-- Provider -->
+
+          <div class="claim-provider">
+            <i class="ri-store-2-line"></i>
+
+            <span class="claim-provider-name"> Provider </span>
+          </div>
+
+          <!-- Location -->
+
+          <div class="claim-location">
+            <i class="ri-map-pin-line"></i>
+
+            <span class="claim-location-text"> Location </span>
+          </div>
+
+          <!-- Pickup + Quantity -->
+
+          <div class="claim-meta">
+            <div class="claim-meta-item">
+              <i class="ri-calendar-line"></i>
+
+              <span class="claim-pickup"> Pickup time </span>
+            </div>
+
+            <div class="claim-meta-item">
+              <i class="ri-box-3-line"></i>
+
+              <span class="claim-quantity"> 0 units </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status -->
+
+        <div class="claim-card-status">
+          <span class="claim-status"> Confirmed </span>
+        </div>
+
+        <!-- Actions -->
+
+        <div class="claim-card-actions">
+          <button type="button" class="view-claim-btn">View Details</button>
+
+          <button type="button" class="claim-action-btn secondary hidden">
+            Contact Provider
+          </button>
+
+          <button type="button" class="claim-action-btn feedback hidden">
+            Give Feedback
+          </button>
+        </div>
+
+        <!-- Arrow -->
+
+        <div class="claim-card-arrow">
+          <i class="ri-arrow-right-s-line"></i>
+        </div>
+      </article>
+    </template>
+
+    <!-- =========================================================
+       TOAST
+  ========================================================== -->
+
+    <div id="ngoToast" class="ngo-toast hidden"></div>
+
+    <!-- =========================================================
+       JAVASCRIPT
+  ========================================================== -->
+
+    <script src="{{ url_for('static', filename='js/ngo-claims.js') }}"></script>
+  </body>
+</html>

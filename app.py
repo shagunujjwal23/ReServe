@@ -972,13 +972,6 @@ def provider_donations_page():
 def ngo_available_donations_page():
     return _render_ngo_workspace("available")
 
-
-@app.route("/ngo-claims")
-@login_required
-def ngo_claims_page():
-    return _render_ngo_workspace("claims")
-
-
 @app.route("/ngo-impact")
 @login_required
 def ngo_impact_page():
@@ -1075,6 +1068,114 @@ def ngo_explore_food():
 
     return render_template(
         "ngo-explore-food.html",
+        user=user
+    )
+
+# ==========================================================
+# NGO CLAIMS / MY REQUESTS
+# ==========================================================
+
+@app.route("/ngo-claims")
+@login_required
+def ngo_claims_page():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    # ------------------------------------------------------
+    # CHECK NGO ROLE
+    # ------------------------------------------------------
+
+    role = str(
+        user_record.get("role", "")
+    ).strip().lower()
+
+    if role != "ngo":
+        return redirect(url_for("home"))
+
+    # ------------------------------------------------------
+    # USER DATA
+    # ------------------------------------------------------
+
+    user = {
+        "id": str(user_record["_id"]),
+
+        "name": user_record.get(
+            "full_name",
+            ""
+        ),
+
+        "email": user_record.get(
+            "email",
+            ""
+        ),
+
+        "phone": user_record.get(
+            "phone",
+            ""
+        ),
+
+        "role": role,
+
+        "organization_name": user_record.get(
+            "organization_name",
+            user_record.get(
+                "full_name",
+                "NGO"
+            )
+        ),
+
+        "profile_image": user_record.get(
+            "profile_image",
+            ""
+        ),
+
+        "address": user_record.get(
+            "address",
+            ""
+        ),
+
+        "city": user_record.get(
+            "city",
+            ""
+        ),
+
+        "state": user_record.get(
+            "state",
+            ""
+        ),
+
+        "pincode": user_record.get(
+            "pincode",
+            ""
+        ),
+    }
+
+    return render_template(
+        "ngo-claims.html",
         user=user
     )
 
