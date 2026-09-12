@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Explore Food | ReServe</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/ngo-explore-food.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- =========================
+       NAVBAR
+  ========================== -->
+    <nav class="ngo-navbar">
+      <!-- Brand -->
+      <a href="/ngo-dashboard" class="ngo-brand">
+        <div class="ngo-logo">
+          <img
+            src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+            alt="ReServe"
+          />
+        </div>
+
+        <div class="ngo-brand-text">
+          <h2>ReServe</h2>
+          <span>From Surplus to Solution</span>
+        </div>
+      </a>
+
+      <!-- Navigation -->
+      <div class="ngo-nav-links">
+        <a href="/ngo-dashboard" class="ngo-nav-item">
+          <i class="ri-home-5-line"></i>
+          <span>Home</span>
+        </a>
+
+        <a href="/ngo-explore-food" class="ngo-nav-item active">
+          <i class="ri-search-line"></i>
+          <span>Explore Food</span>
+        </a>
+
+        <a href="/ngo-claims" class="ngo-nav-item">
+          <i class="ri-calendar-check-line"></i>
+          <span>My Requests</span>
+        </a>
+
+        <a href="#" class="ngo-nav-item">
+          <i class="ri-message-3-line"></i>
+          <span>Messages</span>
+        </a>
+      </div>
+
+      <!-- Right Side -->
+      <div class="ngo-nav-actions">
+        <button
+          type="button"
+          class="ngo-icon-btn"
+          id="notificationBtn"
+          title="Notifications"
+        >
+          <i class="ri-notification-3-line"></i>
+          <span class="ngo-badge">3</span>
+        </button>
+
+        <div class="ngo-profile-wrapper">
+          <button type="button" class="ngo-profile-btn" id="ngoProfileBtn">
+            <div class="ngo-profile-avatar">
+              {% if user and user.profile_image %}
+              <img src="{{ user.profile_image }}" alt="Profile" />
+              {% else %}
+              <img
+                src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                alt="Profile"
+              />
+              {% endif %}
+            </div>
+
+            <div class="ngo-profile-info">
+              <strong>
+                {{ user.organization_name or user.name or "NGO" }}
+              </strong>
+
+              <span>NGO</span>
+            </div>
+
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
+
+          <!-- Profile Dropdown -->
+          <div class="ngo-profile-dropdown hidden" id="ngoProfileDropdown">
+            <a href="/ngo-profile">
+              <i class="ri-user-line"></i>
+              Profile
+            </a>
+
+            <a href="/ngo-settings">
+              <i class="ri-settings-3-line"></i>
+              Settings
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="{{ url_for('auth.logout') }}">
+              <i class="ri-logout-box-r-line"></i>
+              Logout
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================
+       MAIN CONTENT
+  ========================== -->
+
+    <main class="main-content">
+      <!-- =========================
+         HERO
+    ========================== -->
+      <section class="explore-hero">
+        <div class="hero-content">
+          <span class="hero-eyebrow"> FOOD FOR A BETTER TOMORROW </span>
+
+          <h2>
+            Discover
+            <span>Surplus Food</span>
+          </h2>
+
+          <p>
+            Browse available surplus food from verified providers and claim
+            donations for your community.
+          </p>
+
+          <div class="hero-benefits">
+            <div class="benefit-item">
+              <div class="benefit-icon">♥</div>
+              <span>Nutritious food for those in need</span>
+            </div>
+
+            <div class="benefit-item">
+              <div class="benefit-icon">♻</div>
+              <span>Reduce food waste</span>
+            </div>
+
+            <div class="benefit-item">
+              <div class="benefit-icon">♧</div>
+              <span>Build stronger communities</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-image">
+          <img
+            src="{{ url_for('static', filename='images/hero/ngo-explore-food-hero.png') }}"
+            alt="Surplus food donation"
+          />
+        </div>
+      </section>
+
+      <!-- =========================
+         EXPLORE SECTION
+    ========================== -->
+      <section class="explore-section">
+        <!-- =========================
+             FILTER SIDEBAR
+        ========================== -->
+        <aside class="filter-panel">
+          <div class="filter-header">
+            <div>
+              <h3>Filter Food</h3>
+              <p>Find suitable donations</p>
+            </div>
+
+            <button id="clearFilters" class="clear-filter-btn">Clear</button>
+          </div>
+
+          <!-- Food Category -->
+          <div class="filter-group">
+            <h4>Food Category</h4>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="category" value="Meals" />
+              <span>Meals</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="category" value="Bakery" />
+              <span>Bakery Items</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input
+                type="checkbox"
+                name="category"
+                value="Fruits & Vegetables"
+              />
+              <span>Fruits & Vegetables</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="category" value="Snacks" />
+              <span>Snacks</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="category" value="Dairy" />
+              <span>Dairy Products</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="category" value="Beverages" />
+              <span>Beverages</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="category" value="Others" />
+              <span>Others</span>
+            </label>
+          </div>
+
+          <!-- Pickup Date -->
+          <div class="filter-group">
+            <h4>Pickup Date</h4>
+
+            <select id="pickupDateFilter" class="filter-select">
+              <option value="">Any Date</option>
+              <option value="today">Today</option>
+              <option value="tomorrow">Tomorrow</option>
+              <option value="week">This Week</option>
+            </select>
+          </div>
+
+          <!-- Location -->
+          <div class="filter-group">
+            <h4>Location</h4>
+
+            <input
+              type="text"
+              id="locationFilter"
+              class="filter-input"
+              placeholder="Enter location"
+            />
+          </div>
+
+          <!-- Provider Type -->
+          <div class="filter-group">
+            <h4>Provider Type</h4>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="providerType" value="Restaurant" />
+              <span>Restaurants</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="providerType" value="Cafe" />
+              <span>Cafés</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="providerType" value="Bakery" />
+              <span>Bakeries</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="providerType" value="Grocery" />
+              <span>Grocery Stores</span>
+            </label>
+
+            <label class="checkbox-item">
+              <input type="checkbox" name="providerType" value="Other" />
+              <span>Others</span>
+            </label>
+          </div>
+
+          <button id="applyFilters" class="apply-filter-btn">
+            Apply Filters
+          </button>
+        </aside>
+
+        <!-- =========================
+             FOOD CONTENT
+        ========================== -->
+        <div class="food-content">
+          <!-- Food Header -->
+          <div class="food-header">
+            <div>
+              <h2>Available Food</h2>
+              <p>Fresh surplus food, ready to be rescued.</p>
+            </div>
+
+            <div class="food-view-options">
+              <select id="sortBy" class="sort-select">
+                <option value="newest">Newest First</option>
+                <option value="pickup">Pickup Time</option>
+                <option value="quantity">Quantity</option>
+              </select>
+
+              <button
+                id="gridViewBtn"
+                class="view-btn active"
+                aria-label="Grid view"
+              >
+                ▦
+              </button>
+
+              <button id="listViewBtn" class="view-btn" aria-label="List view">
+                ☰
+              </button>
+            </div>
+          </div>
+
+          <!-- Search -->
+          <div class="search-row">
+            <div class="food-search">
+              <span class="search-icon">⌕</span>
+
+              <input
+                type="text"
+                id="foodSearch"
+                placeholder="Search food items, providers or location..."
+              />
+            </div>
+
+            <div class="result-count" id="resultCount">
+              0 donations available
+            </div>
+          </div>
+
+          <!-- Loading -->
+          <div id="loadingState" class="loading-state">
+            <div class="loading-spinner"></div>
+
+            <p>Finding available surplus food...</p>
+          </div>
+
+          <!-- Food Cards -->
+          <div id="donationsContainer" class="donations-grid"></div>
+
+          <!-- Empty State -->
+          <div id="emptyState" class="empty-state hidden">
+            <div class="empty-icon">🍽</div>
+
+            <h3>No surplus food found</h3>
+
+            <p>
+              There are currently no donations matching your selected filters.
+            </p>
+
+            <button id="emptyClearFilters" class="empty-btn">
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- =========================
+     CLAIM MODAL
+========================= -->
+    <div id="claimModal" class="modal-overlay hidden">
+      <div class="claim-modal">
+        <button
+          type="button"
+          id="closeClaimModal"
+          class="modal-close"
+          aria-label="Close"
+        >
+          ×
+        </button>
+
+        <div class="modal-icon">🤝</div>
+
+        <h2>Claim Donation</h2>
+
+        <p class="modal-subtitle">
+          Select the quantity your organization needs.
+        </p>
+
+        <!-- Selected Donation -->
+        <div class="selected-donation">
+          <div class="selected-food-image">
+            <img id="claimFoodImage" src="" alt="Food" />
+          </div>
+
+          <div class="selected-food-info">
+            <span id="claimFoodCategory"> Food </span>
+
+            <h3 id="claimFoodName">Food Name</h3>
+
+            <p id="claimProvider">Provider</p>
+          </div>
+        </div>
+
+        <!-- Available Quantity -->
+        <div class="available-quantity-box">
+          <span>Available Quantity</span>
+
+          <strong>
+            <span id="claimAvailableQuantity">0</span>
+            <span id="claimUnit">units</span>
+          </strong>
+        </div>
+
+        <!-- Quantity Selector -->
+        <div class="quantity-section">
+          <label for="claimQuantity"> Quantity to Claim </label>
+
+          <div class="quantity-control">
+            <button type="button" id="decreaseQuantity" class="quantity-btn">
+              −
+            </button>
+
+            <input type="number" id="claimQuantity" value="1" min="1" />
+
+            <button type="button" id="increaseQuantity" class="quantity-btn">
+              +
+            </button>
+          </div>
+
+          <small id="quantityHelp">
+            You can claim up to the available quantity.
+          </small>
+        </div>
+
+        <!-- Pickup Information -->
+        <div class="claim-pickup-info">
+          <div class="pickup-info-item">
+            <span class="info-label"> Pickup </span>
+
+            <strong id="claimPickupTime"> — </strong>
+          </div>
+
+          <div class="pickup-info-item">
+            <span class="info-label"> Location </span>
+
+            <strong id="claimLocation"> — </strong>
+          </div>
+        </div>
+
+        <!-- Modal Actions -->
+        <div class="modal-actions">
+          <button type="button" id="cancelClaim" class="cancel-btn">
+            Cancel
+          </button>
+
+          <button type="button" id="confirmClaim" class="confirm-claim-btn">
+            Claim Donation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================
+     DONATION CARD TEMPLATE
+========================= -->
+    <template id="donationCardTemplate">
+      <article class="donation-card">
+        <div class="card-image-wrapper">
+          <img class="card-image" src="" alt="Food" />
+
+          <span class="category-badge"> Food </span>
+
+          <span class="quantity-badge"> Available: 0 </span>
+        </div>
+
+        <div class="card-body">
+          <div class="card-title-row">
+            <div>
+              <h3 class="food-title">Food Name</h3>
+
+              <p class="provider-name">Provider Name</p>
+            </div>
+          </div>
+
+          <div class="card-details">
+            <div class="detail-item">
+              <span class="detail-icon"> 📍 </span>
+
+              <span class="food-location"> Location </span>
+            </div>
+
+            <div class="detail-item">
+              <span class="detail-icon"> ◷ </span>
+
+              <span class="pickup-time"> Pickup time </span>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="available-info">
+              <span> Available </span>
+
+              <strong class="available-amount"> 0 units </strong>
+            </div>
+
+            <button type="button" class="claim-btn">Claim Donation</button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <!-- =========================
+     NOTIFICATION PANEL
+========================= -->
+    <div id="notificationPanel" class="notification-panel hidden">
+      <div class="notification-panel-header">
+        <h3>Notifications</h3>
+
+        <button id="closeNotificationPanel">×</button>
+      </div>
+
+      <div id="notificationList">
+        <div class="notification-empty">
+          <span>🔔</span>
+          <p>No new notifications</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/ngo-explore-food.js') }}"></script>
+  </body>
+</html>

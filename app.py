@@ -990,5 +990,93 @@ def ngo_impact_page():
 def ngo_profile_page():
     return _render_ngo_workspace("profile")
 
+# ==========================================================
+# NGO EXPLORE FOOD
+# ==========================================================
+
+@app.route("/ngo-explore-food")
+@login_required
+def ngo_explore_food():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    # ------------------------------------------------------
+    # CHECK NGO ROLE
+    # ------------------------------------------------------
+
+    role = str(
+        user_record.get("role", "")
+    ).strip().lower()
+
+    if role != "ngo":
+        return redirect(url_for("home"))
+
+    # ------------------------------------------------------
+    # USER DATA
+    # ------------------------------------------------------
+
+    user = {
+        "id": str(user_record["_id"]),
+
+        "name": user_record.get(
+            "full_name",
+            ""
+        ),
+
+        "email": user_record.get(
+            "email",
+            ""
+        ),
+
+        "phone": user_record.get(
+            "phone",
+            ""
+        ),
+
+        "role": role,
+
+        "organization_name": user_record.get(
+            "organization_name",
+            user_record.get(
+                "full_name",
+                "NGO"
+            )
+        ),
+
+        "profile_image": user_record.get(
+            "profile_image",
+            ""
+        ),
+    }
+
+    return render_template(
+        "ngo-explore-food.html",
+        user=user
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)
