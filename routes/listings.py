@@ -8,10 +8,15 @@ from flask import Blueprint, jsonify, request, session
 from pymongo.errors import PyMongoError
 
 from config.database import get_collection
-from services.lifecycle import _as_utc, normalize_datetime, refresh_lifecycle
+from services.lifecycle import (
+    _as_utc,
+    normalize_datetime,
+    refresh_lifecycle,
+)
 
 
 listings = Blueprint("listings", __name__)
+
 
 # ==========================================================
 # REQUIRED & OPTIONAL FIELDS
@@ -41,6 +46,7 @@ OPTIONAL_FIELDS = (
     "carbon_saved",
     "ai_recommendation",
 )
+
 
 # ==========================================================
 # PROVIDER HELPER
@@ -90,10 +96,12 @@ def get_provider_details(owner_id):
         )
 
         profile_images = owner.get("profile_images", [])
+
         provider_image = (
             next(
                 (
-                    image for image in profile_images
+                    image
+                    for image in profile_images
                     if isinstance(image, str) and image.strip()
                 ),
                 "",
@@ -120,7 +128,10 @@ def get_provider_details(owner_id):
 
     except PyMongoError as error:
 
-        print("MongoDB provider lookup error:", error)
+        print(
+            "MongoDB provider lookup error:",
+            error
+        )
 
         return default_provider
 
@@ -129,18 +140,26 @@ def get_provider_pickup_location(owner_id):
     """Return the pickup address stored in the authenticated provider profile."""
 
     try:
+
         users_collection = get_collection("users")
 
         if users_collection is None:
             return None
 
-        provider = users_collection.find_one({"_id": owner_id})
+        provider = users_collection.find_one({
+            "_id": owner_id
+        })
 
         if not provider:
             return None
 
-        address = str(provider.get("address", "")).strip()
-        city = str(provider.get("city", "")).strip()
+        address = str(
+            provider.get("address", "")
+        ).strip()
+
+        city = str(
+            provider.get("city", "")
+        ).strip()
 
         if not address or not city:
             return None
@@ -151,7 +170,12 @@ def get_provider_pickup_location(owner_id):
         }
 
     except PyMongoError as error:
-        print("MongoDB provider pickup lookup error:", error)
+
+        print(
+            "MongoDB provider pickup lookup error:",
+            error
+        )
+
         return None
 
 
@@ -160,9 +184,12 @@ def get_provider_pickup_location(owner_id):
 # POST /api/listings
 # ==========================================================
 
-@listings.route("/api/listings", methods=["POST"])
+@listings.route(
+    "/api/listings",
+    methods=["POST"]
+)
 def create_listing():
-    """Create a food listing for the currently logged-in user."""
+    """Create a Sell or Donate food listing."""
 
     # ==========================================================
     # 1. CHECK AUTHENTICATION
@@ -171,6 +198,7 @@ def create_listing():
     session_user_id = session.get("user_id")
 
     if not session_user_id:
+
         return jsonify({
             "success": False,
             "message": "Authentication is required."
@@ -181,7 +209,10 @@ def create_listing():
     # ==========================================================
 
     try:
-        owner_id = ObjectId(session_user_id)
+
+        owner_id = ObjectId(
+            session_user_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -196,33 +227,46 @@ def create_listing():
     # 3. READ JSON PAYLOAD
     # ==========================================================
 
-    payload = request.get_json(silent=True)
+    payload = request.get_json(
+        silent=True
+    )
 
     if not isinstance(payload, dict):
-        return jsonify({
-            "success": False,
-            "message": "A valid JSON request body is required."
-        }), 400
 
-    # Pickup fields are managed by the provider profile. Do not rely on values
-    # from the listing form, which no longer exposes editable location inputs.
-    pickup_location = get_provider_pickup_location(owner_id)
-
-    if pickup_location is None:
         return jsonify({
             "success": False,
             "message": (
-                "Add a complete business address and city in your "
-                "provider profile before creating a listing."
+                "A valid JSON request body "
+                "is required."
             )
         }), 400
 
+    # ==========================================================
+    # 4. GET PROVIDER PICKUP LOCATION
+    # ==========================================================
+
+    pickup_location = get_provider_pickup_location(
+        owner_id
+    )
+
+    if pickup_location is None:
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Add a complete business address and city "
+                "in your provider profile before creating "
+                "a listing."
+            )
+        }), 400
+
+    # The provider profile controls the pickup location.
     payload["address"] = pickup_location["address"]
     payload["city"] = pickup_location["city"]
     payload["landmark"] = ""
 
     # ==========================================================
-    # 4. VALIDATE REQUIRED FIELDS
+    # 5. VALIDATE REQUIRED FIELDS
     # ==========================================================
 
     missing_fields = [
@@ -239,29 +283,114 @@ def create_listing():
     ]
 
     if missing_fields:
+
         return jsonify({
             "success": False,
             "message": "Required fields are missing.",
             "missing_fields": missing_fields
         }), 400
 
-    pickup_start = _as_utc(payload.get("pickup_start"))
-    pickup_end = _as_utc(payload.get("pickup_end"))
-    if not pickup_start or not pickup_end or pickup_end <= pickup_start:
+    # ==========================================================
+    # 6. VALIDATE LISTING TYPE
+    # ==========================================================
+
+    listing_type = str(
+        payload.get("listing_type", "")
+    ).strip().lower()
+
+    if listing_type not in {
+        "sell",
+        "donate"
+    }:
+
         return jsonify({
             "success": False,
-            "message": "Provide a valid pickup start and end time."
+            "message": (
+                "Listing type must be either "
+                "'sell' or 'donate'."
+            )
         }), 400
-    payload["pickup_start"] = normalize_datetime(payload["pickup_start"])
-    payload["pickup_end"] = normalize_datetime(payload["pickup_end"])
+
+    payload["listing_type"] = listing_type
 
     # ==========================================================
-    # 5. GET FOOD LISTINGS COLLECTION
+    # 7. VALIDATE QUANTITY
     # ==========================================================
 
-    listings_collection = get_collection("food_listings")
+    try:
+
+        quantity = int(
+            payload.get("quantity", 0)
+        )
+
+    except (TypeError, ValueError):
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Quantity must be a whole number."
+            )
+        }), 400
+
+    if quantity <= 0:
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Quantity must be greater than zero."
+            )
+        }), 400
+
+    payload["quantity"] = quantity
+
+    # ==========================================================
+    # 8. VALIDATE PICKUP DATES
+    # ==========================================================
+
+    pickup_start = _as_utc(
+        payload.get("pickup_start")
+    )
+
+    pickup_end = _as_utc(
+        payload.get("pickup_end")
+    )
+
+    if (
+        not pickup_start
+        or not pickup_end
+        or pickup_end <= pickup_start
+    ):
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Provide a valid pickup start "
+                "and end time."
+            )
+        }), 400
+
+    payload["pickup_start"] = normalize_datetime(
+        payload["pickup_start"]
+    )
+
+    payload["pickup_end"] = normalize_datetime(
+        payload["pickup_end"]
+    )
+
+    # ==========================================================
+    # 9. GET DATABASE COLLECTIONS
+    # ==========================================================
+
+    listings_collection = get_collection(
+        "food_listings"
+    )
+
+    donations_collection = get_collection(
+        "donations"
+    )
 
     if listings_collection is None:
+
         return jsonify({
             "success": False,
             "message": (
@@ -270,14 +399,25 @@ def create_listing():
             )
         }), 500
 
+    if donations_collection is None:
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "MongoDB donations collection is unavailable."
+            )
+        }), 500
+
     # ==========================================================
-    # 6. CREATE TIMESTAMP
+    # 10. CREATE TIMESTAMP
     # ==========================================================
 
-    timestamp = datetime.now(timezone.utc)
+    timestamp = datetime.now(
+        timezone.utc
+    )
 
     # ==========================================================
-    # 7. CREATE LISTING DOCUMENT
+    # 11. CREATE FOOD LISTING DOCUMENT
     # ==========================================================
 
     listing_document = {
@@ -286,25 +426,45 @@ def create_listing():
     }
 
     listing_document.update({
-        "address": pickup_location["address"],
-        "city": pickup_location["city"],
-    })
 
-    listing_document.update({
+        "address": pickup_location["address"],
+
+        "city": pickup_location["city"],
 
         "landmark": (
-            payload.get("landmark", "").strip()
-            if isinstance(payload.get("landmark", ""), str)
-            else payload.get("landmark", "")
+            payload.get(
+                "landmark",
+                ""
+            ).strip()
+            if isinstance(
+                payload.get(
+                    "landmark",
+                    ""
+                ),
+                str
+            )
+            else payload.get(
+                "landmark",
+                ""
+            )
         ),
 
         "pickup_instructions": (
-            payload.get("pickup_instructions", "").strip()
+            payload.get(
+                "pickup_instructions",
+                ""
+            ).strip()
             if isinstance(
-                payload.get("pickup_instructions", ""),
+                payload.get(
+                    "pickup_instructions",
+                    ""
+                ),
                 str
             )
-            else payload.get("pickup_instructions", "")
+            else payload.get(
+                "pickup_instructions",
+                ""
+            )
         ),
 
         "freshness_score": payload.get(
@@ -330,23 +490,24 @@ def create_listing():
         # Owner
         "owner_id": owner_id,
 
-        # Initial listing status
+        # Both Sell and Donate listings start as available.
         "status": "available",
 
         # Statistics
         "views": 0,
+
         "reservations": 0,
-        # Keep the original amount for surplus history; quantity continues to
-        # be the existing mutable amount remaining after accepted requests.
-        "original_quantity": payload["quantity"],
+
+        "original_quantity": quantity,
 
         # Timestamps
         "created_at": timestamp,
+
         "updated_at": timestamp,
     })
 
     # ==========================================================
-    # 8. SAVE LISTING
+    # 12. SAVE FOOD LISTING
     # ==========================================================
 
     try:
@@ -355,9 +516,14 @@ def create_listing():
             listing_document
         )
 
+        listing_id = result.inserted_id
+
     except PyMongoError as error:
 
-        print("MongoDB listing error:", error)
+        print(
+            "MongoDB listing error:",
+            error
+        )
 
         return jsonify({
             "success": False,
@@ -368,56 +534,309 @@ def create_listing():
         }), 500
 
     # ==========================================================
-    # 9. SUCCESS RESPONSE
+    # 13. CREATE DONATION AUTOMATICALLY
     # ==========================================================
 
+    if listing_type == "donate":
+
+        try:
+
+            # --------------------------------------------------
+            # Get provider name
+            # --------------------------------------------------
+
+            users_collection = get_collection(
+                "users"
+            )
+
+            provider = None
+
+            if users_collection is not None:
+
+                provider = users_collection.find_one({
+                    "_id": owner_id
+                })
+
+            provider = provider or {}
+
+            provider_name = (
+                provider.get("business_name")
+                or provider.get("restaurant_name")
+                or provider.get("organization_name")
+                or provider.get("full_name")
+                or provider.get("name")
+                or "Food Provider"
+            )
+
+            # --------------------------------------------------
+            # Create donation document
+            # --------------------------------------------------
+
+            donation_document = {
+
+                # Relationship with food listing
+                "listing_id": listing_id,
+
+                # Provider
+                "provider_id": owner_id,
+
+                "provider_name": provider_name,
+
+                # No single NGO owns this donation.
+                # Multiple NGOs can claim portions.
+                "ngo_id": None,
+
+                # Donation quantity
+                "surplus_quantity": quantity,
+
+                "available_quantity": quantity,
+
+                # Food information
+                "food_title": payload.get(
+                    "food_title",
+                    ""
+                ),
+
+                "category": payload.get(
+                    "category",
+                    ""
+                ),
+
+                "food_type": payload.get(
+                    "food_type",
+                    ""
+                ),
+
+                "unit": payload.get(
+                    "unit",
+                    ""
+                ),
+
+                "description": payload.get(
+                    "description",
+                    ""
+                ),
+
+                "image": payload.get(
+                    "image",
+                    ""
+                ),
+
+                # Pickup information
+                "pickup_address": pickup_location[
+                    "address"
+                ],
+
+                "city": pickup_location[
+                    "city"
+                ],
+
+                "pickup_instructions": str(
+                    payload.get(
+                        "pickup_instructions",
+                        ""
+                    )
+                ).strip()[:250],
+
+                "donation_pickup_start": normalize_datetime(
+                    payload["pickup_start"]
+                ),
+
+                "donation_pickup_end": normalize_datetime(
+                    payload["pickup_end"]
+                ),
+
+                # Donation status
+                "status": "available",
+
+                # Lifecycle timestamps
+                "created_at": timestamp,
+
+                "updated_at": timestamp,
+
+                "claimed_at": None,
+
+                "picked_up_at": None,
+
+                "completed_at": None,
+
+                "expired_at": None,
+            }
+
+            # --------------------------------------------------
+            # Save donation
+            # --------------------------------------------------
+
+            donation_result = donations_collection.insert_one(
+                donation_document
+            )
+
+            # --------------------------------------------------
+            # Link donation to food listing
+            # --------------------------------------------------
+
+            listings_collection.update_one(
+                {
+                    "_id": listing_id,
+                    "owner_id": owner_id
+                },
+                {
+                    "$set": {
+                        "donation_id": (
+                            donation_result.inserted_id
+                        ),
+                        "updated_at": (
+                            datetime.now(
+                                timezone.utc
+                            )
+                        ),
+                    }
+                }
+            )
+
+            donation_id = donation_result.inserted_id
+
+        except PyMongoError as error:
+
+            print(
+                "MongoDB donation creation error:",
+                error
+            )
+
+            # Remove the listing if donation creation failed.
+            # This prevents a Donate listing from existing
+            # without its corresponding donation record.
+
+            try:
+
+                listings_collection.delete_one({
+                    "_id": listing_id,
+                    "owner_id": owner_id
+                })
+
+            except PyMongoError as cleanup_error:
+
+                print(
+                    "MongoDB donation cleanup error:",
+                    cleanup_error
+                )
+
+            return jsonify({
+                "success": False,
+                "message": (
+                    "The donation could not be published. "
+                    "Please try again later."
+                )
+            }), 500
+
+    else:
+
+        donation_id = None
+
+    # ==========================================================
+    # 14. SUCCESS RESPONSE
+    # ==========================================================
+
+    if listing_type == "donate":
+
+        return jsonify({
+
+            "success": True,
+
+            "message": (
+                "Food donation published "
+                "successfully for NGOs."
+            ),
+
+            "listing_id": str(
+                listing_id
+            ),
+
+            "donation_id": str(
+                donation_id
+            ),
+
+            "listing_type": "donate",
+
+        }), 201
+
     return jsonify({
+
         "success": True,
-        "message": "Listing created successfully.",
-        "listing_id": str(result.inserted_id),
+
+        "message": (
+            "Food listing created successfully."
+        ),
+
+        "listing_id": str(
+            listing_id
+        ),
+
+        "listing_type": "sell",
+
     }), 201
 
 
 # ==========================================================
-# GET PUBLIC AVAILABLE LISTINGS
+# GET PUBLIC AVAILABLE SELL LISTINGS
 # GET /api/listings
 # ==========================================================
 
-@listings.route("/api/listings", methods=["GET"])
+@listings.route(
+    "/api/listings",
+    methods=["GET"]
+)
 def get_public_listings():
-    """Return all currently available public food listings."""
+    """
+    Return only Sell listings for the User Marketplace.
+
+    Donate listings are handled separately by:
+        GET /api/donations/available
+    """
 
     refresh_lifecycle()
 
-    listings_collection = get_collection("food_listings")
+    listings_collection = get_collection(
+        "food_listings"
+    )
 
     if listings_collection is None:
+
         return jsonify({
             "success": False,
-            "message": "MongoDB is currently unavailable."
+            "message": (
+                "MongoDB is currently unavailable."
+            )
         }), 500
 
-    city = request.args.get("city", "").strip()
-    listing_type = request.args.get("type", "").strip()
+    city = request.args.get(
+        "city",
+        ""
+    ).strip()
 
+    # IMPORTANT:
+    # User Marketplace MUST ONLY return Sell listings.
     query = {
-        "status": "available"
+        "status": "available",
+        "listing_type": "sell"
     }
 
     if city:
+
         query["city"] = {
             "$regex": f"^{city}$",
             "$options": "i"
         }
 
-    if listing_type:
-        query["listing_type"] = listing_type
-
     try:
 
         food_listings = list(
-            listings_collection.find(query)
-            .sort("created_at", -1)
+            listings_collection.find(
+                query
+            ).sort(
+                "created_at",
+                -1
+            )
         )
 
         listings_data = []
@@ -430,7 +849,9 @@ def get_public_listings():
 
             listings_data.append({
 
-                "id": str(listing["_id"]),
+                "id": str(
+                    listing["_id"]
+                ),
 
                 "food_title": listing.get(
                     "food_title",
@@ -518,11 +939,17 @@ def get_public_listings():
                 ),
 
                 # Provider
-                "provider_name": provider["provider_name"],
+                "provider_name": provider[
+                    "provider_name"
+                ],
 
-                "provider_image": provider["provider_image"],
+                "provider_image": provider[
+                    "provider_image"
+                ],
 
-                "provider_verified": provider["provider_verified"],
+                "provider_verified": provider[
+                    "provider_verified"
+                ],
 
                 # AI
                 "freshness_score": listing.get(
@@ -564,16 +991,26 @@ def get_public_listings():
 
                 # Date
                 "created_at": (
-                    listing["created_at"].isoformat()
-                    if listing.get("created_at")
+                    listing[
+                        "created_at"
+                    ].isoformat()
+                    if listing.get(
+                        "created_at"
+                    )
                     else None
                 )
             })
 
         return jsonify({
+
             "success": True,
-            "count": len(listings_data),
+
+            "count": len(
+                listings_data
+            ),
+
             "listings": listings_data
+
         }), 200
 
     except PyMongoError as error:
@@ -585,7 +1022,9 @@ def get_public_listings():
 
         return jsonify({
             "success": False,
-            "message": "Unable to load food listings."
+            "message": (
+                "Unable to load food listings."
+            )
         }), 500
 
 
@@ -594,22 +1033,33 @@ def get_public_listings():
 # GET /api/listings/my
 # ==========================================================
 
-@listings.route("/api/listings/my", methods=["GET"])
+@listings.route(
+    "/api/listings/my",
+    methods=["GET"]
+)
 def get_my_listings():
     """Return all food listings created by the logged-in user."""
 
     refresh_lifecycle()
 
-    session_user_id = session.get("user_id")
+    session_user_id = session.get(
+        "user_id"
+    )
 
     if not session_user_id:
+
         return jsonify({
             "success": False,
-            "message": "Authentication is required."
+            "message": (
+                "Authentication is required."
+            )
         }), 401
 
     try:
-        owner_id = ObjectId(session_user_id)
+
+        owner_id = ObjectId(
+            session_user_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -620,9 +1070,12 @@ def get_my_listings():
             "message": "Invalid user session."
         }), 401
 
-    listings_collection = get_collection("food_listings")
+    listings_collection = get_collection(
+        "food_listings"
+    )
 
     if listings_collection is None:
+
         return jsonify({
             "success": False,
             "message": (
@@ -644,7 +1097,10 @@ def get_my_listings():
 
     except PyMongoError as error:
 
-        print("MongoDB get listings error:", error)
+        print(
+            "MongoDB get listings error:",
+            error
+        )
 
         return jsonify({
             "success": False,
@@ -658,12 +1114,19 @@ def get_my_listings():
 
     for listing in user_listings:
 
-        created_at = listing.get("created_at")
-        updated_at = listing.get("updated_at")
+        created_at = listing.get(
+            "created_at"
+        )
+
+        updated_at = listing.get(
+            "updated_at"
+        )
 
         listings_data.append({
 
-            "id": str(listing["_id"]),
+            "id": str(
+                listing["_id"]
+            ),
 
             "food_title": listing.get(
                 "food_title",
@@ -796,30 +1259,46 @@ def get_my_listings():
                 if updated_at
                 else None
             ),
+
+            "donation_id": (
+                str(
+                    listing["donation_id"]
+                )
+                if listing.get(
+                    "donation_id"
+                )
+                else None
+            ),
         })
 
     return jsonify({
+
         "success": True,
-        "count": len(listings_data),
+
+        "count": len(
+            listings_data
+        ),
+
         "listings": listings_data
+
     }), 200
 
 
 # ==========================================================
-# GET SINGLE PUBLIC LISTING
+# GET SINGLE PUBLIC SELL LISTING
 # GET /api/listings/<listing_id>
 # ==========================================================
 
-@listings.route("/api/listings/<listing_id>", methods=["GET"])
+@listings.route(
+    "/api/listings/<listing_id>",
+    methods=["GET"]
+)
 def get_listing(listing_id):
     """
-    Return one available food listing for individual users.
+    Return one available Sell listing.
 
-    Used by:
-        /listing/<listing_id>
-
-    This endpoint provides all information required by
-    the individual user's listing-details page.
+    Donate listings are not accessible through
+    the public User Marketplace endpoint.
     """
 
     refresh_lifecycle()
@@ -830,7 +1309,9 @@ def get_listing(listing_id):
 
     try:
 
-        listing_object_id = ObjectId(listing_id)
+        listing_object_id = ObjectId(
+            listing_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -843,24 +1324,35 @@ def get_listing(listing_id):
     # GET COLLECTION
     # ==========================================================
 
-    listings_collection = get_collection("food_listings")
+    listings_collection = get_collection(
+        "food_listings"
+    )
 
     if listings_collection is None:
 
         return jsonify({
             "success": False,
-            "message": "MongoDB is currently unavailable."
+            "message": (
+                "MongoDB is currently unavailable."
+            )
         }), 500
 
     # ==========================================================
-    # FIND AVAILABLE LISTING
+    # FIND ONLY SELL LISTING
     # ==========================================================
 
     try:
 
         listing = listings_collection.find_one({
+
             "_id": listing_object_id,
-            "status": "available"
+
+            "status": "available",
+
+            # IMPORTANT:
+            # Donate listings must never be returned
+            # through the User Marketplace details API.
+            "listing_type": "sell",
         })
 
     except PyMongoError as error:
@@ -872,24 +1364,23 @@ def get_listing(listing_id):
 
         return jsonify({
             "success": False,
-            "message": "Unable to load listing."
+            "message": (
+                "Unable to load listing."
+            )
         }), 500
-
-    # ==========================================================
-    # LISTING NOT FOUND
-    # ==========================================================
 
     if listing is None:
 
         return jsonify({
             "success": False,
             "message": (
-                "Listing not found or is no longer available."
+                "Listing not found or is no "
+                "longer available."
             )
         }), 404
 
     # ==========================================================
-    # PROVIDER DETAILS
+    # PROVIDER
     # ==========================================================
 
     provider = get_provider_details(
@@ -900,20 +1391,23 @@ def get_listing(listing_id):
     # DATES
     # ==========================================================
 
-    created_at = listing.get("created_at")
-    updated_at = listing.get("updated_at")
+    created_at = listing.get(
+        "created_at"
+    )
+
+    updated_at = listing.get(
+        "updated_at"
+    )
 
     # ==========================================================
-    # LISTING RESPONSE
+    # RESPONSE
     # ==========================================================
 
     listing_data = {
 
-        "id": str(listing["_id"]),
-
-        # ======================================================
-        # FOOD
-        # ======================================================
+        "id": str(
+            listing["_id"]
+        ),
 
         "food_title": listing.get(
             "food_title",
@@ -935,10 +1429,6 @@ def get_listing(listing_id):
             ""
         ),
 
-        # ======================================================
-        # QUANTITY & PRICE
-        # ======================================================
-
         "quantity": listing.get(
             "quantity",
             0
@@ -959,18 +1449,10 @@ def get_listing(listing_id):
             0
         ),
 
-        # ======================================================
-        # EXPIRY
-        # ======================================================
-
         "expiry_date": listing.get(
             "expiry_date",
             ""
         ),
-
-        # ======================================================
-        # PICKUP
-        # ======================================================
 
         "pickup_start": listing.get(
             "pickup_start",
@@ -1002,10 +1484,6 @@ def get_listing(listing_id):
             ""
         ),
 
-        # ======================================================
-        # DESCRIPTION & IMAGE
-        # ======================================================
-
         "description": listing.get(
             "description",
             ""
@@ -1016,19 +1494,17 @@ def get_listing(listing_id):
             ""
         ),
 
-        # ======================================================
-        # PROVIDER
-        # ======================================================
+        "provider_name": provider[
+            "provider_name"
+        ],
 
-        "provider_name": provider["provider_name"],
+        "provider_image": provider[
+            "provider_image"
+        ],
 
-        "provider_image": provider["provider_image"],
-
-        "provider_verified": provider["provider_verified"],
-
-        # ======================================================
-        # AI DATA
-        # ======================================================
+        "provider_verified": provider[
+            "provider_verified"
+        ],
 
         "freshness_score": listing.get(
             "freshness_score",
@@ -1050,18 +1526,10 @@ def get_listing(listing_id):
             ""
         ),
 
-        # ======================================================
-        # STATUS
-        # ======================================================
-
         "status": listing.get(
             "status",
             "available"
         ),
-
-        # ======================================================
-        # STATISTICS
-        # ======================================================
 
         "views": listing.get(
             "views",
@@ -1072,10 +1540,6 @@ def get_listing(listing_id):
             "reservations",
             0
         ),
-
-        # ======================================================
-        # DATES
-        # ======================================================
 
         "created_at": (
             created_at.isoformat()
@@ -1091,8 +1555,11 @@ def get_listing(listing_id):
     }
 
     return jsonify({
+
         "success": True,
+
         "listing": listing_data
+
     }), 200
 
 
@@ -1101,23 +1568,37 @@ def get_listing(listing_id):
 # PUT /api/listings/<listing_id>
 # ==========================================================
 
-@listings.route("/api/listings/<listing_id>", methods=["PUT"])
+@listings.route(
+    "/api/listings/<listing_id>",
+    methods=["PUT"]
+)
 def update_listing(listing_id):
-    """Update a food listing owned by the currently logged-in user."""
+    """
+    Update a food listing owned by the logged-in user.
+
+    Listing type cannot be changed after creation.
+    """
 
     refresh_lifecycle()
 
-    session_user_id = session.get("user_id")
+    session_user_id = session.get(
+        "user_id"
+    )
 
     if not session_user_id:
+
         return jsonify({
             "success": False,
-            "message": "Authentication is required."
+            "message": (
+                "Authentication is required."
+            )
         }), 401
 
     try:
 
-        owner_id = ObjectId(session_user_id)
+        owner_id = ObjectId(
+            session_user_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -1130,7 +1611,9 @@ def update_listing(listing_id):
 
     try:
 
-        listing_object_id = ObjectId(listing_id)
+        listing_object_id = ObjectId(
+            listing_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -1139,16 +1622,26 @@ def update_listing(listing_id):
             "message": "Invalid listing ID."
         }), 400
 
-    payload = request.get_json(silent=True)
+    payload = request.get_json(
+        silent=True
+    )
 
-    if not isinstance(payload, dict):
+    if not isinstance(
+        payload,
+        dict
+    ):
 
         return jsonify({
             "success": False,
-            "message": "A valid JSON request body is required."
+            "message": (
+                "A valid JSON request body "
+                "is required."
+            )
         }), 400
 
-    listings_collection = get_collection("food_listings")
+    listings_collection = get_collection(
+        "food_listings"
+    )
 
     if listings_collection is None:
 
@@ -1167,8 +1660,11 @@ def update_listing(listing_id):
     try:
 
         existing_listing = listings_collection.find_one({
+
             "_id": listing_object_id,
+
             "owner_id": owner_id
+
         })
 
     except PyMongoError as error:
@@ -1180,7 +1676,9 @@ def update_listing(listing_id):
 
         return jsonify({
             "success": False,
-            "message": "Unable to load listing for update."
+            "message": (
+                "Unable to load listing for update."
+            )
         }), 500
 
     if existing_listing is None:
@@ -1188,15 +1686,57 @@ def update_listing(listing_id):
         return jsonify({
             "success": False,
             "message": (
-                "Listing not found or you do not have "
-                "permission to edit it."
+                "Listing not found or you do not "
+                "have permission to edit it."
             )
         }), 404
 
-    if str(existing_listing.get("status", "available")).lower() not in {"available", "paused"}:
+    current_status = str(
+        existing_listing.get(
+            "status",
+            "available"
+        )
+    ).lower()
+
+    if current_status not in {
+        "available",
+        "paused"
+    }:
+
         return jsonify({
             "success": False,
-            "message": "Only active or paused listings can be edited."
+            "message": (
+                "Only active or paused listings "
+                "can be edited."
+            )
+        }), 409
+
+    # ==========================================================
+    # LISTING TYPE CANNOT CHANGE
+    # ==========================================================
+
+    existing_type = str(
+        existing_listing.get(
+            "listing_type",
+            ""
+        )
+    ).strip().lower()
+
+    submitted_type = str(
+        payload.get(
+            "listing_type",
+            existing_type
+        )
+    ).strip().lower()
+
+    if submitted_type != existing_type:
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Listing type cannot be changed "
+                "after the listing is created."
+            )
         }), 409
 
     # ==========================================================
@@ -1207,7 +1747,6 @@ def update_listing(listing_id):
         "food_title",
         "category",
         "food_type",
-        "listing_type",
         "quantity",
         "unit",
         "original_price",
@@ -1235,7 +1774,6 @@ def update_listing(listing_id):
         "food_title",
         "category",
         "food_type",
-        "listing_type",
         "quantity",
         "unit",
         "original_price",
@@ -1254,7 +1792,10 @@ def update_listing(listing_id):
             field not in payload
             or payload[field] is None
             or (
-                isinstance(payload[field], str)
+                isinstance(
+                    payload[field],
+                    str
+                )
                 and not payload[field].strip()
             )
         )
@@ -1264,20 +1805,28 @@ def update_listing(listing_id):
 
         return jsonify({
             "success": False,
-            "message": "Required fields are missing.",
+            "message": (
+                "Required fields are missing."
+            ),
             "missing_fields": missing_fields
         }), 400
 
-    # Keep edited listings in sync with the provider profile's pickup
-    # location, rather than accepting client-supplied address fields.
-    pickup_location = get_provider_pickup_location(owner_id)
+    # ==========================================================
+    # GET CURRENT PROVIDER LOCATION
+    # ==========================================================
+
+    pickup_location = get_provider_pickup_location(
+        owner_id
+    )
 
     if pickup_location is None:
+
         return jsonify({
             "success": False,
             "message": (
-                "Add a complete business address and city in your "
-                "provider profile before updating a listing."
+                "Add a complete business address "
+                "and city in your provider profile "
+                "before updating a listing."
             )
         }), 400
 
@@ -1294,26 +1843,103 @@ def update_listing(listing_id):
 
         value = payload[field]
 
-        if isinstance(value, str):
+        if isinstance(
+            value,
+            str
+        ):
+
             value = value.strip()
 
         update_data[field] = value
 
-    pickup_start = _as_utc(update_data.get("pickup_start"))
-    pickup_end = _as_utc(update_data.get("pickup_end"))
-    if not pickup_start or not pickup_end or pickup_end <= pickup_start:
+    # ==========================================================
+    # VALIDATE QUANTITY
+    # ==========================================================
+
+    try:
+
+        update_quantity = int(
+            update_data.get(
+                "quantity",
+                0
+            )
+        )
+
+    except (TypeError, ValueError):
+
         return jsonify({
             "success": False,
-            "message": "Provide a valid pickup start and end time."
+            "message": (
+                "Quantity must be a whole number."
+            )
         }), 400
-    update_data["pickup_start"] = normalize_datetime(update_data["pickup_start"])
-    update_data["pickup_end"] = normalize_datetime(update_data["pickup_end"])
 
-    update_data["address"] = pickup_location["address"]
-    update_data["city"] = pickup_location["city"]
+    if update_quantity <= 0:
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Quantity must be greater than zero."
+            )
+        }), 400
+
+    update_data["quantity"] = update_quantity
+
+    # ==========================================================
+    # VALIDATE PICKUP
+    # ==========================================================
+
+    pickup_start = _as_utc(
+        update_data.get(
+            "pickup_start"
+        )
+    )
+
+    pickup_end = _as_utc(
+        update_data.get(
+            "pickup_end"
+        )
+    )
+
+    if (
+        not pickup_start
+        or not pickup_end
+        or pickup_end <= pickup_start
+    ):
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Provide a valid pickup start "
+                "and end time."
+            )
+        }), 400
+
+    update_data["pickup_start"] = normalize_datetime(
+        update_data["pickup_start"]
+    )
+
+    update_data["pickup_end"] = normalize_datetime(
+        update_data["pickup_end"]
+    )
+
+    # ==========================================================
+    # PROVIDER LOCATION
+    # ==========================================================
+
+    update_data["address"] = pickup_location[
+        "address"
+    ]
+
+    update_data["city"] = pickup_location[
+        "city"
+    ]
+
     update_data["landmark"] = ""
 
-    update_data["updated_at"] = datetime.now(timezone.utc)
+    update_data["updated_at"] = datetime.now(
+        timezone.utc
+    )
 
     # ==========================================================
     # UPDATE DATABASE
@@ -1322,10 +1948,13 @@ def update_listing(listing_id):
     try:
 
         result = listings_collection.update_one(
+
             {
                 "_id": listing_object_id,
+
                 "owner_id": owner_id
             },
+
             {
                 "$set": update_data
             }
@@ -1350,13 +1979,141 @@ def update_listing(listing_id):
 
         return jsonify({
             "success": False,
-            "message": "Listing could not be updated."
+            "message": (
+                "Listing could not be updated."
+            )
         }), 404
 
+    # ==========================================================
+    # IF DONATION, KEEP DONATION IN SYNC
+    # ==========================================================
+
+    if existing_type == "donate":
+
+        donations_collection = get_collection(
+            "donations"
+        )
+
+        if donations_collection is not None:
+
+            try:
+
+                donations_collection.update_one(
+
+                    {
+                        "listing_id": listing_object_id
+                    },
+
+                    {
+                        "$set": {
+
+                            "surplus_quantity": update_quantity,
+
+                            "unit": update_data.get(
+                                "unit",
+                                existing_listing.get(
+                                    "unit",
+                                    ""
+                                )
+                            ),
+
+                            "food_title": update_data.get(
+                                "food_title",
+                                existing_listing.get(
+                                    "food_title",
+                                    ""
+                                )
+                            ),
+
+                            "category": update_data.get(
+                                "category",
+                                existing_listing.get(
+                                    "category",
+                                    ""
+                                )
+                            ),
+
+                            "food_type": update_data.get(
+                                "food_type",
+                                existing_listing.get(
+                                    "food_type",
+                                    ""
+                                )
+                            ),
+
+                            "description": update_data.get(
+                                "description",
+                                existing_listing.get(
+                                    "description",
+                                    ""
+                                )
+                            ),
+
+                            "image": update_data.get(
+                                "image",
+                                existing_listing.get(
+                                    "image",
+                                    ""
+                                )
+                            ),
+
+                            "pickup_address": (
+                                pickup_location[
+                                    "address"
+                                ]
+                            ),
+
+                            "city": (
+                                pickup_location[
+                                    "city"
+                                ]
+                            ),
+
+                            "pickup_instructions": str(
+                                update_data.get(
+                                    "pickup_instructions",
+                                    ""
+                                )
+                            ).strip()[:250],
+
+                            "donation_pickup_start": (
+                                update_data[
+                                    "pickup_start"
+                                ]
+                            ),
+
+                            "donation_pickup_end": (
+                                update_data[
+                                    "pickup_end"
+                                ]
+                            ),
+
+                            "updated_at": datetime.now(
+                                timezone.utc
+                            ),
+                        }
+                    }
+                )
+
+            except PyMongoError as error:
+
+                print(
+                    "MongoDB donation sync error:",
+                    error
+                )
+
     return jsonify({
+
         "success": True,
-        "message": "Listing updated successfully.",
-        "listing_id": str(listing_object_id)
+
+        "message": (
+            "Listing updated successfully."
+        ),
+
+        "listing_id": str(
+            listing_object_id
+        )
+
     }), 200
 
 
@@ -1374,18 +2131,24 @@ def toggle_pause_listing(listing_id):
 
     refresh_lifecycle()
 
-    session_user_id = session.get("user_id")
+    session_user_id = session.get(
+        "user_id"
+    )
 
     if not session_user_id:
 
         return jsonify({
             "success": False,
-            "message": "Authentication is required."
+            "message": (
+                "Authentication is required."
+            )
         }), 401
 
     try:
 
-        owner_id = ObjectId(session_user_id)
+        owner_id = ObjectId(
+            session_user_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -1398,7 +2161,9 @@ def toggle_pause_listing(listing_id):
 
     try:
 
-        listing_object_id = ObjectId(listing_id)
+        listing_object_id = ObjectId(
+            listing_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -1407,20 +2172,27 @@ def toggle_pause_listing(listing_id):
             "message": "Invalid listing ID."
         }), 400
 
-    listings_collection = get_collection("food_listings")
+    listings_collection = get_collection(
+        "food_listings"
+    )
 
     if listings_collection is None:
 
         return jsonify({
             "success": False,
-            "message": "MongoDB is currently unavailable."
+            "message": (
+                "MongoDB is currently unavailable."
+            )
         }), 500
 
     try:
 
         listing = listings_collection.find_one({
+
             "_id": listing_object_id,
+
             "owner_id": owner_id
+
         })
 
     except PyMongoError as error:
@@ -1432,7 +2204,9 @@ def toggle_pause_listing(listing_id):
 
         return jsonify({
             "success": False,
-            "message": "Unable to update listing."
+            "message": (
+                "Unable to update listing."
+            )
         }), 500
 
     if listing is None:
@@ -1440,42 +2214,65 @@ def toggle_pause_listing(listing_id):
         return jsonify({
             "success": False,
             "message": (
-                "Listing not found or you do not have "
-                "permission to update it."
+                "Listing not found or you do not "
+                "have permission to update it."
             )
         }), 404
 
     current_status = str(
-        listing.get("status", "available")
+        listing.get(
+            "status",
+            "available"
+        )
     ).strip().lower()
 
-    if current_status not in {"available", "paused"}:
+    if current_status not in {
+        "available",
+        "paused"
+    }:
+
         return jsonify({
             "success": False,
-            "message": "This listing can no longer be paused or resumed."
+            "message": (
+                "This listing can no longer "
+                "be paused or resumed."
+            )
         }), 409
 
     if current_status == "paused":
 
         new_status = "available"
-        message = "Listing resumed successfully."
+
+        message = (
+            "Listing resumed successfully."
+        )
 
     else:
 
         new_status = "paused"
-        message = "Listing paused successfully."
+
+        message = (
+            "Listing paused successfully."
+        )
 
     try:
 
         result = listings_collection.update_one(
+
             {
                 "_id": listing_object_id,
+
                 "owner_id": owner_id
             },
+
             {
                 "$set": {
+
                     "status": new_status,
-                    "updated_at": datetime.now(timezone.utc)
+
+                    "updated_at": datetime.now(
+                        timezone.utc
+                    )
                 }
             }
         )
@@ -1499,13 +2296,20 @@ def toggle_pause_listing(listing_id):
 
         return jsonify({
             "success": False,
-            "message": "Listing status could not be updated."
+            "message": (
+                "Listing status could not "
+                "be updated."
+            )
         }), 404
 
     return jsonify({
+
         "success": True,
+
         "message": message,
+
         "status": new_status
+
     }), 200
 
 
@@ -1521,18 +2325,24 @@ def toggle_pause_listing(listing_id):
 def duplicate_listing(listing_id):
     """Create a duplicate of a food listing."""
 
-    session_user_id = session.get("user_id")
+    session_user_id = session.get(
+        "user_id"
+    )
 
     if not session_user_id:
 
         return jsonify({
             "success": False,
-            "message": "Authentication is required."
+            "message": (
+                "Authentication is required."
+            )
         }), 401
 
     try:
 
-        owner_id = ObjectId(session_user_id)
+        owner_id = ObjectId(
+            session_user_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -1545,7 +2355,9 @@ def duplicate_listing(listing_id):
 
     try:
 
-        listing_object_id = ObjectId(listing_id)
+        listing_object_id = ObjectId(
+            listing_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -1554,20 +2366,27 @@ def duplicate_listing(listing_id):
             "message": "Invalid listing ID."
         }), 400
 
-    listings_collection = get_collection("food_listings")
+    listings_collection = get_collection(
+        "food_listings"
+    )
 
     if listings_collection is None:
 
         return jsonify({
             "success": False,
-            "message": "MongoDB is currently unavailable."
+            "message": (
+                "MongoDB is currently unavailable."
+            )
         }), 500
 
     try:
 
         original_listing = listings_collection.find_one({
+
             "_id": listing_object_id,
+
             "owner_id": owner_id
+
         })
 
     except PyMongoError as error:
@@ -1579,7 +2398,10 @@ def duplicate_listing(listing_id):
 
         return jsonify({
             "success": False,
-            "message": "Unable to load listing for duplication."
+            "message": (
+                "Unable to load listing "
+                "for duplication."
+            )
         }), 500
 
     if original_listing is None:
@@ -1587,16 +2409,21 @@ def duplicate_listing(listing_id):
         return jsonify({
             "success": False,
             "message": (
-                "Listing not found or you do not have "
-                "permission to duplicate it."
+                "Listing not found or you do not "
+                "have permission to duplicate it."
             )
         }), 404
 
-    timestamp = datetime.now(timezone.utc)
+    timestamp = datetime.now(
+        timezone.utc
+    )
 
     duplicate = original_listing.copy()
 
-    duplicate.pop("_id", None)
+    duplicate.pop(
+        "_id",
+        None
+    )
 
     original_title = str(
         original_listing.get(
@@ -1616,14 +2443,27 @@ def duplicate_listing(listing_id):
     duplicate["views"] = 0
 
     duplicate["reservations"] = 0
-    duplicate["original_quantity"] = duplicate.get("quantity", 0)
+
+    duplicate["original_quantity"] = (
+        duplicate.get(
+            "quantity",
+            0
+        )
+    )
+
+    # A duplicate must never inherit
+    # the original donation relationship.
     for field in (
         "surplus_quantity",
         "pickup_window_ended_at",
         "surplus_confirmed_at",
         "donation_id",
     ):
-        duplicate.pop(field, None)
+
+        duplicate.pop(
+            field,
+            None
+        )
 
     duplicate["created_at"] = timestamp
 
@@ -1651,9 +2491,17 @@ def duplicate_listing(listing_id):
         }), 500
 
     return jsonify({
+
         "success": True,
-        "message": "Listing duplicated successfully.",
-        "listing_id": str(result.inserted_id)
+
+        "message": (
+            "Listing duplicated successfully."
+        ),
+
+        "listing_id": str(
+            result.inserted_id
+        )
+
     }), 201
 
 
@@ -1669,18 +2517,24 @@ def duplicate_listing(listing_id):
 def delete_listing(listing_id):
     """Delete a food listing owned by the logged-in user."""
 
-    session_user_id = session.get("user_id")
+    session_user_id = session.get(
+        "user_id"
+    )
 
     if not session_user_id:
 
         return jsonify({
             "success": False,
-            "message": "Authentication is required."
+            "message": (
+                "Authentication is required."
+            )
         }), 401
 
     try:
 
-        owner_id = ObjectId(session_user_id)
+        owner_id = ObjectId(
+            session_user_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -1693,7 +2547,9 @@ def delete_listing(listing_id):
 
     try:
 
-        listing_object_id = ObjectId(listing_id)
+        listing_object_id = ObjectId(
+            listing_id
+        )
 
     except (InvalidId, TypeError):
 
@@ -1702,31 +2558,47 @@ def delete_listing(listing_id):
             "message": "Invalid listing ID."
         }), 400
 
-    listings_collection = get_collection("food_listings")
+    listings_collection = get_collection(
+        "food_listings"
+    )
 
     if listings_collection is None:
 
         return jsonify({
             "success": False,
-            "message": "MongoDB is currently unavailable."
+            "message": (
+                "MongoDB is currently unavailable."
+            )
         }), 500
 
     try:
 
         existing = listings_collection.find_one({
+
             "_id": listing_object_id,
+
             "owner_id": owner_id
+
         })
 
-        if existing and existing.get("donation_id"):
+        if existing and existing.get(
+            "donation_id"
+        ):
+
             return jsonify({
                 "success": False,
-                "message": "Listings with donation history cannot be deleted."
+                "message": (
+                    "Listings with donation history "
+                    "cannot be deleted."
+                )
             }), 409
 
         result = listings_collection.delete_one({
+
             "_id": listing_object_id,
+
             "owner_id": owner_id
+
         })
 
     except PyMongoError as error:
@@ -1749,12 +2621,17 @@ def delete_listing(listing_id):
         return jsonify({
             "success": False,
             "message": (
-                "Listing not found or you do not have "
-                "permission to delete it."
+                "Listing not found or you do not "
+                "have permission to delete it."
             )
         }), 404
 
     return jsonify({
+
         "success": True,
-        "message": "Listing deleted successfully."
+
+        "message": (
+            "Listing deleted successfully."
+        )
+
     }), 200
