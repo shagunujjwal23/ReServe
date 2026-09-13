@@ -27,13 +27,13 @@
 
   <body>
     <div class="dashboard">
-      <!-- ========================================= -->
-      <!-- Sidebar -->
-      <!-- ========================================= -->
+      <!-- =========================================================
+           PROVIDER NAVBAR
+      ========================================================== -->
 
-      <aside class="sidebar">
+      <header class="provider-navbar">
         <!-- Brand -->
-        <div class="sidebar-brand">
+        <a href="/dashboard" class="navbar-brand">
           <div class="logo-wrapper">
             <img
               src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
@@ -45,505 +45,740 @@
             <h2>ReServe</h2>
             <p>Food Rescue Platform</p>
           </div>
-        </div>
+        </a>
 
-        <!-- Navigation -->
-        <nav class="sidebar-nav">
-          <a href="/dashboard" class="active">
+        <!-- Main Navigation -->
+        <nav class="navbar-nav">
+          <a href="/dashboard" class="nav-item active">
             <i class="ri-home-5-line"></i>
-            <span>Dashboard</span>
+            <span>Home</span>
           </a>
 
-          <a href="/add-listings">
-            <i class="ri-restaurant-line"></i>
-            <span>Add Listings</span>
+          <a href="/add-listings" class="nav-item">
+            <i class="ri-add-circle-line"></i>
+            <span>Add Listing</span>
           </a>
 
-          <a href="/my-listings">
+          <a href="/my-listings" class="nav-item">
             <i class="ri-store-2-line"></i>
             <span>My Listings</span>
           </a>
 
-          <a href="/provider-donations">
-            <i class="ri-hand-heart-line"></i>
-            <span>Donations</span>
-          </a>
-
-          <a href="/requests">
+          <a href="/requests" class="nav-item">
             <i class="ri-file-list-3-line"></i>
             <span>Requests</span>
           </a>
 
-          <a href="#">
-            <i class="ri-box-3-line"></i>
+          <a href="#" class="nav-item">
+            <i class="ri-truck-line"></i>
             <span>Pickups</span>
           </a>
 
-          <a href="#">
-            <i class="ri-robot-2-line"></i>
-            <span>AI Insights</span>
+          <a href="#" class="nav-item">
+            <i class="ri-bar-chart-box-line"></i>
+            <span>Impact</span>
           </a>
 
-          <a href="#">
-            <i class="ri-bar-chart-box-line"></i>
-            <span>Analytics</span>
+          <a href="#" class="nav-item">
+            <i class="ri-message-3-line"></i>
+            <span>Messages</span>
           </a>
         </nav>
 
-        <!-- Footer -->
-        <div class="sidebar-footer">
-          <a href="#">
-            <i class="ri-logout-box-r-line"></i>
-            <span>Logout</span>
-          </a>
-        </div>
-      </aside>
+        <!-- Navbar Right -->
+        <div class="navbar-actions">
+          <!-- Notifications -->
+          <button class="navbar-icon-btn" type="button" title="Notifications">
+            <i class="ri-notification-3-line"></i>
+            <span class="badge">3</span>
+          </button>
 
-      <!-- ========================================= -->
-      <!-- Main Content -->
-      <!-- ========================================= -->
+          <!-- Profile -->
+          <div class="profile-wrapper">
+            <button class="profile" type="button" id="profileMenuBtn">
+              <img
+                src="{{ url_for('static', filename='images/avatars/default.png') }}"
+                alt="Profile"
+                id="headerProfileImage"
+              />
+
+              <div class="profile-info">
+                <h4>{{ user.business_name or user.name }}</h4>
+
+                <p>{{ user.role | replace('_', ' ') | title }}</p>
+              </div>
+
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <a href="/donor-profile">
+                <i class="ri-user-line"></i>
+                <span>My Profile</span>
+              </a>
+
+              <a href="/settings">
+                <i class="ri-settings-3-line"></i>
+                <span>Settings</span>
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <a href="{{ url_for('auth.logout') }}">
+                <i class="ri-logout-box-r-line"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =========================================================
+           MAIN CONTENT
+      ========================================================== -->
 
       <div class="main-content">
         <main class="content-wrapper">
-          <!-- ==========================================================
-          TOPBAR
-      =========================================================== -->
-
-          <header class="topbar">
-            <!-- Search -->
-
-            <div class="search-container">
-              <i class="ri-search-line"></i>
-
-              <input type="text" placeholder="Search food, NGOs, orders..." />
-
-              <kbd>Ctrl + K</kbd>
-            </div>
-
-            <!-- Right Side -->
-
-            <div class="topbar-actions">
-              <!-- Theme -->
-
-              <button class="icon-btn" title="Theme">
-                <i class="ri-moon-line"></i>
-              </button>
-
-              <!-- Messages -->
-
-              <button class="icon-btn" title="Messages">
-                <i class="ri-message-3-line"></i>
-
-                <span class="badge">2</span>
-              </button>
-
-              <!-- Notifications -->
-
-              <button class="icon-btn" title="Notifications">
-                <i class="ri-notification-3-line"></i>
-
-                <span class="badge">5</span>
-              </button>
-
-              <!-- Profile -->
-              <div class="profile-wrapper">
-                <button class="profile" type="button" id="profileMenuBtn">
-                  <img
-                    src="{{ url_for('static', filename='images/avatars/default.png') }}"
-                    alt="Profile"
-                    id="headerProfileImage"
-                  />
-
-                  <div class="profile-info">
-                    <h4>{{ user.business_name or user.name }}</h4>
-
-                    <p>{{ user.role | replace('_', ' ') | title }}</p>
-                  </div>
-
-                  <i class="ri-arrow-down-s-line"></i>
-                </button>
-
-                <!-- Profile Dropdown -->
-                <div class="profile-dropdown hidden" id="profileDropdown">
-                  <!-- My Profile -->
-                  <a href="/donor-profile">
-                    <i class="ri-user-line"></i>
-                    <span>My Profile</span>
-                  </a>
-
-                  <!-- Settings -->
-                  <a href="/settings">
-                    <i class="ri-settings-3-line"></i>
-                    <span>Settings</span>
-                  </a>
-
-                  <div class="dropdown-divider"></div>
-
-                  <!-- Logout -->
-                  <a href="{{ url_for('auth.logout') }}">
-                    <i class="ri-logout-box-r-line"></i>
-                    <span>Logout</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <!-- ==========================================================
-     HERO SECTION
-=========================================================== -->
+          <!-- =====================================================
+               HERO SECTION
+          ====================================================== -->
 
           <section class="hero">
             <!-- Left Content -->
-
             <div class="hero-left">
-              <div class="hero-badge">
-                <i class="ri-sun-line"></i>
-                <span>Good Afternoon</span>
-              </div>
+              <div class="hero-greeting">Good Afternoon,</div>
 
-              <h2>
+              <h1>
                 Welcome back,
-                <span>{{ user.name }}</span>! 👋
-              </h2>
+                <span> {{ user.business_name or user.name }}! </span>
+              </h1>
 
               <p>
-                Every meal you rescue brings hope to someone. Here's what's
-                happening today.
+                Thank you for sharing surplus food and helping build a
+                hunger-free tomorrow.
               </p>
 
               <div class="hero-buttons">
-                <a href="\add-listings" class="primary-btn">
+                <a href="/add-listings" class="primary-btn">
                   <i class="ri-add-line"></i>
-                  <span>Add Food Listing</span>
+                  <span>Add New Food Listing</span>
                 </a>
 
-                <a href="#" class="secondary-btn">
-                  <i class="ri-bar-chart-box-line"></i>
-                  <span>View Analytics</span>
+                <a href="/my-listings" class="secondary-btn">
+                  <i class="ri-list-check-3"></i>
+                  <span>View My Listings</span>
                 </a>
               </div>
             </div>
 
-            <!-- Center Illustration -->
-
+            <!-- Hero Image -->
             <div class="hero-center">
               <img
                 src="{{ url_for('static', filename='images/hero/food-rescue.png') }}"
-                alt="Food Rescue Illustration"
+                alt="Food Rescue"
               />
+            </div>
+
+            <!-- Hero Benefits -->
+            <div class="hero-benefits">
+              <div class="hero-benefit">
+                <div class="hero-benefit-icon">
+                  <i class="ri-leaf-line"></i>
+                </div>
+
+                <div>
+                  <h4>Reduce Food Waste</h4>
+                  <p>Turn surplus into support.</p>
+                </div>
+              </div>
+
+              <div class="hero-benefit">
+                <div class="hero-benefit-icon">
+                  <i class="ri-group-line"></i>
+                </div>
+
+                <div>
+                  <h4>Support Communities</h4>
+                  <p>Nourish people in need.</p>
+                </div>
+              </div>
+
+              <div class="hero-benefit">
+                <div class="hero-benefit-icon">
+                  <i class="ri-heart-3-line"></i>
+                </div>
+
+                <div>
+                  <h4>Create Real Impact</h4>
+                  <p>Every meal counts.</p>
+                </div>
+              </div>
             </div>
           </section>
 
-          <!-- ==========================================================
-     STATISTICS
-=========================================================== -->
+          <!-- =====================================================
+               QUICK OVERVIEW
+          ====================================================== -->
 
-          <section class="stats-section">
-            <div class="stats-grid">
-              <!-- Card 1 -->
+          <section class="dashboard-overview">
+            <!-- =================================================
+                 ACTIVE LISTINGS
+            ================================================== -->
 
-              <div class="stat-card">
-                <div class="stat-main">
-                  <div class="stat-icon meals">
-                    <i class="ri-restaurant-2-line"></i>
+            <div class="dashboard-card recent-listings-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <div class="card-icon">
+                    <i class="ri-restaurant-line"></i>
                   </div>
 
-                  <div class="stat-content">
-                    <span class="stat-title">Meals Rescued</span>
-
-                    <h3>1,284</h3>
-
-                    <div class="stat-trend positive">
-                      <i class="ri-arrow-up-line"></i>
-                      <span>18% this month</span>
-                    </div>
+                  <div>
+                    <h2>Active Listings</h2>
+                    <p>Your latest food listings.</p>
                   </div>
                 </div>
 
-                <div class="stat-graph">
-                  <canvas id="mealChart"></canvas>
-                </div>
+                <a href="/my-listings" class="view-all-btn">
+                  View All
+                  <i class="ri-arrow-right-line"></i>
+                </a>
               </div>
 
-              <!-- Card 2 -->
+              <!-- Active Listings -->
+              <div class="recent-listings" id="activeListingsContainer">
+                <!-- Listings loaded dynamically by dashboard.js -->
+              </div>
+            </div>
 
-              <div class="stat-card">
-                <div class="stat-main">
-                  <div class="stat-icon food">
-                    <i class="ri-leaf-line"></i>
+            <!-- =================================================
+                 INCOMING REQUESTS
+            ================================================== -->
+
+            <div class="dashboard-card requests-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <div class="card-icon">
+                    <i class="ri-file-list-3-line"></i>
                   </div>
 
-                  <div class="stat-content">
-                    <span class="stat-title">Food Saved</span>
-
-                    <h3>365 kg</h3>
-
-                    <div class="stat-trend positive">
-                      <i class="ri-arrow-up-line"></i>
-                      <span>Today +21 kg</span>
-                    </div>
+                  <div>
+                    <h2>Incoming Requests</h2>
+                    <p>Requests that need your attention.</p>
                   </div>
                 </div>
 
-                <div class="stat-graph">
-                  <canvas id="foodChart"></canvas>
-                </div>
+                <a href="/requests" class="view-all-btn">
+                  View All
+                  <i class="ri-arrow-right-line"></i>
+                </a>
               </div>
 
-              <!-- Card 3 -->
+              <div class="incoming-requests" id="incomingRequestsContainer">
+                <!-- Request 1 -->
+                <div class="request-item">
+                  <div class="request-avatar user">
+                    <i class="ri-user-3-line"></i>
+                  </div>
 
-              <div class="stat-card">
-                <div class="stat-main">
-                  <div class="stat-icon people">
+                  <div class="request-info">
+                    <h4>
+                      Requester Name
+                      <span class="requester-type">(User)</span>
+                    </h4>
+
+                    <p>Veg Biryani · 2 packs</p>
+
+                    <small>
+                      <i class="ri-map-pin-line"></i>
+                      1.2 km away · Pickup time
+                    </small>
+                  </div>
+
+                  <div class="request-actions">
+                    <button type="button" class="outline-action-btn">
+                      View
+                    </button>
+
+                    <button type="button" class="accept-action-btn">
+                      Accept
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Request 2 -->
+                <div class="request-item">
+                  <div class="request-avatar ngo">
+                    <i class="ri-sun-line"></i>
+                  </div>
+
+                  <div class="request-info">
+                    <h4>
+                      NourishKids NGO
+                      <span class="requester-type">(NGO)</span>
+                    </h4>
+
+                    <p>Pasta (White Sauce) · 5 packs</p>
+
+                    <small>
+                      <i class="ri-map-pin-line"></i>
+                      2.3 km away · Pickup time
+                    </small>
+                  </div>
+
+                  <div class="request-actions">
+                    <button type="button" class="outline-action-btn">
+                      View
+                    </button>
+
+                    <button type="button" class="accept-action-btn">
+                      Accept
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Request 3 -->
+                <div class="request-item">
+                  <div class="request-avatar ngo">
                     <i class="ri-group-line"></i>
                   </div>
 
-                  <div class="stat-content">
-                    <span class="stat-title">People Served</span>
+                  <div class="request-info">
+                    <h4>
+                      Community Kitchen
+                      <span class="requester-type">(NGO)</span>
+                    </h4>
 
-                    <h3>892</h3>
+                    <p>Bread Loaves · 10 packs</p>
 
-                    <div class="stat-trend positive">
-                      <i class="ri-arrow-up-line"></i>
-                      <span>Today +34</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="stat-graph">
-                  <canvas id="peopleChart"></canvas>
-                </div>
-              </div>
-
-              <!-- Card 4 -->
-
-              <div class="stat-card">
-                <div class="stat-main">
-                  <div class="stat-icon carbon">
-                    <i class="ri-earth-line"></i>
-                  </div>
-
-                  <div class="stat-content">
-                    <span class="stat-title">CO₂ Prevented</span>
-
-                    <h3>740 kg</h3>
-
-                    <div class="stat-trend positive">
-                      <i class="ri-arrow-up-line"></i>
-                      <span>+12% this month</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="stat-graph">
-                  <canvas id="carbonChart"></canvas>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- ==========================================================
-     IMPACT OVERVIEW & AI ASSISTANT
-=========================================================== -->
-
-          <section class="dashboard-grid">
-            <!-- ==========================================================
-       IMPACT OVERVIEW
-  =========================================================== -->
-
-            <div class="dashboard-card impact-card">
-              <!-- Header -->
-              <div class="card-header">
-                <div class="card-header-content">
-                  <span class="card-label">
-                    <i class="ri-bar-chart-box-line"></i>
-                    Analytics
-                  </span>
-
-                  <div class="impact-title-row">
-                    <h2>Impact Overview</h2>
-
-                    <div class="impact-actions">
-                      <div class="growth-badge positive">
-                        <i class="ri-arrow-up-line"></i>
-                        +18.4%
-                      </div>
-
-                      <div class="time-filter" id="filterToggle">
-                        <i class="ri-calendar-line"></i>
-
-                        <span id="selectedFilter">This Week</span>
-
-                        <i class="ri-arrow-down-s-line arrow"></i>
-
-                        <div class="filter-dropdown" id="filterDropdown">
-                          <button class="filter-option" data-value="today">
-                            Today
-                          </button>
-
-                          <button
-                            class="filter-option active"
-                            data-value="week"
-                          >
-                            This Week
-                          </button>
-
-                          <button class="filter-option" data-value="month">
-                            This Month
-                          </button>
-
-                          <button class="filter-option" data-value="year">
-                            This Year
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <p>Monitor your donation trends with real-time insights.</p>
-                </div>
-              </div>
-              <!-- Donation Trend -->
-
-              <div class="chart-section">
-                <div class="line-chart-card">
-                  <div class="chart-header">
-                    <div>
-                      <h3>Donation Trend</h3>
-                      <span>Last 7 Days</span>
-                    </div>
-
-                    <h2>1,248</h2>
-                  </div>
-
-                  <canvas id="impactChart"></canvas>
-                </div>
-              </div>
-            </div>
-
-            <!-- ==========================================================
-       AI ASSISTANT
-  =========================================================== -->
-
-            <div class="dashboard-card ai-card">
-              <div class="card-header">
-                <div>
-                  <span class="card-label">
-                    <i class="ri-robot-2-line"></i>
-                    AI Assistant
-                  </span>
-
-                  <p class="ai-subtitle">Today's Recommendations</p>
-                </div>
-              </div>
-
-              <div class="ai-content">
-                <div class="ai-greeting">
-                  <h3>
-                    Good Afternoon,
-                    <span>{{ user.name }}</span> 👋
-                  </h3>
-                </div>
-
-                <div class="ai-list">
-                  <!-- Recommendation 1 -->
-
-                  <div class="ai-item">
-                    <div class="ai-icon">
-                      <i class="ri-time-line"></i>
-                    </div>
-
-                    <div>
-                      <p>
-                        Donations posted before
-                        <strong>5:30 PM</strong>
-                        usually receive faster pickup requests.
-                      </p>
-                    </div>
-                  </div>
-
-                  <!-- Recommendation 2 -->
-
-                  <div class="ai-item">
-                    <div class="ai-icon">
+                    <small>
                       <i class="ri-map-pin-line"></i>
-                    </div>
-
-                    <div>
-                      <p>
-                        NGOs near
-                        <strong>Gomti Nagar</strong>
-                        are actively looking for cooked meals today.
-                      </p>
-                    </div>
+                      1.8 km away · Pickup time
+                    </small>
                   </div>
 
-                  <!-- Recommendation 3 -->
+                  <div class="request-actions">
+                    <button type="button" class="outline-action-btn">
+                      View
+                    </button>
 
-                  <div class="ai-item">
-                    <div class="ai-icon">
-                      <i class="ri-alarm-warning-line"></i>
-                    </div>
+                    <button type="button" class="accept-action-btn">
+                      Accept
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                    <div>
-                      <p>
-                        <strong>4 active listings</strong>
-                        are nearing their expiry time.
-                      </p>
-                    </div>
+            <!-- =================================================
+                 UPCOMING PICKUPS
+            ================================================== -->
+
+            <div class="dashboard-card pickups-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <div class="card-icon">
+                    <i class="ri-calendar-check-line"></i>
                   </div>
 
-                  <!-- Recommendation 4 -->
-
-                  <div class="ai-item">
-                    <div class="ai-icon">
-                      <i class="ri-line-chart-line"></i>
-                    </div>
-
-                    <div>
-                      <p>
-                        Your current listings have a
-                        <strong>92% predicted pickup success rate</strong>
-                        based on demand, distance and expiry time.
-                      </p>
-                    </div>
+                  <div>
+                    <h2>Upcoming Pickups</h2>
+                    <p>Your next scheduled pickups.</p>
                   </div>
-
-                  <!-- Recommendation 5 -->
                 </div>
 
-                <button class="primary-btn ai-btn">
-                  View All Recommendations
-
+                <a href="#" class="view-all-btn">
+                  View Calendar
                   <i class="ri-arrow-right-line"></i>
-                </button>
+                </a>
+              </div>
+
+              <div class="upcoming-pickups" id="upcomingPickupsContainer">
+                <!-- Pickup 1 -->
+                <div class="pickup-item">
+                  <div class="pickup-date">
+                    <strong>16</strong>
+                    <span>May</span>
+                  </div>
+
+                  <div class="pickup-timeline">
+                    <span class="timeline-dot"></span>
+                  </div>
+
+                  <div class="pickup-info">
+                    <div class="pickup-top-row">
+                      <h4>Pasta (White Sauce)</h4>
+                      <span class="pickup-time">5:00 PM</span>
+                    </div>
+
+                    <p>NourishKids NGO</p>
+                    <span>3 packs</span>
+                  </div>
+
+                  <span class="pickup-status"> Scheduled </span>
+                </div>
+
+                <!-- Pickup 2 -->
+                <div class="pickup-item">
+                  <div class="pickup-date">
+                    <strong>18</strong>
+                    <span>May</span>
+                  </div>
+
+                  <div class="pickup-timeline">
+                    <span class="timeline-dot"></span>
+                  </div>
+
+                  <div class="pickup-info">
+                    <div class="pickup-top-row">
+                      <h4>Veg Biryani</h4>
+                      <span class="pickup-time">11:00 AM</span>
+                    </div>
+
+                    <p>Community Kitchen</p>
+                    <span>5 packs</span>
+                  </div>
+
+                  <span class="pickup-status"> Scheduled </span>
+                </div>
+
+                <!-- Pickup 3 -->
+                <div class="pickup-item">
+                  <div class="pickup-date">
+                    <strong>20</strong>
+                    <span>May</span>
+                  </div>
+
+                  <div class="pickup-timeline">
+                    <span class="timeline-dot"></span>
+                  </div>
+
+                  <div class="pickup-info">
+                    <div class="pickup-top-row">
+                      <h4>Bread Loaves</h4>
+                      <span class="pickup-time">4:00 PM</span>
+                    </div>
+
+                    <p>Hope Foundation</p>
+                    <span>25 packs</span>
+                  </div>
+
+                  <span class="pickup-status"> Scheduled </span>
+                </div>
               </div>
             </div>
           </section>
 
-          <!-- ===========================
-     Active Listings
-=========================== -->
-          <section class="active-listings">
-            <div class="section-header">
-              <div>
-                <h2>Active Listings</h2>
-                <p>Your latest surplus food listings.</p>
+          <!-- =====================================================
+               LOWER DASHBOARD
+          ====================================================== -->
+
+          <section class="dashboard-lower-grid">
+            <!-- =================================================
+                 DONATION TREND
+            ================================================== -->
+
+            <div class="dashboard-card donation-trend-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <div class="card-icon">
+                    <i class="ri-bar-chart-box-line"></i>
+                  </div>
+
+                  <div>
+                    <h2>Donation Trend</h2>
+                    <p>Food donated over time.</p>
+                  </div>
+                </div>
+
+                <!-- Existing Filter IDs preserved -->
+                <div class="time-filter" id="filterToggle">
+                  <i class="ri-calendar-line"></i>
+
+                  <span id="selectedFilter"> Last 6 Months </span>
+
+                  <i class="ri-arrow-down-s-line arrow"></i>
+
+                  <div class="filter-dropdown" id="filterDropdown">
+                    <button class="filter-option" data-value="today">
+                      Today
+                    </button>
+
+                    <button class="filter-option" data-value="week">
+                      This Week
+                    </button>
+
+                    <button class="filter-option active" data-value="month">
+                      This Month
+                    </button>
+
+                    <button class="filter-option" data-value="year">
+                      This Year
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              <a href="/my-listings" class="view-all-btn"> Manage Listings </a>
+              <div class="donation-chart-wrapper">
+                <div class="donation-chart-summary">
+                  <span>Total Food Donated</span>
+
+                  <strong id="donationTotal"> 365 kg </strong>
+                </div>
+
+                <!-- Existing chart ID preserved -->
+                <canvas id="impactChart"></canvas>
+              </div>
             </div>
 
-            <div class="listing-grid" id="activeListingsContainer">
-              <!-- Listings loaded from JS -->
+            <!-- =================================================
+     FOOD CATEGORY DISTRIBUTION
+================================================== -->
+
+            <div class="dashboard-card category-distribution-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <div class="card-icon">
+                    <i class="ri-pie-chart-2-line"></i>
+                  </div>
+
+                  <div>
+                    <h2>Food Category Distribution</h2>
+                    <p>Distribution of food donated by category.</p>
+                  </div>
+                </div>
+
+                <a href="/impact" class="view-all-btn">
+                  View Details
+                  <i class="ri-arrow-right-line"></i>
+                </a>
+              </div>
+
+              <!-- Donut Chart -->
+
+              <div class="category-chart-wrapper">
+                <div class="category-donut">
+                  <canvas id="categoryChart"></canvas>
+
+                  <div class="donut-center">
+                    <strong id="categoryTotalValue"> 0 </strong>
+
+                    <span id="categoryTotalUnit"> Food Donated </span>
+                  </div>
+                </div>
+
+                <!-- Dynamic Category Legend -->
+
+                <div class="category-legend" id="categoryLegend"></div>
+              </div>
+            </div>
+
+            <!-- =================================================
+                 RECENT ACTIVITY
+            ================================================== -->
+
+            <div class="dashboard-card activity-card">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <div class="card-icon">
+                    <i class="ri-time-line"></i>
+                  </div>
+
+                  <div>
+                    <h2>Recent Activity</h2>
+                    <p>
+                      Latest updates from your listings, requests and pickups.
+                    </p>
+                  </div>
+                </div>
+
+                <a href="#" class="view-all-btn">
+                  View All
+                  <i class="ri-arrow-right-line"></i>
+                </a>
+              </div>
+
+              <div class="activity-list" id="recentActivityContainer">
+                <!-- Activity 1 -->
+                <div class="activity-item">
+                  <div class="activity-icon request">
+                    <i class="ri-group-line"></i>
+                  </div>
+
+                  <div class="activity-content">
+                    <h4>
+                      Riya Sharma
+                      <span>(User)</span>
+                    </h4>
+
+                    <p>Requested 2 packs of Veg Biryani</p>
+                  </div>
+
+                  <span class="activity-time"> 2 hours ago </span>
+
+                  <i class="ri-arrow-right-s-line activity-arrow"></i>
+                </div>
+
+                <!-- Activity 2 -->
+                <div class="activity-item">
+                  <div class="activity-icon ngo">
+                    <i class="ri-sun-line"></i>
+                  </div>
+
+                  <div class="activity-content">
+                    <h4>NourishKids NGO</h4>
+
+                    <p>Request accepted for Pasta (White Sauce)</p>
+                  </div>
+
+                  <span class="activity-time"> 4 hours ago </span>
+
+                  <i class="ri-arrow-right-s-line activity-arrow"></i>
+                </div>
+
+                <!-- Activity 3 -->
+                <div class="activity-item">
+                  <div class="activity-icon pickup">
+                    <i class="ri-truck-line"></i>
+                  </div>
+
+                  <div class="activity-content">
+                    <h4>Pickup completed</h4>
+
+                    <p>3 packs of Veg Biryani to Community Kitchen</p>
+                  </div>
+
+                  <span class="activity-time"> 1 day ago </span>
+
+                  <i class="ri-arrow-right-s-line activity-arrow"></i>
+                </div>
+
+                <!-- Activity 4 -->
+                <div class="activity-item">
+                  <div class="activity-icon listing">
+                    <i class="ri-list-check-3"></i>
+                  </div>
+
+                  <div class="activity-content">
+                    <h4>New listing created</h4>
+
+                    <p>Fruit Platter · 4 packs</p>
+                  </div>
+
+                  <span class="activity-time"> 1 day ago </span>
+
+                  <i class="ri-arrow-right-s-line activity-arrow"></i>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- =====================================================
+               COMPATIBILITY BLOCK
+               Existing chart IDs preserved for current JS.
+               Hidden through CSS later.
+          ====================================================== -->
+
+          <section class="legacy-dashboard-elements" aria-hidden="true">
+            <div class="stat-card">
+              <div class="stat-main">
+                <div class="stat-icon meals">
+                  <i class="ri-restaurant-2-line"></i>
+                </div>
+
+                <div class="stat-content">
+                  <span class="stat-title">Meals Rescued</span>
+                  <h3>0</h3>
+
+                  <div class="stat-trend positive">
+                    <i class="ri-arrow-up-line"></i>
+                    <span>0%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stat-graph">
+                <canvas id="mealChart"></canvas>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-main">
+                <div class="stat-icon food">
+                  <i class="ri-leaf-line"></i>
+                </div>
+
+                <div class="stat-content">
+                  <span class="stat-title">Food Saved</span>
+                  <h3>365 kg</h3>
+
+                  <div class="stat-trend positive">
+                    <i class="ri-arrow-up-line"></i>
+                    <span>Today +21 kg</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stat-graph">
+                <canvas id="foodChart"></canvas>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-main">
+                <div class="stat-icon people">
+                  <i class="ri-group-line"></i>
+                </div>
+
+                <div class="stat-content">
+                  <span class="stat-title">People Served</span>
+                  <h3>892</h3>
+
+                  <div class="stat-trend positive">
+                    <i class="ri-arrow-up-line"></i>
+                    <span>Today +34</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stat-graph">
+                <canvas id="peopleChart"></canvas>
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-main">
+                <div class="stat-icon carbon">
+                  <i class="ri-earth-line"></i>
+                </div>
+
+                <div class="stat-content">
+                  <span class="stat-title">CO₂ Prevented</span>
+                  <h3>740 kg</h3>
+
+                  <div class="stat-trend positive">
+                    <i class="ri-arrow-up-line"></i>
+                    <span>+12% this month</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stat-graph">
+                <canvas id="carbonChart"></canvas>
+              </div>
             </div>
           </section>
         </main>
       </div>
     </div>
 
+    <!-- =========================================================
+         CHART.JS
+    ========================================================== -->
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Existing Dashboard JS -->
     <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
   </body>
 </html>
