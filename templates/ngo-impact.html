@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Impact | ReServe</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Impact CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/ngo-impact.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- =========================================================
+       NGO NAVBAR
+  ========================================================== -->
+
+    <nav class="ngo-navbar">
+      <!-- Brand -->
+      <a href="/ngo-dashboard" class="ngo-brand">
+        <div class="ngo-logo">
+          <img
+            src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+            alt="ReServe"
+          />
+        </div>
+
+        <div class="ngo-brand-text">
+          <h2>ReServe</h2>
+          <span>From Surplus to Solution</span>
+        </div>
+      </a>
+
+      <!-- Navigation -->
+      <div class="ngo-nav-links">
+        <a href="/ngo-dashboard" class="ngo-nav-item">
+          <i class="ri-home-5-line"></i>
+          <span>Home</span>
+        </a>
+
+        <a href="/ngo-explore-food" class="ngo-nav-item">
+          <i class="ri-search-line"></i>
+          <span>Explore Food</span>
+        </a>
+
+        <a href="/ngo-claims" class="ngo-nav-item">
+          <i class="ri-calendar-check-line"></i>
+          <span>My Claims</span>
+        </a>
+
+        <a href="/ngo-impact" class="ngo-nav-item active">
+          <i class="ri-heart-3-line"></i>
+          <span>Impact</span>
+        </a>
+
+        <a href="#" class="ngo-nav-item">
+          <i class="ri-message-3-line"></i>
+          <span>Messages</span>
+        </a>
+      </div>
+
+      <!-- Right Side -->
+      <div class="ngo-nav-actions">
+        <!-- Notifications -->
+        <button
+          type="button"
+          class="ngo-icon-btn"
+          id="notificationBtn"
+          title="Notifications"
+        >
+          <i class="ri-notification-3-line"></i>
+          <span class="ngo-badge" id="notificationBadge">0</span>
+        </button>
+
+        <!-- Profile -->
+        <div class="ngo-profile-wrapper">
+          <button type="button" class="ngo-profile-btn" id="ngoProfileBtn">
+            <div class="ngo-profile-avatar">
+              {% if user and user.profile_image %}
+
+              <img src="{{ user.profile_image }}" alt="Profile" />
+
+              {% else %}
+
+              <img
+                src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                alt="Profile"
+              />
+
+              {% endif %}
+            </div>
+
+            <div class="ngo-profile-info">
+              <strong>
+                {{ user.organization_name or user.name or "NGO" }}
+              </strong>
+
+              <span>NGO</span>
+            </div>
+
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
+
+          <!-- Profile Dropdown -->
+          <div class="ngo-profile-dropdown hidden" id="ngoProfileDropdown">
+            <a href="/ngo-profile">
+              <i class="ri-user-line"></i>
+              <span>Profile</span>
+            </a>
+
+            <a href="/ngo-settings">
+              <i class="ri-settings-3-line"></i>
+              <span>Settings</span>
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="{{ url_for('auth.logout') }}">
+              <i class="ri-logout-box-r-line"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- =========================================================
+       MAIN CONTENT
+  ========================================================== -->
+
+    <main class="impact-main">
+      <!-- =======================================================
+         IMPACT HERO
+    ======================================================== -->
+
+      <section class="impact-hero">
+        <div class="impact-hero-content">
+          <span class="impact-eyebrow"> OUR IMPACT </span>
+
+          <h1>
+            Good Food Creates
+            <span>Brighter Tomorrows</span>
+          </h1>
+
+          <p>
+            See how your contributions are helping reduce food waste and support
+            healthier, stronger communities.
+          </p>
+        </div>
+
+        <!-- Hero Image -->
+        <div class="impact-hero-image">
+          <img
+            src="{{ url_for('static', filename='images/hero/ngo-explore-food-hero.png') }}"
+            alt="Food donation impact"
+          />
+        </div>
+
+        <!-- Hero Benefits -->
+        <div class="impact-hero-benefits">
+          <div class="hero-benefit">
+            <div class="hero-benefit-icon">
+              <i class="ri-leaf-line"></i>
+            </div>
+
+            <div>
+              <strong>Less Food Waste</strong>
+              <span>A cleaner, greener tomorrow.</span>
+            </div>
+          </div>
+
+          <div class="hero-benefit">
+            <div class="hero-benefit-icon">
+              <i class="ri-group-line"></i>
+            </div>
+
+            <div>
+              <strong>Stronger Communities</strong>
+              <span>Nutritious food for those in need.</span>
+            </div>
+          </div>
+
+          <div class="hero-benefit">
+            <div class="hero-benefit-icon">
+              <i class="ri-heart-3-line"></i>
+            </div>
+
+            <div>
+              <strong>Greater Impact</strong>
+              <span>Together we make a difference.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+         IMPACT SUMMARY CARDS
+    ======================================================== -->
+
+      <section class="impact-summary-grid">
+        <!-- Food Collected -->
+        <div class="impact-stat-card">
+          <div class="stat-icon stat-icon-green">
+            <i class="ri-inbox-unarchive-line"></i>
+          </div>
+
+          <div class="stat-content">
+            <strong id="foodCollectedValue"> — </strong>
+
+            <span> Food Collected </span>
+          </div>
+
+          <div class="stat-change stat-change-green" id="foodCollectedChange">
+            —
+          </div>
+        </div>
+
+        <!-- People Served -->
+        <div class="impact-stat-card">
+          <div class="stat-icon stat-icon-blue">
+            <i class="ri-group-line"></i>
+          </div>
+
+          <div class="stat-content">
+            <strong id="peopleServedValue"> — </strong>
+
+            <span> People Served </span>
+          </div>
+
+          <div class="stat-change stat-change-blue" id="peopleServedChange">
+            —
+          </div>
+        </div>
+
+        <!-- Communities Supported -->
+        <div class="impact-stat-card">
+          <div class="stat-icon stat-icon-red">
+            <i class="ri-heart-3-line"></i>
+          </div>
+
+          <div class="stat-content">
+            <strong id="communitiesSupportedValue"> — </strong>
+
+            <span> Communities Supported </span>
+          </div>
+
+          <div
+            class="stat-change stat-change-red"
+            id="communitiesSupportedChange"
+          >
+            —
+          </div>
+        </div>
+
+        <!-- Food Waste Prevented -->
+        <div class="impact-stat-card">
+          <div class="stat-icon stat-icon-purple">
+            <i class="ri-leaf-line"></i>
+          </div>
+
+          <div class="stat-content">
+            <strong id="wastePreventedValue"> — </strong>
+
+            <span> Food Waste Prevented </span>
+          </div>
+
+          <div class="stat-change stat-change-purple" id="wastePreventedChange">
+            —
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+         ANALYTICS ROW
+    ======================================================== -->
+
+      <section class="impact-analytics-grid">
+        <!-- =====================================================
+           FOOD DISTRIBUTION TREND
+      ====================================================== -->
+
+        <div class="impact-card distribution-trend-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon green">
+                <i class="ri-calendar-check-line"></i>
+              </div>
+
+              <h2>Food Distribution Trend</h2>
+            </div>
+
+            <select class="period-select" id="trendPeriod">
+              <option value="6">Last 6 Months</option>
+              <option value="12">Last 12 Months</option>
+              <option value="3">Last 3 Months</option>
+            </select>
+          </div>
+
+          <!-- Chart -->
+          <div class="chart-wrapper">
+            <canvas id="distributionTrendChart"></canvas>
+
+            <div class="chart-empty" id="distributionTrendEmpty">
+              <i class="ri-bar-chart-line"></i>
+              <span>No distribution data available yet.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- =====================================================
+           FOOD SOURCE BREAKDOWN
+      ====================================================== -->
+
+        <div class="impact-card food-source-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon green">
+                <i class="ri-pie-chart-line"></i>
+              </div>
+
+              <h2>Food Source Breakdown</h2>
+            </div>
+
+            <select class="period-select" id="sourcePeriod">
+              <option value="month">This Month</option>
+              <option value="all">All Time</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+
+          <div class="source-breakdown-content">
+            <!-- Donut -->
+            <div class="donut-wrapper">
+              <canvas id="foodSourceChart"></canvas>
+
+              <div class="donut-center">
+                <strong id="sourceTotal"> — </strong>
+
+                <span> Total Collected </span>
+              </div>
+            </div>
+
+            <!-- Legend -->
+            <div class="source-legend" id="sourceLegend">
+              <!-- JS will generate legend items -->
+            </div>
+          </div>
+        </div>
+
+        <!-- =====================================================
+           AREAS REACHED
+      ====================================================== -->
+
+        <div class="impact-card areas-reached-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon green">
+                <i class="ri-map-2-line"></i>
+              </div>
+
+              <h2>Areas Reached</h2>
+            </div>
+
+            <select class="period-select" id="areasPeriod">
+              <option value="month">This Month</option>
+              <option value="all">All Time</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+
+          <div class="areas-content">
+            <!-- Map -->
+            <div class="impact-map" id="impactMap">
+              <div class="map-placeholder">
+                <i class="ri-map-pin-2-line"></i>
+
+                <span> Distribution areas will appear here </span>
+              </div>
+            </div>
+
+            <!-- Top Areas -->
+            <div class="top-areas">
+              <h3>Top Areas</h3>
+
+              <div id="topAreasList">
+                <!-- JS populated -->
+
+                <div class="area-empty">No area data available.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+         SECOND ANALYTICS ROW
+    ======================================================== -->
+
+      <section class="impact-secondary-grid">
+        <!-- =====================================================
+           TOP FOOD CATEGORIES
+      ====================================================== -->
+
+        <div class="impact-card categories-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon green">
+                <i class="ri-restaurant-line"></i>
+              </div>
+
+              <h2>Top Food Categories</h2>
+            </div>
+          </div>
+
+          <div class="category-list" id="topCategoriesList">
+            <!-- Dynamic categories -->
+
+            <div class="category-empty">No category data available yet.</div>
+          </div>
+        </div>
+
+        <!-- =====================================================
+           IMPACT JOURNEY
+      ====================================================== -->
+
+        <div class="impact-card impact-journey-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon green">
+                <i class="ri-node-tree"></i>
+              </div>
+
+              <h2>Impact Journey</h2>
+            </div>
+          </div>
+
+          <div class="impact-journey">
+            <!-- Step 1 -->
+            <div class="journey-step">
+              <div class="journey-icon journey-green">
+                <i class="ri-inbox-unarchive-line"></i>
+              </div>
+
+              <strong> Food Donated </strong>
+
+              <span> Surplus food shared by partners </span>
+            </div>
+
+            <div class="journey-arrow">
+              <i class="ri-arrow-right-line"></i>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="journey-step">
+              <div class="journey-icon journey-blue">
+                <i class="ri-truck-line"></i>
+              </div>
+
+              <strong> Collected </strong>
+
+              <span> Picked up and quality checked </span>
+            </div>
+
+            <div class="journey-arrow">
+              <i class="ri-arrow-right-line"></i>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="journey-step">
+              <div class="journey-icon journey-orange">
+                <i class="ri-group-line"></i>
+              </div>
+
+              <strong> Distributed </strong>
+
+              <span> Delivered to NGOs and shelters </span>
+            </div>
+
+            <div class="journey-arrow">
+              <i class="ri-arrow-right-line"></i>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="journey-step">
+              <div class="journey-icon journey-red">
+                <i class="ri-heart-3-line"></i>
+              </div>
+
+              <strong> Communities Supported </strong>
+
+              <span> Meals served to those in need </span>
+            </div>
+
+            <div class="journey-arrow">
+              <i class="ri-arrow-right-line"></i>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="journey-step">
+              <div class="journey-icon journey-purple">
+                <i class="ri-leaf-line"></i>
+              </div>
+
+              <strong> Waste Reduced </strong>
+
+              <span> Less food in landfills </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- =====================================================
+           FOOD DISTRIBUTION PROGRESS
+      ====================================================== -->
+
+        <div class="impact-card progress-card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon green">
+                <i class="ri-focus-3-line"></i>
+              </div>
+
+              <h2>Food Distribution Progress</h2>
+            </div>
+
+            <select class="period-select" id="progressPeriod">
+              <option value="month">This Month</option>
+              <option value="all">All Time</option>
+              <option value="year">This Year</option>
+            </select>
+          </div>
+
+          <div class="progress-list" id="impactProgressList">
+            <!-- Distribution to NGOs -->
+            <div class="progress-item">
+              <div class="progress-icon">
+                <i class="ri-user-heart-line"></i>
+              </div>
+
+              <div class="progress-info">
+                <div class="progress-label">
+                  <span>Distribution to NGOs</span>
+                  <strong id="ngoDistributionPercent">—</strong>
+                </div>
+
+                <div class="progress-bar">
+                  <span id="ngoDistributionBar" style="width: 0%"></span>
+                </div>
+              </div>
+
+              <div class="progress-value" id="ngoDistributionValue">—</div>
+            </div>
+
+            <!-- Distribution Locations -->
+            <div class="progress-item">
+              <div class="progress-icon">
+                <i class="ri-community-line"></i>
+              </div>
+
+              <div class="progress-info">
+                <div class="progress-label">
+                  <span>Distribution Locations</span>
+                  <strong id="locationProgressPercent">—</strong>
+                </div>
+
+                <div class="progress-bar">
+                  <span id="locationProgressBar" style="width: 0%"></span>
+                </div>
+              </div>
+
+              <div class="progress-value" id="locationProgressValue">—</div>
+            </div>
+
+            <!-- Beneficiaries Reached -->
+            <div class="progress-item">
+              <div class="progress-icon">
+                <i class="ri-user-community-line"></i>
+              </div>
+
+              <div class="progress-info">
+                <div class="progress-label">
+                  <span>Beneficiaries Reached</span>
+                  <strong id="beneficiaryProgressPercent">—</strong>
+                </div>
+
+                <div class="progress-bar">
+                  <span id="beneficiaryProgressBar" style="width: 0%"></span>
+                </div>
+              </div>
+
+              <div class="progress-value" id="beneficiaryProgressValue">—</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- =======================================================
+         BOTTOM IMPACT CTA
+    ======================================================== -->
+
+      <section class="impact-bottom-banner">
+        <div class="bottom-banner-icon">
+          <i class="ri-plant-line"></i>
+        </div>
+
+        <div class="bottom-banner-content">
+          <h2>Together for a Hunger-Free Tomorrow</h2>
+
+          <p>
+            Every claim, every meal and every action helps build healthier,
+            happier communities.
+          </p>
+        </div>
+
+        <a href="/ngo-explore-food" class="impact-cta-btn">
+          Make a Bigger Impact
+          <i class="ri-arrow-right-line"></i>
+        </a>
+      </section>
+    </main>
+
+    <!-- =========================================================
+       NOTIFICATION PANEL
+  ========================================================== -->
+
+    <div class="notification-panel hidden" id="notificationPanel">
+      <div class="notification-panel-header">
+        <h3>Notifications</h3>
+
+        <button type="button" id="closeNotificationPanel">
+          <i class="ri-close-line"></i>
+        </button>
+      </div>
+
+      <div id="notificationList">
+        <div class="notification-empty">
+          <i class="ri-notification-off-line"></i>
+
+          <p>No new notifications</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+       SCRIPTS
+  ========================================================== -->
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Impact JS -->
+    <script src="{{ url_for('static', filename='js/ngo-impact.js') }}"></script>
+  </body>
+</html>

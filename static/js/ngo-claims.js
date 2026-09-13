@@ -25,40 +25,96 @@ document.addEventListener("DOMContentLoaded", () => {
   const claimsLoading = document.getElementById("claimsLoading");
   const claimsEmpty = document.getElementById("claimsEmpty");
 
-  const searchInput = document.getElementById("claimsSearch");
-  const sortSelect = document.getElementById("claimsSort");
+  /* IMPORTANT: IDs matching your HTML */
+  const searchInput = document.getElementById("claimSearch");
+  const sortSelect = document.getElementById("claimSort");
 
   const claimTabs = document.querySelectorAll(".claim-tab");
 
   const resultCount = document.getElementById("resultCount");
 
-  /* Summary */
-  const summaryDonut = document.getElementById("summaryDonut");
-  const summaryTotal = document.getElementById("summaryTotal");
+  /* =======================================================
+     SUMMARY + TAB COUNTS
+     ======================================================= */
 
+  /* Donut */
+  const summaryDonut = document.getElementById("summaryDonut");
+
+  /* Donut center */
+  const summaryTotal = document.getElementById("totalClaims");
+
+  /* Top tabs */
+  const allCount = document.getElementById("allCount");
   const pendingCount = document.getElementById("pendingCount");
   const confirmedCount = document.getElementById("confirmedCount");
+  const pickedUpCount = document.getElementById("pickedUpCount");
   const completedCount = document.getElementById("completedCount");
   const cancelledCount = document.getElementById("cancelledCount");
 
+  /* Claim Summary legend */
+  const summaryPending = document.getElementById("summaryPending");
+  const summaryConfirmed = document.getElementById("summaryConfirmed");
+  const summaryCompleted = document.getElementById("summaryCompleted");
+  const summaryCancelled = document.getElementById("summaryCancelled");
+
   const summaryPeriod = document.getElementById("summaryPeriod");
 
-  /* Upcoming */
+  /* =======================================================
+     UPCOMING PICKUPS
+     ======================================================= */
+
   const upcomingPickups = document.getElementById("upcomingPickups");
 
-  /* Modal */
-  const claimModal = document.getElementById("claimModal");
-  const modalCloseBtn = document.getElementById("modalCloseBtn");
-  const modalOverlay = document.querySelector(".claim-modal-overlay");
+  /* =======================================================
+     CLAIM DETAILS MODAL
+     ======================================================= */
 
-  /* Navbar */
+  /*
+   * IMPORTANT:
+   * These IDs match your current HTML.
+   */
+
+  const claimModal = document.getElementById("claimDetailsModal");
+
+  const modalCloseBtn = document.getElementById("closeClaimDetails");
+
+  const modalCloseBottom = document.getElementById("closeClaimDetailsBottom");
+
+  const modalOverlay = claimModal
+    ? claimModal.querySelector(".claim-modal-overlay")
+    : null;
+
+  const modalClaimImage = document.getElementById("modalClaimImage");
+  const modalClaimCategory = document.getElementById("modalClaimCategory");
+  const modalClaimStatus = document.getElementById("modalClaimStatus");
+  const modalClaimTitle = document.getElementById("modalClaimTitle");
+  const modalClaimProvider = document.getElementById("modalClaimProvider");
+  const modalClaimLocation = document.getElementById("modalClaimLocation");
+  const modalClaimPickup = document.getElementById("modalClaimPickup");
+  const modalClaimQuantity = document.getElementById("modalClaimQuantity");
+  const modalClaimInstructions = document.getElementById(
+    "modalClaimInstructions",
+  );
+
+  const pickupClaimBtn = document.getElementById("pickupClaimBtn");
+  const completeClaimBtn = document.getElementById("completeClaimBtn");
+
+  let activeModalClaim = null;
+
+  /* =======================================================
+     NAVBAR
+     ======================================================= */
+
   const notificationBtn = document.getElementById("notificationBtn");
+
   const notificationPanel = document.getElementById("notificationPanel");
+
   const closeNotificationPanel = document.getElementById(
     "closeNotificationPanel",
   );
 
   const ngoProfileBtn = document.getElementById("ngoProfileBtn");
+
   const ngoProfileDropdown = document.getElementById("ngoProfileDropdown");
 
   /* =======================================================
@@ -91,7 +147,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       allClaims = normalizeClaims(data);
 
+      console.log("NGO CLAIMS:", allClaims);
+
       updateSummary();
+
       updateUpcomingPickups();
 
       applyFilters();
@@ -101,7 +160,12 @@ document.addEventListener("DOMContentLoaded", () => {
       hideLoading();
 
       allClaims = [];
+
       filteredClaims = [];
+
+      updateSummary();
+
+      updateUpcomingPickups();
 
       renderClaims([]);
 
@@ -267,6 +331,11 @@ document.addEventListener("DOMContentLoaded", () => {
       return "cancelled";
     }
 
+    /* IMPORTANT: preserve expired status */
+    if (value === "expired" || value === "expire") {
+      return "expired";
+    }
+
     return "pending";
   }
 
@@ -280,7 +349,7 @@ document.addEventListener("DOMContentLoaded", () => {
       : "";
 
     filteredClaims = allClaims.filter((claim) => {
-      /* Status filter */
+      /* Status */
       if (currentFilter !== "all" && claim.status !== currentFilter) {
         return false;
       }
@@ -368,12 +437,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     claims.forEach((claim) => {
-      const card = createClaimCard(claim);
-      claimsList.appendChild(card);
+      claimsList.appendChild(createClaimCard(claim));
     });
 
     if (resultCount) {
-      resultCount.textContent = claims.length;
+      resultCount.textContent = claims.length.toString();
     }
   }
 
@@ -442,11 +510,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
           <div class="claim-meta-item">
             <i class="ri-calendar-event-line"></i>
-            <span>${escapeHTML(pickupText)}</span>
+
+            <span>
+              ${escapeHTML(pickupText)}
+            </span>
           </div>
 
           <div class="claim-meta-item">
             <i class="ri-inbox-archive-line"></i>
+
             <span>
               ${formatNumber(claim.quantity)}
               ${escapeHTML(claim.unit)}
@@ -471,7 +543,6 @@ document.addEventListener("DOMContentLoaded", () => {
           type="button"
           class="view-claim-btn"
           data-action="details"
-          data-claim-id="${escapeAttribute(claim.id)}"
         >
           View Details
         </button>
@@ -482,8 +553,7 @@ document.addEventListener("DOMContentLoaded", () => {
               <button
                 type="button"
                 class="claim-action-btn ${action.className || ""}"
-                data-action="${action.action}"
-                data-claim-id="${escapeAttribute(claim.id)}"
+                data-action="${escapeAttribute(action.action)}"
               >
                 ${escapeHTML(action.label)}
               </button>
@@ -502,17 +572,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const detailsButton = card.querySelector('[data-action="details"]');
 
     if (detailsButton) {
-      detailsButton.addEventListener("click", () => {
-        openClaimModal(claim);
-      });
+      detailsButton.addEventListener("click", () => openClaimModal(claim));
     }
 
-    /* Primary action */
-    const actionButton = card.querySelector(
-      `.claim-action-btn[data-claim-id="${CSS.escape(String(claim.id))}"]`,
-    );
+    /* Action */
+    const actionButton = card.querySelector(".claim-action-btn");
 
-    if (actionButton) {
+    if (actionButton && action) {
       actionButton.addEventListener("click", () => {
         handleClaimAction(action.action, claim);
       });
@@ -558,6 +624,12 @@ document.addEventListener("DOMContentLoaded", () => {
           label: "Explore Food",
         };
 
+      case "expired":
+        return {
+          action: "reorder",
+          label: "Explore Food",
+        };
+
       default:
         return null;
     }
@@ -570,11 +642,13 @@ document.addEventListener("DOMContentLoaded", () => {
   async function handleClaimAction(action, claim) {
     if (action === "feedback") {
       showToast("Feedback feature will be available soon.", "success");
+
       return;
     }
 
     if (action === "reorder") {
       window.location.href = "/ngo-explore-food";
+
       return;
     }
 
@@ -626,26 +700,17 @@ document.addEventListener("DOMContentLoaded", () => {
   async function updateClaimStatus(claim, action) {
     if (!claim.id) {
       showToast("Claim ID is missing.", "error");
+
       return;
     }
 
-    let endpoint = `${API_URL}/${encodeURIComponent(claim.id)}`;
+    let endpoint = "";
 
-    let method = "POST";
-
-    let body = {
-      action: action,
-    };
+    let body = {};
 
     /*
-      Preferred backend endpoints:
-
-      POST /api/donation-claims/<claim_id>/pickup
-      POST /api/donation-claims/<claim_id>/complete
-
-      For now this code first tries the claim-specific
-      endpoint structure.
-    */
+     * Match the backend endpoints.
+     */
 
     if (action === "pickup") {
       endpoint = `/api/donation-claims/${encodeURIComponent(claim.id)}/pickup`;
@@ -654,9 +719,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (action === "complete") {
-      endpoint = `/api/donation-claims/${encodeURIComponent(claim.id)}/complete`;
+      endpoint = `/api/donation-claims/${encodeURIComponent(
+        claim.id,
+      )}/complete`;
 
       body = {};
+    }
+
+    /*
+     * IMPORTANT:
+     * Cancel uses the dedicated backend endpoint.
+     */
+    if (action === "cancel") {
+      endpoint = `/api/donation-claims/${encodeURIComponent(claim.id)}/cancel`;
+
+      body = {};
+    }
+
+    if (!endpoint) {
+      showToast("Invalid claim action.", "error");
+
+      return;
     }
 
     try {
@@ -665,6 +748,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         headers: {
           "Content-Type": "application/json",
+
           Accept: "application/json",
         },
 
@@ -724,37 +808,104 @@ document.addEventListener("DOMContentLoaded", () => {
       picked_up: 0,
       completed: 0,
       cancelled: 0,
+      expired: 0,
     };
 
     allClaims.forEach((claim) => {
-      if (Object.prototype.hasOwnProperty.call(counts, claim.status)) {
-        counts[claim.status]++;
+      const status = normalizeStatus(claim.status);
+
+      if (Object.prototype.hasOwnProperty.call(counts, status)) {
+        counts[status]++;
       }
     });
 
-    const total = allClaims.length;
+    const confirmedTotal = counts.confirmed + counts.picked_up;
 
-    if (summaryTotal) {
-      summaryTotal.textContent = total;
+    /*
+     * ALL CLAIMS
+     * Includes Pickup Closed claims as well.
+     */
+    const total =
+      counts.pending +
+      counts.confirmed +
+      counts.picked_up +
+      counts.completed +
+      counts.cancelled +
+      counts.expired;
+
+    /* =====================================================
+     TOP TABS
+     ===================================================== */
+
+    if (allCount) {
+      allCount.textContent = String(total);
     }
 
     if (pendingCount) {
-      pendingCount.textContent = counts.pending;
+      pendingCount.textContent = String(counts.pending);
     }
 
     if (confirmedCount) {
-      confirmedCount.textContent = counts.confirmed + counts.picked_up;
+      confirmedCount.textContent = String(counts.confirmed);
+    }
+
+    if (pickedUpCount) {
+      pickedUpCount.textContent = String(counts.picked_up);
     }
 
     if (completedCount) {
-      completedCount.textContent = counts.completed;
+      completedCount.textContent = String(counts.completed);
     }
 
     if (cancelledCount) {
-      cancelledCount.textContent = counts.cancelled;
+      cancelledCount.textContent = String(counts.cancelled);
     }
 
-    updateDonut(counts);
+    /* =====================================================
+     CLAIM SUMMARY
+     ===================================================== */
+
+    if (summaryTotal) {
+      summaryTotal.textContent = String(total);
+    }
+
+    if (summaryPending) {
+      summaryPending.textContent = String(counts.pending);
+    }
+
+    if (summaryConfirmed) {
+      summaryConfirmed.textContent = String(confirmedTotal);
+    }
+
+    if (summaryCompleted) {
+      summaryCompleted.textContent = String(counts.completed);
+    }
+
+    if (summaryCancelled) {
+      summaryCancelled.textContent = String(counts.cancelled);
+    }
+
+    /* =====================================================
+     DONUT
+     ===================================================== */
+
+    updateDonut({
+      pending: counts.pending,
+      confirmed: confirmedTotal,
+      completed: counts.completed,
+      cancelled: counts.cancelled,
+      expired: counts.expired,
+    });
+
+    console.log("NGO CLAIM SUMMARY:", {
+      total,
+      pending: counts.pending,
+      confirmed: counts.confirmed,
+      picked_up: counts.picked_up,
+      completed: counts.completed,
+      cancelled: counts.cancelled,
+      pickup_closed: counts.expired,
+    });
   }
 
   /* =======================================================
@@ -763,17 +914,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateDonut(counts) {
     if (!summaryDonut) {
+      console.warn("summaryDonut element not found.");
+
       return;
     }
 
-    const pending = counts.pending;
-    const confirmed = counts.confirmed + counts.picked_up;
-    const completed = counts.completed;
-    const cancelled = counts.cancelled;
+    const pending = Number(counts.pending) || 0;
+
+    const confirmed = Number(counts.confirmed) || 0;
+
+    const completed = Number(counts.completed) || 0;
+
+    const cancelled = Number(counts.cancelled) || 0;
 
     const total = pending + confirmed + completed + cancelled;
 
-    if (!total) {
+    if (total === 0) {
       summaryDonut.style.background = "conic-gradient(#e5ebe7 0deg 360deg)";
 
       return;
@@ -806,8 +962,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =======================================================
-     UPCOMING PICKUPS
-     ======================================================= */
+   UPCOMING PICKUPS
+   ======================================================= */
 
   function updateUpcomingPickups() {
     if (!upcomingPickups) {
@@ -818,39 +974,78 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const upcoming = allClaims
       .filter((claim) => {
+        /* Only active claims can have upcoming pickups */
         if (claim.status !== "confirmed" && claim.status !== "pending") {
           return false;
         }
 
-        const pickup = parseDate(claim.pickupStart);
+        const pickupStart = parseDate(claim.pickupStart);
 
-        return pickup && pickup >= now;
+        const pickupEnd = parseDate(claim.pickupEnd);
+
+        /*
+         * If an end time exists, consider the pickup
+         * upcoming until the END of the pickup window.
+         *
+         * Example:
+         * 9:27 AM - 9:40 AM
+         *
+         * At 9:39 AM -> still upcoming
+         * At 9:41 AM -> no longer upcoming
+         */
+        if (pickupEnd) {
+          return pickupEnd >= now;
+        }
+
+        /*
+         * If there is no pickup end time,
+         * fall back to the start time.
+         */
+        if (pickupStart) {
+          return pickupStart >= now;
+        }
+
+        return false;
       })
       .sort((a, b) => {
+        /*
+         * Sort using pickup START time.
+         */
         return getTimestamp(a.pickupStart) - getTimestamp(b.pickupStart);
       })
       .slice(0, 3);
 
+    /* =====================================================
+     EMPTY STATE
+     ===================================================== */
+
     if (!upcoming.length) {
       upcomingPickups.innerHTML = `
-        <div class="upcoming-empty">
-          <i class="ri-calendar-check-line"></i>
-          <p>No upcoming pickups.</p>
-        </div>
-      `;
+      <div class="upcoming-empty">
+        <i class="ri-calendar-check-line"></i>
+        <p>No upcoming pickups.</p>
+      </div>
+    `;
 
       return;
     }
 
+    /* =====================================================
+     RENDER UPCOMING PICKUPS
+     ===================================================== */
+
     upcomingPickups.innerHTML = "";
 
     upcoming.forEach((claim) => {
-      const pickupDate = parseDate(claim.pickupStart);
+      const pickupDate =
+        parseDate(claim.pickupStart) || parseDate(claim.pickupEnd);
 
       const day = pickupDate ? pickupDate.getDate() : "--";
 
       const month = pickupDate
-        ? pickupDate.toLocaleDateString("en-IN", { month: "short" })
+        ? pickupDate.toLocaleDateString("en-IN", {
+            month: "short",
+          })
         : "---";
 
       const time = formatTime(
@@ -864,38 +1059,40 @@ document.addEventListener("DOMContentLoaded", () => {
       item.className = "upcoming-item";
 
       item.innerHTML = `
-        <div class="upcoming-date">
-          <strong>${day}</strong>
-          <span>${month}</span>
-        </div>
+      <div class="upcoming-date">
+        <strong>${day}</strong>
+        <span>${escapeHTML(month)}</span>
+      </div>
 
-        <div class="upcoming-details">
+      <div class="upcoming-details">
 
-          <strong>
-            ${escapeHTML(claim.foodTitle)}
-          </strong>
+        <strong>
+          ${escapeHTML(claim.foodTitle)}
+        </strong>
 
-          <span>
-            ${escapeHTML(claim.providerName)}
-          </span>
+        <span>
+          ${escapeHTML(claim.providerName)}
+        </span>
 
-          <span>
-            ${escapeHTML(time)}
-          </span>
+        <span>
+          ${escapeHTML(time)}
+        </span>
 
-        </div>
+      </div>
 
-        <button
-          type="button"
-          class="upcoming-view-btn"
-        >
-          View
-        </button>
-      `;
+      <button
+        type="button"
+        class="upcoming-view-btn"
+      >
+        View
+      </button>
+    `;
 
       const button = item.querySelector(".upcoming-view-btn");
 
-      button.addEventListener("click", () => openClaimModal(claim));
+      if (button) {
+        button.addEventListener("click", () => openClaimModal(claim));
+      }
 
       upcomingPickups.appendChild(item);
     });
@@ -907,98 +1104,122 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function openClaimModal(claim) {
     if (!claimModal) {
+      console.warn("claimDetailsModal not found.");
+
       return;
     }
 
-    const image = document.getElementById("modalFoodImage");
+    activeModalClaim = claim;
 
-    const category = document.getElementById("modalCategory");
+    /* Image */
+    if (modalClaimImage) {
+      modalClaimImage.src =
+        claim.image || "/static/images/food-placeholder.jpg";
 
-    const status = document.getElementById("modalStatus");
-
-    const title = document.getElementById("modalFoodTitle");
-
-    const provider = document.getElementById("modalProvider");
-
-    const location = document.getElementById("modalLocation");
-
-    const quantity = document.getElementById("modalQuantity");
-
-    const pickup = document.getElementById("modalPickup");
-
-    const instructions = document.getElementById("modalInstructions");
-
-    if (image) {
-      image.src = claim.image || "/static/images/food-placeholder.jpg";
-
-      image.alt = claim.foodTitle || "Food";
+      modalClaimImage.alt = claim.foodTitle || "Food";
     }
 
-    if (category) {
-      category.textContent = claim.category;
+    /* Category */
+    if (modalClaimCategory) {
+      modalClaimCategory.textContent = claim.category || "Other";
     }
 
-    if (status) {
-      status.textContent = formatStatus(claim.status);
+    /* Status */
+    if (modalClaimStatus) {
+      modalClaimStatus.textContent = formatStatus(claim.status);
 
-      status.className = `modal-status ${claim.status}`;
+      modalClaimStatus.className = `modal-status ${claim.status}`;
     }
 
-    if (title) {
-      title.textContent = claim.foodTitle;
+    /* Title */
+    if (modalClaimTitle) {
+      modalClaimTitle.textContent = claim.foodTitle;
     }
 
-    if (provider) {
-      provider.textContent = claim.providerName;
+    /* Provider */
+    if (modalClaimProvider) {
+      modalClaimProvider.textContent = claim.providerName;
     }
 
-    if (location) {
-      location.textContent =
+    /* Location */
+    if (modalClaimLocation) {
+      modalClaimLocation.textContent =
         claim.city || claim.address || "Location unavailable";
     }
 
-    if (quantity) {
-      quantity.textContent = `${formatNumber(claim.quantity)} ${claim.unit}`;
-    }
-
-    if (pickup) {
-      pickup.textContent = formatPickupDateTime(
+    /* Pickup */
+    if (modalClaimPickup) {
+      modalClaimPickup.textContent = formatPickupDateTime(
         claim.pickupStart,
         claim.pickupEnd,
         claim.pickupTime,
       );
     }
 
-    if (instructions) {
-      instructions.textContent = claim.instructions;
+    /* Quantity */
+    if (modalClaimQuantity) {
+      modalClaimQuantity.textContent = `${formatNumber(
+        claim.quantity,
+      )} ${claim.unit}`;
+    }
+
+    /* Instructions */
+    if (modalClaimInstructions) {
+      modalClaimInstructions.textContent =
+        claim.instructions ||
+        "Please collect the food during the specified pickup time.";
+    }
+
+    /* =====================================================
+       MODAL ACTION BUTTONS
+       ===================================================== */
+
+    /*
+     * Hide both buttons first.
+     */
+    if (pickupClaimBtn) {
+      pickupClaimBtn.classList.add("hidden");
+
+      pickupClaimBtn.onclick = null;
+    }
+
+    if (completeClaimBtn) {
+      completeClaimBtn.classList.add("hidden");
+
+      completeClaimBtn.onclick = null;
     }
 
     /*
-      Optional modal action button
-    */
+     * Confirmed -> Mark Picked Up
+     */
+    if (claim.status === "confirmed" && pickupClaimBtn) {
+      pickupClaimBtn.classList.remove("hidden");
 
-    const modalAction = document.getElementById("modalPrimaryAction");
-
-    if (modalAction) {
-      const action = getPrimaryAction(claim);
-
-      if (action) {
-        modalAction.textContent = action.label;
-
-        modalAction.className = `modal-primary-btn ${action.className || ""}`;
-
-        modalAction.onclick = () => handleClaimAction(action.action, claim);
-
-        modalAction.classList.remove("hidden");
-      } else {
-        modalAction.classList.add("hidden");
-      }
+      pickupClaimBtn.onclick = () => {
+        handleClaimAction("pickup", claim);
+      };
     }
 
+    /*
+     * Picked Up -> Mark Completed
+     */
+    if (claim.status === "picked_up" && completeClaimBtn) {
+      completeClaimBtn.classList.remove("hidden");
+
+      completeClaimBtn.onclick = () => {
+        handleClaimAction("complete", claim);
+      };
+    }
+
+    /* Open modal */
     claimModal.classList.remove("hidden");
 
     document.body.style.overflow = "hidden";
   }
+
+  /* =======================================================
+     CLOSE MODAL
+     ======================================================= */
 
   function closeClaimModal() {
     if (!claimModal) {
@@ -1008,6 +1229,8 @@ document.addEventListener("DOMContentLoaded", () => {
     claimModal.classList.add("hidden");
 
     document.body.style.overflow = "";
+
+    activeModalClaim = null;
   }
 
   /* =======================================================
@@ -1018,9 +1241,17 @@ document.addEventListener("DOMContentLoaded", () => {
     modalCloseBtn.addEventListener("click", closeClaimModal);
   }
 
+  if (modalCloseBottom) {
+    modalCloseBottom.addEventListener("click", closeClaimModal);
+  }
+
   if (modalOverlay) {
     modalOverlay.addEventListener("click", closeClaimModal);
   }
+
+  /* =======================================================
+     ESCAPE KEY
+     ======================================================= */
 
   document.addEventListener("keydown", (event) => {
     if (
@@ -1087,14 +1318,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (summaryPeriod) {
     summaryPeriod.addEventListener("change", () => {
       /*
-          The summary currently uses all loaded claims.
-          When the backend supports period-based analytics,
-          this can call the analytics endpoint.
-
-          For now we keep the UI responsive and calculate
-          the summary from the loaded claims.
-        */
-
+       * Currently summary is calculated
+       * from all loaded claims.
+       */
       updateSummary();
     });
   }
@@ -1125,9 +1351,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  /* Close notification when clicking outside */
+  /* =======================================================
+     OUTSIDE CLICK
+     ======================================================= */
 
   document.addEventListener("click", (event) => {
+    /* Notifications */
     if (
       notificationPanel &&
       !notificationPanel.classList.contains("hidden") &&
@@ -1138,6 +1367,7 @@ document.addEventListener("DOMContentLoaded", () => {
       closeNotifications();
     }
 
+    /* Profile */
     if (
       ngoProfileDropdown &&
       !ngoProfileDropdown.classList.contains("hidden") &&
@@ -1210,6 +1440,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setTimeout(() => {
       toast.style.opacity = "0";
+
       toast.style.transform = "translateY(8px)";
 
       toast.style.transition = "all 0.25s ease";
@@ -1251,8 +1482,6 @@ document.addEventListener("DOMContentLoaded", () => {
   function formatPickupDateTime(start, end, fallbackTime) {
     const startDate = parseDate(start);
 
-    const endDate = parseDate(end);
-
     if (!startDate) {
       return fallbackTime || "Pickup time unavailable";
     }
@@ -1263,7 +1492,7 @@ document.addEventListener("DOMContentLoaded", () => {
       year: "numeric",
     });
 
-    let timeText = formatTime(start, end, fallbackTime);
+    const timeText = formatTime(start, end, fallbackTime);
 
     return `${dateText}, ${timeText}`;
   }
@@ -1305,6 +1534,7 @@ document.addEventListener("DOMContentLoaded", () => {
       picked_up: "Picked Up",
       completed: "Completed",
       cancelled: "Cancelled",
+      expired: "Pickup Closed",
     };
 
     return labels[status] || "Pending";
