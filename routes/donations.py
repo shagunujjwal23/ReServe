@@ -159,7 +159,7 @@ def _serialize_claim(claim, donation=None, ngo=None):
 
     result["id"] = str(claim["_id"])
 
-    for key in ("donation_id", "ngo_id"):
+    for key in ("donation_id", "ngo_id", "provider_id"):
         if result.get(key) is not None:
             result[key] = str(result[key])
 
@@ -852,6 +852,345 @@ def provider_donations():
 
 
 # ============================================================
+# PROVIDER — DONATION CLAIM REQUESTS
+# ============================================================
+
+@donations.route(
+    "/api/provider/donation-claims",
+    methods=["GET"]
+)
+def provider_donation_claims():
+
+    refresh_lifecycle()
+
+    user, error = _session_user("provider")
+
+    if error:
+        return error
+
+    claims_collection = get_collection("donation_claims")
+    donations_collection = get_collection("donations")
+
+    if (
+        claims_collection is None
+        or donations_collection is None
+    ):
+        return jsonify(
+            success=False,
+            message="MongoDB is currently unavailable."
+        ), 503
+
+    _ensure_donation_claim_indexes()
+
+    claim_records = list(
+        claims_collection.find(
+            {
+                "status": {
+                    "$in": [
+                        "pending",
+                        "confirmed",
+                        "picked_up",
+                        "completed",
+                        "cancelled",
+                    ]
+                }
+            }
+        ).sort(
+            "created_at",
+            -1
+        )
+    )
+
+    claims = []
+
+    for claim in claim_records:
+
+        donation = donations_collection.find_one(
+            {
+                "_id": claim.get("donation_id"),
+                "provider_id": user["_id"],
+            }
+        )
+
+        if donation is None:
+            continue
+
+        claims.append(
+            _serialize_claim(
+                claim,
+                donation=donation,
+            )
+        )
+
+    return jsonify(
+        success=True,
+        claims=claims
+    ), 200
+
+
+# ============================================================
+# PROVIDER — APPROVE DONATION CLAIM
+# ============================================================
+
+@donations.route(
+    "/api/provider/donation-claims/<claim_id>/approve",
+    methods=["POST"]
+)
+def approve_donation_claim(claim_id):
+
+    refresh_lifecycle()
+
+    user, error = _session_user("provider")
+
+    if error:
+        return error
+
+    object_id = _object_id(claim_id)
+
+    if not object_id:
+        return jsonify(
+            success=False,
+            message="Invalid claim ID."
+        ), 400
+
+    claims_collection = get_collection("donation_claims")
+    donations_collection = get_collection("donations")
+
+    if (
+        claims_collection is None
+        or donations_collection is None
+    ):
+        return jsonify(
+            success=False,
+            message="MongoDB is currently unavailable."
+        ), 503
+
+    claim = claims_collection.find_one(
+        {
+            "_id": object_id,
+            "status": "pending",
+        }
+    )
+
+    if claim is None:
+        return jsonify(
+            success=False,
+            message="Pending claim not found."
+        ), 404
+
+    donation = donations_collection.find_one(
+        {
+            "_id": claim.get("donation_id"),
+            "provider_id": user["_id"],
+        }
+    )
+
+    if donation is None:
+        return jsonify(
+            success=False,
+            message="You are not authorized to approve this claim."
+        ), 403
+
+    now = datetime.now(timezone.utc)
+
+    updated_claim = claims_collection.find_one_and_update(
+        {
+            "_id": object_id,
+            "status": "pending",
+        },
+        {
+            "$set": {
+                "status": "confirmed",
+                "updated_at": now,
+            }
+        },
+        return_document=ReturnDocument.AFTER,
+    )
+
+    if updated_claim is None:
+        return jsonify(
+            success=False,
+            message="Claim has already been processed."
+        ), 409
+
+    donations_collection.update_one(
+        {
+            "_id": donation["_id"]
+        },
+        {
+            "$set": {
+                "updated_at": now,
+            }
+        }
+    )
+
+    updated_donation = donations_collection.find_one(
+        {
+            "_id": donation["_id"]
+        }
+    )
+
+    return jsonify(
+        success=True,
+        message="Donation claim approved.",
+        claim=_serialize_claim(
+            updated_claim,
+            donation=updated_donation,
+        ),
+    ), 200
+
+
+# ============================================================
+# PROVIDER — REJECT DONATION CLAIM
+# ============================================================
+
+@donations.route(
+    "/api/provider/donation-claims/<claim_id>/reject",
+    methods=["POST"]
+)
+def reject_donation_claim(claim_id):
+
+    refresh_lifecycle()
+
+    user, error = _session_user("provider")
+
+    if error:
+        return error
+
+    object_id = _object_id(claim_id)
+
+    if not object_id:
+        return jsonify(
+            success=False,
+            message="Invalid claim ID."
+        ), 400
+
+    claims_collection = get_collection("donation_claims")
+    donations_collection = get_collection("donations")
+
+    if (
+        claims_collection is None
+        or donations_collection is None
+    ):
+        return jsonify(
+            success=False,
+            message="MongoDB is currently unavailable."
+        ), 503
+
+    claim = claims_collection.find_one(
+        {
+            "_id": object_id,
+            "status": "pending",
+        }
+    )
+
+    if claim is None:
+        return jsonify(
+            success=False,
+            message="Pending claim not found."
+        ), 404
+
+    donation = donations_collection.find_one(
+        {
+            "_id": claim.get("donation_id"),
+            "provider_id": user["_id"],
+        }
+    )
+
+    if donation is None:
+        return jsonify(
+            success=False,
+            message="You are not authorized to reject this claim."
+        ), 403
+
+    now = datetime.now(timezone.utc)
+
+    updated_claim = claims_collection.find_one_and_update(
+        {
+            "_id": object_id,
+            "status": "pending",
+        },
+        {
+            "$set": {
+                "status": "cancelled",
+                "cancelled_at": now,
+                "updated_at": now,
+            }
+        },
+        return_document=ReturnDocument.AFTER,
+    )
+
+    if updated_claim is None:
+        return jsonify(
+            success=False,
+            message="Claim has already been processed."
+        ), 409
+
+    # The quantity was reserved when the NGO submitted the claim.
+    # Return it to the donation when the provider rejects the request.
+    updated_donation = donations_collection.find_one_and_update(
+        {
+            "_id": donation["_id"],
+        },
+        {
+            "$inc": {
+                "available_quantity": _quantity(
+                    claim.get("quantity")
+                ),
+            },
+            "$set": {
+                "updated_at": now,
+            },
+        },
+        return_document=ReturnDocument.AFTER,
+    )
+
+    if updated_donation is not None:
+
+        available_quantity = _quantity(
+            updated_donation.get("available_quantity")
+        )
+
+        donation_end = _as_utc(
+            updated_donation.get("donation_pickup_end")
+        )
+
+        if (
+            available_quantity > 0
+            and (
+                donation_end is None
+                or now < donation_end
+            )
+            and updated_donation.get("status") not in {
+                "completed",
+                "expired",
+            }
+        ):
+            donations_collection.update_one(
+                {
+                    "_id": donation["_id"],
+                },
+                {
+                    "$set": {
+                        "status": "available",
+                        "updated_at": now,
+                    }
+                },
+            )
+
+            updated_donation["status"] = "available"
+
+    return jsonify(
+        success=True,
+        message="Donation claim rejected.",
+        claim=_serialize_claim(
+            updated_claim,
+            donation=updated_donation or donation,
+        ),
+    ), 200
+
+
+# ============================================================
 # NGO — AVAILABLE DONATIONS
 # ============================================================
 
@@ -1132,6 +1471,9 @@ def claim_donation(donation_id):
 
     # --------------------------------------------------------
     # Create separate claim record.
+    #
+    # The quantity is reserved immediately, but the claim
+    # remains pending until the provider approves it.
     # --------------------------------------------------------
 
     claim = {
@@ -1146,8 +1488,8 @@ def claim_donation(donation_id):
             ""
         ),
 
-        # Direct claims are immediately confirmed.
-        "status": "confirmed",
+        # NGO claims wait for provider approval.
+        "status": "pending",
 
         "claimed_at": now,
 
@@ -1201,7 +1543,8 @@ def claim_donation(donation_id):
     return jsonify(
         success=True,
         message=(
-            "Donation claimed successfully."
+            "Donation claim submitted. "
+            "Waiting for provider approval."
         ),
         claim=_serialize_claim(
             claim,

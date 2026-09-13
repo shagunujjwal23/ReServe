@@ -632,68 +632,107 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const loadDashboard = async () => {
     try {
+      /* -------------------------------------------------------
+       LOAD DASHBOARD DATA
+    ------------------------------------------------------- */
+
       const dashboardData = await get("/api/ngo/dashboard");
 
       const data = dashboardData.dashboard || {};
 
-      const donations = Array.isArray(data.my_donations)
+      /*
+       * These are only the recent records supplied by
+       * the dashboard API.
+       *
+       * They are used for the Recent Food Claims table
+       * and Upcoming Pickups.
+       */
+
+      const recentDonations = Array.isArray(data.my_donations)
         ? data.my_donations
         : [];
 
-      const recentDonations = [...donations].sort((a, b) => {
-        const dateA = parseDate(a.claimed_at || a.created_at || a.updated_at);
+      /* -------------------------------------------------------
+       LOAD ALL NGO CLAIMS
+    ------------------------------------------------------- */
 
-        const dateB = parseDate(b.claimed_at || b.created_at || b.updated_at);
+      let allClaims = [];
 
-        return (dateB?.getTime() || 0) - (dateA?.getTime() || 0);
-      });
+      try {
+        const claimsData = await get("/api/ngo/claims");
+
+        allClaims = Array.isArray(claimsData.claims) ? claimsData.claims : [];
+      } catch (claimsError) {
+        console.error("Unable to load all NGO claims:", claimsError);
+
+        /*
+         * Fallback to recent dashboard records
+         * if the claims API is unavailable.
+         */
+
+        allClaims = recentDonations;
+      }
 
       /* -------------------------------------------------------
-         RECENT FOOD CLAIMS
-      ------------------------------------------------------- */
+       RECENT FOOD CLAIMS
+    ------------------------------------------------------- */
 
       const claimsTable = document.getElementById("recentClaimsTable");
 
       if (claimsTable) {
-        const recentClaims = recentDonations.slice(0, 5);
+        const recentClaims = [...recentDonations]
+          .sort((a, b) => {
+            const dateA = parseDate(
+              a.claimed_at || a.created_at || a.updated_at,
+            );
+
+            const dateB = parseDate(
+              b.claimed_at || b.created_at || b.updated_at,
+            );
+
+            return (dateB?.getTime() || 0) - (dateA?.getTime() || 0);
+          })
+          .slice(0, 5);
 
         claimsTable.innerHTML = recentClaims.length
           ? recentClaims.map(recentClaimRow).join("")
           : `
-              <tr>
+          <tr>
 
-                <td
-                  colspan="6"
-                  class="table-empty"
-                >
+            <td
+              colspan="6"
+              class="table-empty"
+            >
 
-                  <div class="ngo-empty">
+              <div class="ngo-empty">
 
-                    <i class="ri-file-list-3-line"></i>
+                <i class="ri-file-list-3-line"></i>
 
-                    No food claims yet.
+                No food claims yet.
 
-                  </div>
+              </div>
 
-                </td>
+            </td>
 
-              </tr>
-            `;
+          </tr>
+        `;
       }
 
       /* -------------------------------------------------------
-         UPCOMING PICKUPS
-      ------------------------------------------------------- */
+       UPCOMING PICKUPS
+    ------------------------------------------------------- */
 
       const pickupContainer = document.getElementById("upcomingPickups");
 
       if (pickupContainer) {
         const now = new Date();
 
-        const upcoming = donations
+        const upcoming = recentDonations
+
           .filter((donation) =>
-            ["claimed", "picked_up"].includes(donation.status),
+            ["confirmed", "picked_up", "claimed"].includes(donation.status),
           )
+
           .filter((donation) => {
             const pickupDate = parseDate(
               donation.donation_pickup_start || donation.donation_pickup_end,
@@ -701,6 +740,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             return !pickupDate || pickupDate >= now;
           })
+
           .sort((a, b) => {
             const dateA = parseDate(
               a.donation_pickup_start || a.donation_pickup_end,
@@ -712,44 +752,51 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             return (dateA?.getTime() || 0) - (dateB?.getTime() || 0);
           })
+
           .slice(0, 3);
 
         pickupContainer.innerHTML = upcoming.length
           ? upcoming.map(upcomingPickup).join("")
           : `
-              <div class="timeline-loading">
+          <div class="timeline-loading">
 
-                <i class="ri-calendar-line"></i>
+            <i class="ri-calendar-line"></i>
 
-                <span>
-                  No upcoming pickups.
-                </span>
+            <span>
+              No upcoming pickups.
+            </span>
 
-              </div>
-            `;
+          </div>
+        `;
       }
 
       /* -------------------------------------------------------
-         FOOD COLLECTION TREND
-      ------------------------------------------------------- */
-
-      buildCollectionTrend(donations);
-
-      /* -------------------------------------------------------
-         CATEGORY DISTRIBUTION
-      ------------------------------------------------------- */
-
-      buildCategoryDistribution(donations);
-
-      /* -------------------------------------------------------
-         OPTIONAL DASHBOARD VALUES
-      ------------------------------------------------------- */
+       FOOD COLLECTION TREND
+    ------------------------------------------------------- */
 
       /*
-       * These elements are not currently present
-       * in the new HTML, but keeping these updates
-       * makes the JS compatible if they are added later.
+       * IMPORTANT:
+       *
+       * Use ALL claims here, not only the recent 5.
        */
+
+      buildCollectionTrend(allClaims);
+
+      /* -------------------------------------------------------
+       CATEGORY DISTRIBUTION
+    ------------------------------------------------------- */
+
+      /*
+       * IMPORTANT:
+       *
+       * Use ALL claims here, not only the recent 5.
+       */
+
+      buildCategoryDistribution(allClaims);
+
+      /* -------------------------------------------------------
+       DASHBOARD VALUES
+    ------------------------------------------------------- */
 
       setText("availableFoodCount", data.available_count || 0);
 
@@ -767,37 +814,39 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       if (claimsTable) {
         claimsTable.innerHTML = `
-          <tr>
+        <tr>
 
-            <td
-              colspan="6"
-              class="table-empty"
-            >
+          <td
+            colspan="6"
+            class="table-empty"
+          >
 
-              <div class="ngo-empty">
-                Unable to load recent claims.
-              </div>
+            <div class="ngo-empty">
 
-            </td>
+              Unable to load recent claims.
 
-          </tr>
-        `;
+            </div>
+
+          </td>
+
+        </tr>
+      `;
       }
 
       const pickups = document.getElementById("upcomingPickups");
 
       if (pickups) {
         pickups.innerHTML = `
-          <div class="timeline-loading">
+        <div class="timeline-loading">
 
-            <i class="ri-error-warning-line"></i>
+          <i class="ri-error-warning-line"></i>
 
-            <span>
-              Unable to load upcoming pickups.
-            </span>
+          <span>
+            Unable to load upcoming pickups.
+          </span>
 
-          </div>
-        `;
+        </div>
+      `;
       }
     }
   };
