@@ -271,6 +271,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const readinessScore = document.getElementById("readinessScore");
   const progressFill = document.getElementById("progressFill");
+  const readinessRingProgress = document.getElementById(
+    "readinessRingProgress",
+  );
 
   // Checklist
   const foodNameCheck = document.getElementById("foodNameCheck");
@@ -679,11 +682,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const completed = Object.values(checks).filter(Boolean).length;
     const percent = Math.round((completed / total) * 100);
 
-    // Update percentage
-    readinessScore.textContent = `${percent}%`;
+   // Update percentage
+readinessScore.textContent = `${percent}%`;
 
-    // Update progress bar
+// Update normal progress bar
+if (progressFill) {
     progressFill.style.width = `${percent}%`;
+}
+
+// Update circular readiness ring
+if (readinessRingProgress) {
+
+    const circumference = 314;
+
+    const offset =
+        circumference - (percent / 100) * circumference;
+
+    readinessRingProgress.style.strokeDashoffset = offset;
+}
 
     // Update the completed counter
     const readinessCompleted = document.getElementById("readinessCompleted");

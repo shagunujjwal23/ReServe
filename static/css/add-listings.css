@@ -7324,166 +7324,2759 @@ body.ai-analysis-running {
 }
 
 .pickup-instructions-card {
-    margin-top: 24px;
-    padding: 22px;
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 22px;
+  margin-top: 24px;
+  padding: 22px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 22px;
 }
 
 .instructions-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    margin-bottom: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 18px;
 }
 
 .instructions-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    background: #eefbf3;
-    color: #22c55e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #eefbf3;
+  color: #22c55e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
 }
 
 .instructions-header h4 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #111827;
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
 }
 
 .instructions-header p {
-    margin-top: 4px;
-    color: #64748b;
-    font-size: 0.92rem;
+  margin-top: 4px;
+  color: #64748b;
+  font-size: 0.92rem;
 }
 
 .char-counter {
-    margin-left: auto;
-    font-size: 0.85rem;
-    color: #94a3b8;
-    font-weight: 600;
+  margin-left: auto;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  font-weight: 600;
 }
 
 #pickupInstructions {
-    width: 100%;
-    min-height: 130px;
-    border: 1px solid #dbe2ea;
-    border-radius: 16px;
-    padding: 16px;
-    font-size: 15px;
-    resize: vertical;
-    font-family: inherit;
-    transition: all 0.25s ease;
+  width: 100%;
+  min-height: 130px;
+  border: 1px solid #dbe2ea;
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 15px;
+  resize: vertical;
+  font-family: inherit;
+  transition: all 0.25s ease;
 }
 
 #pickupInstructions:focus {
-    outline: none;
-    border-color: #22c55e;
-    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.12);
+  outline: none;
+  border-color: #22c55e;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.12);
 }
 
 #pickupInstructions::placeholder {
-    color: #94a3b8;
-    line-height: 1.5;
+  color: #94a3b8;
+  line-height: 1.5;
 }
 
 .instruction-tips {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 14px;
-    color: #64748b;
-    font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: #64748b;
+  font-size: 0.9rem;
 }
 
 .instruction-tips i {
-    color: #f59e0b;
-    font-size: 18px;
+  color: #f59e0b;
+  font-size: 18px;
 }
 
 .pickup-info-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
-    padding: 18px 20px;
+  padding: 18px 20px;
 
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
 
-    background: #fafefe;
+  background: #fafefe;
 
-    margin-top: 1.25rem;
+  margin-top: 1.25rem;
 }
 
 .pickup-info-left {
-    display: flex;
-    align-items: center;
-    gap: 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .pickup-icon {
-    width: 48px;
-    height: 48px;
+  width: 48px;
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+
+  background: rgba(34, 197, 94, 0.12);
+
+  color: #22c55e;
+  font-size: 1.25rem;
+}
+
+.pickup-details {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.pickup-details strong {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.pickup-details span {
+  font-size: 0.9rem;
+  color: #6b7280;
+
+  max-width: 550px;
+}
+
+.edit-location-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 10px 14px;
+
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+
+  text-decoration: none;
+
+  color: #2563eb;
+  background: #ffffff;
+
+  font-weight: 600;
+
+  transition: all 0.25s ease;
+}
+
+.edit-location-btn:hover {
+  background: #eff6ff;
+}
+
+/* ==========================================================
+   FINAL STEP 1 UI
+   Screenshot-matched Add Listings workspace
+   IMPORTANT:
+   - STEP 2 (AI Review) is untouched.
+   - STEP 3 (Publish) is untouched.
+   - Existing IDs/classes used by JavaScript are untouched.
+========================================================== */
+
+/* ----------------------------------------------------------
+   PROVIDER TOP NAVBAR
+---------------------------------------------------------- */
+
+body.provider-add-listing-page {
+  --reserve-green: #07883f;
+  --reserve-green-dark: #056b32;
+  --reserve-green-soft: #e9fbf1;
+  --reserve-navy: #07154f;
+  --reserve-muted: #64748b;
+  --reserve-border: #e5eaf0;
+  --reserve-bg: #f5fbf8;
+}
+
+body.provider-add-listing-page .provider-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  width: 100%;
+  min-height: 60px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  padding: 0 42px;
+
+  background: rgba(255, 255, 255, 0.98);
+  border-bottom: 1px solid #edf1f3;
+  box-shadow: 0 2px 14px rgba(15, 23, 42, 0.05);
+}
+
+body.provider-add-listing-page .provider-brand {
+  flex: 0 0 235px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  text-decoration: none;
+}
+
+body.provider-add-listing-page .brand-logo {
+  width: 36px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.provider-add-listing-page .brand-logo img {
+  width: 36px;
+  height: 42px;
+  object-fit: contain;
+}
+
+body.provider-add-listing-page .brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+body.provider-add-listing-page .brand-text h2 {
+  margin: 0 0 4px;
+
+  color: var(--reserve-green);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+body.provider-add-listing-page .brand-text span {
+  color: var(--reserve-navy);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+body.provider-add-listing-page .provider-nav-links {
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  min-width: 0;
+}
+
+body.provider-add-listing-page .provider-nav-links a {
+  min-height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 0 13px;
+
+  border-radius: 9px;
+
+  color: var(--reserve-navy);
+  text-decoration: none;
+
+  font-size: 12px;
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+body.provider-add-listing-page .provider-nav-links a i {
+  font-size: 18px;
+}
+
+body.provider-add-listing-page .provider-nav-links a:hover {
+  background: #f2faf6;
+  color: var(--reserve-green);
+}
+
+body.provider-add-listing-page .provider-nav-links a.active {
+  background: #e8faf1;
+  color: var(--reserve-green-dark);
+}
+
+body.provider-add-listing-page .provider-navbar-actions {
+  flex: 0 0 auto;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+body.provider-add-listing-page .navbar-icon-btn {
+  position: relative;
+
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+
+  color: var(--reserve-navy);
+  cursor: pointer;
+}
+
+body.provider-add-listing-page .navbar-icon-btn:hover {
+  background: #f3f8f6;
+}
+
+body.provider-add-listing-page .navbar-icon-btn i {
+  font-size: 22px;
+}
+
+body.provider-add-listing-page .navbar-icon-btn .notification-count {
+  position: absolute;
+  top: 1px;
+  right: 0;
+
+  width: 17px;
+  height: 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  border: 2px solid #fff;
+
+  background: #ef2f2f;
+  color: #fff;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+body.provider-add-listing-page .profile-menu {
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 3px 4px 3px 3px;
+
+  border: 0;
+  background: transparent;
+  border-radius: 12px;
+
+  cursor: pointer;
+}
+
+body.provider-add-listing-page .profile-menu:hover {
+  background: #f5faf7;
+}
+
+body.provider-add-listing-page .profile-avatar {
+  width: 38px;
+  height: 38px;
+
+  overflow: hidden;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  background: #eef2f1;
+}
+
+body.provider-add-listing-page .profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+body.provider-add-listing-page .profile-info {
+  min-width: 118px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+body.provider-add-listing-page .profile-info strong {
+  max-width: 150px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: var(--reserve-navy);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+body.provider-add-listing-page .profile-info span {
+  color: var(--reserve-navy);
+  font-size: 11px;
+}
+
+body.provider-add-listing-page .profile-menu > i {
+  color: var(--reserve-navy);
+  font-size: 18px;
+}
+
+/* ----------------------------------------------------------
+   PAGE SHELL
+---------------------------------------------------------- */
+
+body.provider-add-listing-page .main-content {
+  width: 100% !important;
+  min-height: calc(100vh - 60px);
+
+  margin-left: 0 !important;
+
+  background:
+    radial-gradient(
+      circle at 8% 15%,
+      rgba(205, 248, 225, 0.52),
+      transparent 31%
+    ),
+    linear-gradient(135deg, #f5fcf9 0%, #ffffff 52%, #f1fbf6 100%);
+}
+
+body.provider-add-listing-page .content-wrapper {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 16px 46px 86px;
+}
+
+body.provider-add-listing-page #stepOne {
+  width: 100%;
+}
+
+body.provider-add-listing-page #stepOne .create-listing-container {
+  width: 100%;
+  max-width: 1440px;
+
+  margin: 0 auto;
+}
+
+/* ----------------------------------------------------------
+   HEADER + HERO
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .page-header {
+  margin: 0 0 10px;
+}
+
+body.provider-add-listing-page #stepOne .breadcrumb {
+  margin: 0 0 5px;
+
+  gap: 5px;
+
+  font-size: 12px;
+}
+
+body.provider-add-listing-page #stepOne .breadcrumb a {
+  color: #64748b;
+}
+
+body.provider-add-listing-page #stepOne .breadcrumb span {
+  color: #12204d;
+}
+
+body.provider-add-listing-page #stepOne .page-header-main {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) minmax(330px, 430px) 228px;
+  align-items: center;
+  gap: 20px;
+
+  min-height: 76px;
+}
+
+body.provider-add-listing-page #stepOne .page-header-text h1 {
+  color: #08154d;
+  font-size: 30px;
+  line-height: 1.08;
+  font-weight: 800;
+  letter-spacing: -0.8px;
+}
+
+body.provider-add-listing-page #stepOne .page-header-text p {
+  margin-top: 6px;
+
+  max-width: 680px;
+
+  color: #60708f;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* Decorative food illustration area */
+body.provider-add-listing-page #stepOne .listing-hero-art {
+  min-height: 82px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  overflow: hidden;
+  position: relative;
+}
+
+body.provider-add-listing-page #stepOne .hero-message {
+  position: relative;
+  z-index: 3;
+
+  display: flex;
+  flex-direction: column;
+
+  color: #08783e;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  font-weight: 700;
+  font-style: italic;
+  line-height: 1.05;
+  text-align: center;
+
+  transform: rotate(-2deg);
+}
+
+body.provider-add-listing-page #stepOne .hero-message i {
+  color: #07883f;
+  font-size: 13px;
+}
+
+body.provider-add-listing-page #stepOne .hero-food-art {
+  position: relative;
+
+  width: 185px;
+  height: 86px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.provider-add-listing-page #stepOne .food-bowl {
+  position: relative;
+  z-index: 2;
+
+  display: block;
+
+  font-size: 58px;
+  line-height: 1;
+
+  filter: drop-shadow(0 10px 10px rgba(5, 107, 50, 0.13));
+}
+
+body.provider-add-listing-page #stepOne .leaf {
+  position: absolute;
+
+  display: block;
+
+  width: 25px;
+  height: 46px;
+
+  border-radius: 100% 0 100% 0;
+
+  background: linear-gradient(135deg, #4fbf67, #07883f);
+
+  opacity: 0.82;
+  transform-origin: bottom center;
+}
+
+body.provider-add-listing-page #stepOne .leaf-one {
+  top: 4px;
+  right: 34px;
+  transform: rotate(32deg);
+}
+
+body.provider-add-listing-page #stepOne .leaf-two {
+  top: 13px;
+  right: 9px;
+  width: 20px;
+  height: 38px;
+  transform: rotate(58deg);
+}
+
+body.provider-add-listing-page #stepOne .leaf-three {
+  bottom: 3px;
+  left: 25px;
+  width: 19px;
+  height: 36px;
+  transform: rotate(-50deg);
+}
+
+/* AI status card */
+body.provider-add-listing-page #stepOne .ai-status-card {
+  min-height: 70px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 11px 14px;
+
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid #dfe9e4;
+  border-radius: 10px;
+
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.045);
+}
+
+body.provider-add-listing-page #stepOne .ai-status-icon {
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: #e9fbf1;
+  color: #07883f;
+}
+
+body.provider-add-listing-page #stepOne .ai-status-icon i {
+  font-size: 22px;
+}
+
+body.provider-add-listing-page #stepOne .ai-status-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+body.provider-add-listing-page #stepOne .ai-status-content span {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+body.provider-add-listing-page #stepOne .ai-status-content strong {
+  color: #101b49;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+/* ----------------------------------------------------------
+   STEPPER + SAVED DRAFT
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .progress-draft-wrapper {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) 430px;
+  gap: 14px;
+
+  width: 100%;
+  margin: 0 0 12px;
+
+  align-items: center;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .progress-draft-wrapper
+  .progress-section {
+  width: 100%;
+  min-width: 0;
+
+  padding: 0 12px;
+
+  background: rgba(255, 255, 255, 0.82);
+  border: 1px solid #e5eee9;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.035);
+
+  transform: none;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .progress-draft-wrapper
+  .progress-steps {
+  min-height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+}
+
+body.provider-add-listing-page #stepOne .progress-draft-wrapper .step {
+  gap: 9px;
+}
+
+body.provider-add-listing-page #stepOne .progress-draft-wrapper .step-number {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+
+  border: 0;
+
+  background: #edf1f7;
+  color: #7d879d;
+
+  font-size: 13px;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .progress-draft-wrapper
+  .step.active
+  .step-number,
+body.provider-add-listing-page
+  #stepOne
+  .progress-draft-wrapper
+  .step.completed
+  .step-number {
+  background: linear-gradient(135deg, #07883f, #16a34a);
+  color: #fff;
+
+  box-shadow: none;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .progress-draft-wrapper
+  .step-content
+  h4 {
+  color: #67738f;
+
+  font-size: 12px;
+  font-weight: 600;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .progress-draft-wrapper
+  .step.active
+  .step-content
+  h4,
+body.provider-add-listing-page
+  #stepOne
+  .progress-draft-wrapper
+  .step.completed
+  .step-content
+  h4 {
+  color: #0c174a;
+  font-weight: 700;
+}
+
+body.provider-add-listing-page #stepOne .progress-draft-wrapper .step-line {
+  flex: 1;
+  width: auto;
+  min-width: 25px;
+  height: 2px;
+
+  margin: 0;
+
+  background: #e2e8ef;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .progress-draft-wrapper
+  .step-line.active {
+  background: #07883f;
+}
+
+/* Saved draft: horizontal, like screenshot */
+body.provider-add-listing-page
+  #stepOne
+  .progress-draft-wrapper
+  .draft-notification {
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin: 0;
+  padding: 8px 10px;
+
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid #e4ebe8;
+  border-radius: 10px;
+
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.035);
+}
+
+body.provider-add-listing-page #stepOne .draft-notification-content {
+  gap: 9px;
+}
+
+body.provider-add-listing-page #stepOne .draft-icon-small {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+
+  border-radius: 8px;
+
+  background: #e9fbf1;
+  color: #07883f;
+}
+
+body.provider-add-listing-page #stepOne .draft-icon-small i {
+  font-size: 17px;
+}
+
+body.provider-add-listing-page #stepOne .draft-text {
+  gap: 2px;
+}
+
+body.provider-add-listing-page #stepOne .draft-text strong {
+  color: #0c174a;
+  font-size: 11px;
+}
+
+body.provider-add-listing-page #stepOne .draft-text span {
+  color: #64748b;
+  font-size: 9px;
+}
+
+body.provider-add-listing-page #stepOne .draft-notification-actions {
+  display: flex;
+  width: auto;
+  gap: 8px;
+}
+
+body.provider-add-listing-page #stepOne .draft-notification-actions .link-btn {
+  min-height: 35px;
+  padding: 0 13px;
+
+  border-radius: 7px;
+
+  background: #fff;
+  border: 1px solid #a9ddc0;
+
+  color: #07883f;
+
+  font-size: 10px;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .draft-notification-actions
+  .link-btn.danger {
+  border-color: #ffb5b5;
+  color: #ef4444;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .draft-notification-actions
+  .restore-btn:hover {
+  background: #effbf4;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .draft-notification-actions
+  .link-btn.danger:hover {
+  background: #fff5f5;
+}
+
+/* ----------------------------------------------------------
+   TWO-COLUMN WORKSPACE
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .listing-workspace {
+  display: grid;
+
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 14px;
+
+  width: 100%;
+  align-items: start;
+}
+
+body.provider-add-listing-page #stepOne .listing-main-column {
+  min-width: 0;
+}
+
+body.provider-add-listing-page #stepOne .listing-side-column {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+body.provider-add-listing-page #stepOne .listing-form-wrapper {
+  gap: 12px;
+}
+
+/* ----------------------------------------------------------
+   FORM CARDS
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .form-card {
+  padding: 14px 18px;
+
+  border: 1px solid #e4ebe8;
+  border-radius: 11px;
+
+  background: rgba(255, 255, 255, 0.94);
+
+  box-shadow: 0 3px 15px rgba(15, 23, 42, 0.035);
+}
+
+body.provider-add-listing-page #stepOne .card-header {
+  margin-bottom: 12px;
+  padding-bottom: 0;
+
+  border-bottom: 0;
+
+  gap: 0;
+}
+
+body.provider-add-listing-page #stepOne .section-heading {
+  min-height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+body.provider-add-listing-page #stepOne .section-content h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin: 0;
+
+  color: #0a174e;
+
+  font-size: 15px;
+  line-height: 1.2;
+  font-weight: 750;
+}
+
+body.provider-add-listing-page #stepOne .section-content h2 i {
+  width: 29px;
+  height: 29px;
+
+  border-radius: 8px;
+
+  background: #e8faf1;
+  color: #07883f;
+
+  font-size: 16px;
+}
+
+body.provider-add-listing-page #stepOne .section-content p {
+  margin: 3px 0 0;
+
+  color: #64748b;
+
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+body.provider-add-listing-page #stepOne .completion-badge {
+  padding: 4px 9px;
+
+  border: 1px solid #dce4ed;
+  border-radius: 999px;
+
+  background: #fff;
+
+  color: #536589;
+  font-size: 9px;
+}
+
+/* ----------------------------------------------------------
+   FORM GRIDS — MATCH SCREENSHOT
+---------------------------------------------------------- */
+
+/* Food information: 4 fields on first row, image + description below */
+body.provider-add-listing-page
+  #stepOne
+  .listing-main-column
+  .form-card:first-child
+  .form-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px 24px;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .listing-main-column
+  .form-card:first-child
+  .form-grid
+  > .form-group:nth-child(5),
+body.provider-add-listing-page
+  #stepOne
+  .listing-main-column
+  .form-card:first-child
+  .form-grid
+  > .form-group:nth-child(6) {
+  grid-column: span 2;
+}
+
+/* Availability: six compact columns like reference */
+body.provider-add-listing-page
+  #stepOne
+  .listing-main-column
+  .form-card:nth-child(2)
+  .form-grid {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px 18px;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .listing-main-column
+  .form-card:nth-child(2)
+  .form-grid
+  > .form-group:nth-child(7) {
+  grid-column: span 2;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .listing-main-column
+  .form-card:nth-child(2)
+  .form-grid
+  > .form-group:nth-child(8),
+body.provider-add-listing-page
+  #stepOne
+  .listing-main-column
+  .form-card:nth-child(2)
+  .form-grid
+  > .form-group:nth-child(9),
+body.provider-add-listing-page
+  #stepOne
+  .listing-main-column
+  .form-card:nth-child(2)
+  .form-grid
+  > .form-group:nth-child(10) {
+  grid-column: span 1;
+}
+
+/* General compact form controls */
+body.provider-add-listing-page #stepOne .form-group {
+  gap: 5px;
+}
+
+body.provider-add-listing-page #stepOne .form-group label {
+  color: #101a4d;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+body.provider-add-listing-page #stepOne .form-group label span {
+  font-size: 10px;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .form-group
+  input:not([type="checkbox"]),
+body.provider-add-listing-page #stepOne .form-group select {
+  height: 36px;
+
+  padding: 0 11px;
+
+  border: 1px solid #d8e1eb;
+  border-radius: 6px;
+
+  color: #172554;
+  font-size: 11px;
+
+  box-shadow: none;
+}
+
+body.provider-add-listing-page #stepOne .form-group select {
+  padding-right: 30px;
+  background-position: right 9px center;
+  background-size: 13px;
+}
+
+body.provider-add-listing-page #stepOne .form-group textarea {
+  min-height: 97px;
+
+  padding: 9px 11px;
+
+  border: 1px solid #d8e1eb;
+  border-radius: 6px;
+
+  color: #172554;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+body.provider-add-listing-page #stepOne .form-group input::placeholder,
+body.provider-add-listing-page #stepOne .form-group textarea::placeholder {
+  color: #9aa8bb;
+}
+
+body.provider-add-listing-page #stepOne .field-helper {
+  margin-top: 1px;
+
+  color: #697895;
+  font-size: 8.5px;
+  line-height: 1.35;
+}
+
+/* ----------------------------------------------------------
+   UPLOAD AREA
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .upload-area {
+  min-height: 122px;
+
+  border: 1px dashed #aebfd3;
+  border-radius: 7px;
+
+  background: #fbfdff;
+
+  transform: none;
+}
+
+body.provider-add-listing-page #stepOne .upload-area:hover {
+  border-color: #07883f;
+  background: #f5fcf8;
+  transform: none;
+}
+
+body.provider-add-listing-page #stepOne .upload-content {
+  padding: 10px;
+}
+
+body.provider-add-listing-page #stepOne .upload-icon {
+  width: 36px;
+  height: 36px;
+
+  margin-bottom: 6px;
+
+  border-radius: 7px;
+  background: #e8faf1;
+}
+
+body.provider-add-listing-page #stepOne .upload-icon i {
+  color: #07883f;
+  font-size: 20px;
+}
+
+body.provider-add-listing-page #stepOne .upload-content h3 {
+  margin-bottom: 3px;
+
+  color: #0b174e;
+  font-size: 11px;
+}
+
+body.provider-add-listing-page #stepOne .upload-content p {
+  margin-bottom: 3px;
+
+  color: #64748b;
+  font-size: 9px;
+}
+
+body.provider-add-listing-page #stepOne .upload-content span,
+body.provider-add-listing-page #stepOne .upload-content .browse-files {
+  color: #07883f;
+}
+
+body.provider-add-listing-page #stepOne .upload-content small {
+  color: #78869e;
+  font-size: 8px;
+}
+
+body.provider-add-listing-page #stepOne .preview-image {
+  border-radius: 7px;
+}
+
+/* ----------------------------------------------------------
+   EXPIRY CHECKBOX
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .checkbox-field {
+  min-height: 36px;
+
+  padding: 8px 10px;
+
+  border: 1px solid #edf1f5;
+  border-radius: 7px;
+
+  background: #f8fafc;
+}
+
+body.provider-add-listing-page #stepOne .checkbox-field input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+body.provider-add-listing-page #stepOne .checkbox-field label {
+  font-size: 9px;
+}
+
+/* ----------------------------------------------------------
+   PICKUP INFORMATION
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .pickup-section .card-header {
+  margin-bottom: 8px;
+}
+
+body.provider-add-listing-page #stepOne .pickup-info-bar {
+  margin-top: 4px;
+  padding: 9px 10px;
+
+  border: 1px solid #e2e9ee;
+  border-radius: 7px;
+
+  background: #f9fcfb;
+}
+
+body.provider-add-listing-page #stepOne .pickup-info-left {
+  gap: 9px;
+}
+
+body.provider-add-listing-page #stepOne .pickup-icon {
+  width: 32px;
+  height: 32px;
+
+  border-radius: 7px;
+
+  background: #e8faf1;
+  color: #07883f;
+
+  font-size: 16px;
+}
+
+body.provider-add-listing-page #stepOne .pickup-details {
+  gap: 1px;
+}
+
+body.provider-add-listing-page #stepOne .pickup-details strong {
+  color: #111a4c;
+  font-size: 10px;
+}
+
+body.provider-add-listing-page #stepOne .pickup-details span {
+  color: #657594;
+  font-size: 8px;
+}
+
+body.provider-add-listing-page #stepOne .edit-location-btn {
+  padding: 6px 12px;
+
+  border: 1px solid #dce5ed;
+  border-radius: 6px;
+
+  background: #fff;
+
+  color: #101a4d;
+  font-size: 9px;
+}
+
+body.provider-add-listing-page #stepOne .pickup-instructions-card {
+  margin-top: 8px;
+  padding: 9px 10px;
+
+  border: 1px solid #e4eaf0;
+  border-radius: 7px;
+
+  background: #fff;
+}
+
+body.provider-add-listing-page #stepOne .instructions-header {
+  gap: 8px;
+  margin-bottom: 7px;
+}
+
+body.provider-add-listing-page #stepOne .instructions-icon {
+  width: 28px;
+  height: 28px;
+
+  border-radius: 7px;
+
+  background: #eef8f3;
+  color: #07883f;
+
+  font-size: 14px;
+}
+
+body.provider-add-listing-page #stepOne .instructions-header h4 {
+  font-size: 9px;
+}
+
+body.provider-add-listing-page #stepOne .instructions-header p {
+  margin-top: 2px;
+  font-size: 7.5px;
+}
+
+body.provider-add-listing-page
+  #stepOne
+  .pickup-instructions-card
+  .char-counter {
+  font-size: 8px;
+}
+
+body.provider-add-listing-page #stepOne #pickupInstructions {
+  min-height: 45px;
+
+  padding: 7px 9px;
+
+  border-radius: 6px;
+
+  font-size: 8px;
+}
+
+body.provider-add-listing-page #stepOne .instruction-tips {
+  gap: 5px;
+  margin-top: 5px;
+
+  color: #72809a;
+  font-size: 7.5px;
+}
+
+body.provider-add-listing-page #stepOne .instruction-tips i {
+  font-size: 11px;
+}
+
+/* ----------------------------------------------------------
+   AI READINESS SIDEBAR
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .readiness-card {
+  padding: 14px;
+
+  border: 1px solid #e0ebe5;
+  border-radius: 11px;
+
+  background: rgba(255, 255, 255, 0.95);
+
+  box-shadow: 0 3px 15px rgba(15, 23, 42, 0.035);
+}
+
+body.provider-add-listing-page #stepOne .readiness-header {
+  margin-bottom: 8px;
+  gap: 10px;
+}
+
+body.provider-add-listing-page #stepOne .readiness-header h3 {
+  gap: 8px;
+
+  margin-bottom: 3px;
+
+  color: #0b174e;
+  font-size: 15px;
+}
+
+body.provider-add-listing-page #stepOne .readiness-header h3 i {
+  font-size: 18px;
+  color: #07883f;
+}
+
+body.provider-add-listing-page #stepOne .readiness-header p {
+  color: #657493;
+  font-size: 8.5px;
+  line-height: 1.4;
+}
+
+body.provider-add-listing-page #stepOne .readiness-score-area {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  align-items: center;
+  gap: 12px;
+
+  margin: 5px 0 10px;
+}
+
+body.provider-add-listing-page #stepOne .readiness-score {
+  width: 82px;
+  height: 82px;
+
+  border: 0;
+  background: #fff;
+
+  position: relative;
+}
+
+body.provider-add-listing-page #stepOne .readiness-ring {
+  width: 82px;
+  height: 82px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 7px solid #dfe5ee;
+  border-radius: 50%;
+
+  box-sizing: border-box;
+}
+
+body.provider-add-listing-page #stepOne .readiness-score span {
+  color: #111a4c;
+  font-size: 17px;
+}
+
+body.provider-add-listing-page #stepOne .readiness-score small {
+  position: absolute;
+  bottom: 7px;
+
+  color: #64748b;
+  font-size: 7px;
+}
+
+body.provider-add-listing-page #stepOne .readiness-message {
+  padding: 10px;
+
+  border-radius: 7px;
+
+  background: #f1fbf6;
+}
+
+body.provider-add-listing-page #stepOne .readiness-message strong {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #17633f;
+  font-size: 9px;
+}
+
+body.provider-add-listing-page #stepOne .readiness-message p {
+  color: #60728f;
+  font-size: 8px;
+  line-height: 1.45;
+}
+
+body.provider-add-listing-page #stepOne .factors-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 5px;
+
+  color: #111a4c;
+  font-size: 9px;
+}
+
+body.provider-add-listing-page #stepOne .factors-heading strong {
+  font-size: 9px;
+}
+
+body.provider-add-listing-page #stepOne .checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+body.provider-add-listing-page #stepOne .check-item {
+  min-height: 25px;
+
+  padding: 3px 2px;
+
+  border: 0;
+  border-radius: 0;
+
+  background: transparent;
+
+  gap: 7px;
+
+  color: #64748b;
+  font-size: 8.5px;
+}
+
+body.provider-add-listing-page #stepOne .check-item i {
+  color: #9eabc0;
+  font-size: 16px;
+}
+
+body.provider-add-listing-page #stepOne .check-item.completed {
+  color: #166534;
+}
+
+body.provider-add-listing-page #stepOne .progress-bar {
+  height: 7px;
+
+  margin: 7px 0 9px;
+
+  background: #e7edf3;
+}
+
+body.provider-add-listing-page #stepOne .progress-fill {
+  background: linear-gradient(90deg, #07883f, #22c55e);
+}
+
+body.provider-add-listing-page #stepOne .ai-placeholder {
+  margin: 0;
+
+  padding: 10px 11px;
+
+  border: 0;
+  border-radius: 7px;
+
+  background: #eef9f3;
+}
+
+body.provider-add-listing-page #stepOne .ai-placeholder i {
+  width: 30px;
+  height: 30px;
+
+  margin-bottom: 5px;
+
+  background: #dff6e9;
+  color: #07883f;
+
+  font-size: 17px;
+}
+
+body.provider-add-listing-page #stepOne .ai-placeholder h4 {
+  margin-bottom: 3px;
+
+  color: #11204f;
+  font-size: 9px;
+}
+
+body.provider-add-listing-page #stepOne .ai-placeholder p {
+  color: #64748b;
+  font-size: 7.5px;
+  line-height: 1.45;
+}
+
+/* ----------------------------------------------------------
+   PICKUP AVAILABILITY + POTENTIAL MATCHES
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .availability-summary-card,
+body.provider-add-listing-page #stepOne .listing-reach-card {
+  padding: 13px 14px;
+
+  border: 1px solid #e0ebe5;
+  border-radius: 11px;
+
+  background: rgba(255, 255, 255, 0.95);
+
+  box-shadow: 0 3px 15px rgba(15, 23, 42, 0.035);
+}
+
+body.provider-add-listing-page #stepOne .availability-summary-header {
+  margin-bottom: 9px;
+}
+
+body.provider-add-listing-page #stepOne .availability-summary-header h3 {
+  margin-top: 3px;
+
+  color: #0b174e;
+  font-size: 13px;
+}
+
+body.provider-add-listing-page #stepOne .availability-summary-header > i {
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: #e8faf1;
+  color: #07883f;
+
+  font-size: 17px;
+}
+
+body.provider-add-listing-page #stepOne .section-tag {
+  color: #07883f;
+  font-size: 7px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+}
+
+body.provider-add-listing-page #stepOne .availability-summary-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+body.provider-add-listing-page #stepOne .availability-item {
+  padding: 8px;
+
+  border: 1px solid #edf1f4;
+  border-radius: 7px;
+
+  background: #fbfdfc;
+}
+
+body.provider-add-listing-page #stepOne .availability-icon {
+  width: 25px;
+  height: 25px;
+
+  border-radius: 7px;
+
+  background: #eef4ff;
+  color: #172554;
+
+  font-size: 13px;
+}
+
+body.provider-add-listing-page #stepOne .availability-item span {
+  font-size: 7px;
+}
+
+body.provider-add-listing-page #stepOne .availability-item strong {
+  font-size: 8px;
+}
+
+body.provider-add-listing-page #stepOne .availability-status {
+  margin-top: 7px;
+  padding-top: 7px;
+
+  border-top: 1px solid #edf1f4;
+
+  font-size: 7.5px;
+}
+
+body.provider-add-listing-page #stepOne .listing-reach-card h3 {
+  margin-bottom: 4px;
+
+  color: #0b174e;
+  font-size: 13px;
+}
+
+body.provider-add-listing-page #stepOne .listing-reach-card p {
+  color: #657493;
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+body.provider-add-listing-page #stepOne .reach-icon {
+  width: 32px;
+  height: 32px;
+
+  margin-bottom: 7px;
+
+  border-radius: 8px;
+
+  background: #e8faf1;
+  color: #07883f;
+}
+
+/* ----------------------------------------------------------
+   BOTTOM ACTION BAR
+---------------------------------------------------------- */
+
+body.provider-add-listing-page #stepOne .action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  z-index: 900;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  min-height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 7px 46px;
+
+  margin: 0;
+
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid #e5ebe8;
+
+  border-radius: 0;
+
+  box-shadow: 0 -5px 20px rgba(15, 23, 42, 0.055);
+
+  backdrop-filter: blur(12px);
+}
+
+body.provider-add-listing-page #stepOne .draft-status {
+  min-width: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+body.provider-add-listing-page #stepOne .draft-status .draft-icon {
+  width: 34px;
+  height: 34px;
+
+  border-radius: 8px;
+
+  background: #e8faf1;
+  color: #07883f;
+}
+
+body.provider-add-listing-page #stepOne .draft-status .draft-title {
+  color: #101a4d;
+  font-size: 10px;
+}
+
+body.provider-add-listing-page #stepOne .draft-status .draft-time {
+  color: #71809a;
+  font-size: 8px;
+}
+
+body.provider-add-listing-page #stepOne .action-buttons {
+  gap: 9px;
+}
+
+body.provider-add-listing-page #stepOne .action-buttons .btn {
+  height: 37px;
+
+  padding: 0 17px;
+
+  border-radius: 7px;
+
+  font-size: 10px;
+}
+
+body.provider-add-listing-page #stepOne .action-buttons .btn i {
+  font-size: 14px;
+}
+
+body.provider-add-listing-page #stepOne .action-buttons .btn-secondary {
+  border-color: #dce4ec;
+  background: #fff;
+  color: #172554;
+}
+
+body.provider-add-listing-page #stepOne .action-buttons .btn-primary {
+  background: linear-gradient(135deg, #087f3c, #056b32);
+  box-shadow: 0 5px 13px rgba(7, 136, 63, 0.2);
+}
+
+/* ----------------------------------------------------------
+   RESPONSIVE — STEP 1 ONLY
+---------------------------------------------------------- */
+
+@media (max-width: 1250px) {
+  body.provider-add-listing-page .provider-navbar {
+    padding: 0 22px;
+    gap: 12px;
+  }
+
+  body.provider-add-listing-page .provider-brand {
+    flex-basis: 190px;
+  }
+
+  body.provider-add-listing-page .provider-nav-links a {
+    padding: 0 8px;
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  body.provider-add-listing-page .provider-nav-links a i {
+    font-size: 16px;
+  }
+
+  body.provider-add-listing-page .profile-info {
+    min-width: 92px;
+  }
+
+  body.provider-add-listing-page .content-wrapper {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  body.provider-add-listing-page #stepOne .listing-workspace {
+    grid-template-columns: minmax(0, 1fr) 330px;
+  }
+
+  body.provider-add-listing-page #stepOne .progress-draft-wrapper {
+    grid-template-columns: minmax(0, 1fr) 330px;
+  }
+}
+
+@media (max-width: 1050px) {
+  body.provider-add-listing-page .provider-nav-links a span {
+    display: none;
+  }
+
+  body.provider-add-listing-page .provider-nav-links a {
+    width: 40px;
+    padding: 0;
+  }
+
+  body.provider-add-listing-page #stepOne .page-header-main {
+    grid-template-columns: minmax(0, 1fr) 300px;
+  }
+
+  body.provider-add-listing-page #stepOne .listing-hero-art {
+    display: none;
+  }
+
+  body.provider-add-listing-page #stepOne .listing-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  body.provider-add-listing-page #stepOne .listing-side-column {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.provider-add-listing-page #stepOne .readiness-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  body.provider-add-listing-page .provider-navbar {
+    min-height: 58px;
+    padding: 0 12px;
+  }
+
+  body.provider-add-listing-page .provider-brand {
+    flex-basis: auto;
+  }
+
+  body.provider-add-listing-page .brand-text {
+    display: none;
+  }
+
+  body.provider-add-listing-page .provider-nav-links {
+    justify-content: flex-end;
+  }
+
+  body.provider-add-listing-page .provider-nav-links a:nth-child(n + 5) {
+    display: none;
+  }
+
+  body.provider-add-listing-page .profile-info,
+  body.provider-add-listing-page .profile-menu > i {
+    display: none;
+  }
+
+  body.provider-add-listing-page .provider-navbar-actions {
+    gap: 4px;
+  }
+
+  body.provider-add-listing-page .content-wrapper {
+    padding: 12px 12px 78px;
+  }
+
+  body.provider-add-listing-page #stepOne .page-header-main {
+    grid-template-columns: 1fr;
+  }
+
+  body.provider-add-listing-page #stepOne .ai-status-card {
+    width: 100%;
+  }
+
+  body.provider-add-listing-page #stepOne .progress-draft-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  body.provider-add-listing-page
+    #stepOne
+    .progress-draft-wrapper
+    .progress-section {
+    overflow-x: auto;
+  }
+
+  body.provider-add-listing-page
+    #stepOne
+    .progress-draft-wrapper
+    .progress-steps {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  body.provider-add-listing-page
+    #stepOne
+    .progress-draft-wrapper
+    .draft-notification {
+    flex-wrap: wrap;
+  }
+
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:first-child
+    .form-grid,
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:nth-child(2)
+    .form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:first-child
+    .form-grid
+    > .form-group,
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:nth-child(2)
+    .form-grid
+    > .form-group {
+    grid-column: auto;
+  }
+
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:first-child
+    .form-grid
+    > .form-group:nth-child(5),
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:first-child
+    .form-grid
+    > .form-group:nth-child(6) {
+    grid-column: span 2;
+  }
+
+  body.provider-add-listing-page #stepOne .listing-side-column {
+    grid-template-columns: 1fr;
+  }
+
+  body.provider-add-listing-page #stepOne .readiness-card {
+    grid-column: auto;
+  }
+
+  body.provider-add-listing-page #stepOne .action-bar {
+    padding: 7px 12px;
+  }
+
+  body.provider-add-listing-page #stepOne .draft-status .draft-time {
+    display: none;
+  }
+
+  body.provider-add-listing-page #stepOne .action-buttons .btn {
+    padding: 0 11px;
+  }
+}
+
+@media (max-width: 520px) {
+  body.provider-add-listing-page .provider-nav-links a {
+    display: none;
+  }
+
+  body.provider-add-listing-page .provider-nav-links {
+    flex: 1;
+  }
+
+  body.provider-add-listing-page #stepOne .page-header-text h1 {
+    font-size: 25px;
+  }
+
+  body.provider-add-listing-page #stepOne .page-header-text p {
+    font-size: 12px;
+  }
+
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:first-child
+    .form-grid,
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:nth-child(2)
+    .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:first-child
+    .form-grid
+    > .form-group:nth-child(5),
+  body.provider-add-listing-page
+    #stepOne
+    .listing-main-column
+    .form-card:first-child
+    .form-grid
+    > .form-group:nth-child(6) {
+    grid-column: 1;
+  }
+
+  body.provider-add-listing-page #stepOne .draft-notification-actions {
+    width: 100%;
+  }
+
+  body.provider-add-listing-page
+    #stepOne
+    .draft-notification-actions
+    .link-btn {
+    flex: 1;
+  }
+
+  body.provider-add-listing-page #stepOne .action-bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  body.provider-add-listing-page #stepOne .action-buttons {
+    width: 100%;
+  }
+
+  body.provider-add-listing-page #stepOne .action-buttons .btn {
+    flex: 1;
+  }
+}
+
+/* ==========================================================
+   AVAILABILITY — FIXED FIELD POSITIONS
+
+   Row 1:
+   Listing Type | Quantity | Unit | Specify Unit
+
+   Row 2:
+   Original Price | Selling Price
+
+   Specify Unit can disappear without moving Original Price.
+========================================================== */
+
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2) .form-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px 18px;
+}
+
+/* Reset old positioning */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+/* -------------------------
+   ROW 1
+------------------------- */
+
+/* Listing Type */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* Quantity */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(2) {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+/* Unit */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(3) {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+/* Specify Unit */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(4) {
+  grid-column: 4;
+  grid-row: 1;
+}
+
+
+/* -------------------------
+   ROW 2
+------------------------- */
+
+/* Original Price — ALWAYS Row 2 */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(5) {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+/* Selling Price — ALWAYS Row 2 */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(6) {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+
+/* -------------------------
+   ROW 3
+------------------------- */
+
+/* Expiry checkbox */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(7) {
+  grid-column: 1 / -1;
+  grid-row: 3;
+}
+
+
+/* Preparation Time */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(8) {
+  grid-column: 1;
+  grid-row: 4;
+}
+
+
+/* Expiry Date & Time */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(9) {
+  grid-column: 2;
+  grid-row: 4;
+}
+
+
+/* Available Until */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(10) {
+  grid-column: 3;
+  grid-row: 4;
+}
+
+/* ==========================================================
+   EXPIRY ROW — ALL THREE IN ONE ROW
+
+   Expiry Checkbox | Preparation Time | Available Until
+========================================================== */
+
+/* Expiry checkbox */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(7) {
+  grid-column: 1;
+  grid-row: 3;
+}
+
+/* Preparation Time */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(8) {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+/* Available Until */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(9) {
+  grid-column: 3;
+  grid-row: 3;
+}
+
+/* ==========================================================
+   AVAILABILITY — FINAL GRID
+
+   Row 1: Listing Type | Quantity | Unit | Specify Unit
+   Row 2: Original Price | Selling Price
+   Row 3: Expiry Information | Preparation Time | Available Until
+========================================================== */
+
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2) .form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px 18px;
+}
+
+/* Reset */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group {
+  grid-column: auto;
+  grid-row: auto;
+}
+
+/* =========================
+   ROW 1
+========================= */
+
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(1) {
+  grid-column: 1 / span 3;
+  grid-row: 1;
+}
+
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(2) {
+  grid-column: 4 / span 3;
+  grid-row: 1;
+}
+
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(3) {
+  grid-column: 7 / span 3;
+  grid-row: 1;
+}
+
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(4) {
+  grid-column: 10 / span 3;
+  grid-row: 1;
+}
+
+/* =========================
+   ROW 2
+========================= */
+
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(5) {
+  grid-column: 1 / span 3;
+  grid-row: 2;
+}
+
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(6) {
+  grid-column: 4 / span 3;
+  grid-row: 2;
+}
+
+/* =========================
+   ROW 3 — FULL WIDTH
+========================= */
+
+/* Expiry Information */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(7) {
+  grid-column: 1 / span 4;
+  grid-row: 3;
+}
+
+/* Preparation Time */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(8) {
+  grid-column: 5 / span 4;
+  grid-row: 3;
+}
+
+/* Available Until */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(9) {
+  grid-column: 9 / span 4;
+  grid-row: 3;
+}
+
+/* =========================
+   ROW 3 — FULL WIDTH
+   Expiry Information | Preparation Time | Available Until
+========================= */
+
+/* Expiry Information */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(7) {
+  grid-column: 1 / span 4;
+  grid-row: 3;
+}
+
+/* Preparation Time */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(8) {
+  grid-column: 5 / span 4;
+  grid-row: 3;
+}
+
+/* Expiry Date & Time — hidden unless checkbox is selected */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(9) {
+  grid-column: 5 / span 4;
+  grid-row: 3;
+}
+
+/* Available Until */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(10) {
+  grid-column: 9 / span 4;
+  grid-row: 3;
+}
+
+/* Keep the 3-column expiry row when Expiry Date is hidden */
+body.provider-add-listing-page #stepOne
+.listing-main-column .form-card:nth-child(2)
+.form-grid > .form-group:nth-child(9)[hidden] {
+  display: none !important;
+}
+
+/* ==========================================================
+   ADD LISTING HEADER HERO
+========================================================== */
+
+body.provider-add-listing-page .page-header-main {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(420px, 1.5fr) 220px;
+  align-items: center;
+  gap: 20px;
+}
+
+body.provider-add-listing-page .listing-header-hero {
+  width: 100%;
+  height: 90px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.provider-add-listing-page .listing-header-hero img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ==========================================================
+   PROGRESS + SAVED DRAFT
+   Enhanced Step 1 UI
+========================================================== */
+
+/* Main wrapper */
+body.provider-add-listing-page #stepOne .progress-draft-wrapper {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(390px, 1fr);
+  gap: 14px;
+  align-items: stretch;
+  margin-top: 14px;
+}
+
+/* ==========================================================
+   STEP PROGRESS CARD
+========================================================== */
+
+body.provider-add-listing-page #stepOne .progress-section {
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid #e4ebe8;
+  border-radius: 14px;
+  padding: 12px 20px;
+  min-height: 62px;
+
+  display: flex;
+  align-items: center;
+
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+body.provider-add-listing-page #stepOne .progress-steps {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Individual step */
+body.provider-add-listing-page #stepOne .step {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+/* Step circle */
+body.provider-add-listing-page #stepOne .step-number {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #edf1f5;
+  color: #718096;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  border: 1px solid #e0e6eb;
+
+  transition: all 0.25s ease;
+}
+
+/* Active step */
+body.provider-add-listing-page #stepOne .step.active .step-number {
+  background: #07883f;
+  color: #ffffff;
+  border-color: #07883f;
+
+  box-shadow: 0 4px 10px rgba(7, 136, 63, 0.18);
+}
+
+/* Step text */
+body.provider-add-listing-page #stepOne .step-content h4 {
+  margin: 0;
+
+  font-size: 13px;
+  font-weight: 650;
+
+  color: #65748b;
+  white-space: nowrap;
+}
+
+body.provider-add-listing-page #stepOne .step.active .step-content h4 {
+  color: #0b173f;
+}
+
+/* Connecting line */
+body.provider-add-listing-page #stepOne .step-line {
+  height: 2px;
+  flex: 1;
+
+  min-width: 35px;
+
+  background: #e2e8ed;
+  border-radius: 10px;
+}
+
+/* Active connecting line */
+body.provider-add-listing-page #stepOne .step-line.active {
+  background: #07883f;
+}
+
+
+/* ==========================================================
+   SAVED DRAFT CARD
+========================================================== */
+
+body.provider-add-listing-page #stepOne .draft-notification {
+  background: rgba(255, 255, 255, 0.96);
+
+  border: 1px solid #e4ebe8;
+  border-radius: 14px;
+
+  padding: 10px 12px;
+
+  min-height: 62px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+
+  box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+/* Draft left side */
+body.provider-add-listing-page #stepOne .draft-notification-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Draft icon */
+body.provider-add-listing-page #stepOne .draft-icon-small {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+
+  border-radius: 9px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e9faf2;
+  color: #07883f;
+
+  font-size: 17px;
+}
+
+/* Draft text */
+body.provider-add-listing-page #stepOne .draft-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+body.provider-add-listing-page #stepOne .draft-text strong {
+  font-size: 12px;
+  font-weight: 700;
+  color: #0b173f;
+}
+
+body.provider-add-listing-page #stepOne .draft-text span {
+  font-size: 10px;
+  color: #718096;
+}
+
+/* Buttons wrapper */
+body.provider-add-listing-page #stepOne .draft-notification-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Draft buttons */
+body.provider-add-listing-page #stepOne .draft-notification-actions .link-btn {
+  height: 36px;
+  min-width: 76px;
+
+  padding: 0 13px;
+
+  border-radius: 8px;
+
+  background: #ffffff;
+  border: 1px solid #bfe3d0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  font-size: 11px;
+  font-weight: 650;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Restore */
+body.provider-add-listing-page #stepOne
+.draft-notification-actions .restore-btn {
+  color: #07883f;
+}
+
+body.provider-add-listing-page #stepOne
+.draft-notification-actions .restore-btn:hover {
+  background: #effbf5;
+  border-color: #07883f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(7, 136, 63, 0.08);
+}
+
+/* Discard */
+body.provider-add-listing-page #stepOne
+.draft-notification-actions .link-btn.danger {
+  color: #e53935;
+  border-color: #f1c6c4;
+}
+
+body.provider-add-listing-page #stepOne
+.draft-notification-actions .link-btn.danger:hover {
+  background: #fff5f5;
+  border-color: #e53935;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(229, 57, 53, 0.07);
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 1050px) {
+
+  body.provider-add-listing-page #stepOne .progress-draft-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+@media (max-width: 650px) {
+
+  body.provider-add-listing-page #stepOne .progress-section {
+    padding: 10px 12px;
+  }
+
+  body.provider-add-listing-page #stepOne .progress-steps {
+    gap: 7px;
+  }
+
+  body.provider-add-listing-page #stepOne .step-number {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    font-size: 12px;
+  }
+
+  body.provider-add-listing-page #stepOne .step-content h4 {
+    font-size: 11px;
+  }
+
+  body.provider-add-listing-page #stepOne .step-line {
+    min-width: 15px;
+  }
+
+  body.provider-add-listing-page #stepOne .draft-notification {
+    flex-wrap: wrap;
+  }
+
+  body.provider-add-listing-page #stepOne .draft-notification-actions {
+    width: 100%;
+  }
+
+  body.provider-add-listing-page #stepOne
+  .draft-notification-actions .link-btn {
+    flex: 1;
+  }
+}
+
+/* ==========================================================
+   AI READINESS — CLEAN CIRCULAR PROGRESS
+========================================================== */
+
+.readiness-ring {
+    position: relative;
+    width: 92px;
+    height: 92px;
+    flex: 0 0 92px;
+
+    /* IMPORTANT: remove any old border */
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* SVG itself */
+.readiness-ring-svg {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    transform: rotate(-90deg);
+}
+
+
+/* Background / empty ring */
+.readiness-ring-bg {
+    fill: none;
+    stroke: #e4e9ef;
+    stroke-width: 7;
+}
+
+
+/* Green progress ring */
+.readiness-ring-progress {
+    fill: none;
+
+    stroke: #07883f;
+    stroke-width: 7;
+
+    stroke-linecap: round;
+
+    /* Circle circumference */
+    stroke-dasharray: 314;
+    stroke-dashoffset: 314;
+
+    transition:
+        stroke-dashoffset 0.5s ease;
+}
+
+
+/* Percentage container */
+.readiness-ring-content {
+    position: absolute;
+    inset: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    border-radius: 12px;
-
-    background: rgba(34, 197, 94, 0.12);
-
-    color: #22c55e;
-    font-size: 1.25rem;
+    pointer-events: none;
 }
 
-.pickup-details {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-}
 
-.pickup-details strong {
-    font-size: 1rem;
+/* Percentage text */
+.readiness-ring-content span {
+    position: relative;
+
+    color: #142052;
+    font-size: 18px;
     font-weight: 700;
-    color: #111827;
+
+    line-height: 1;
+    letter-spacing: -0.3px;
 }
 
-.pickup-details span {
-    font-size: 0.9rem;
-    color: #6b7280;
-
-    max-width: 550px;
-}
-
-.edit-location-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    padding: 10px 14px;
-
-    border: 1px solid #dbeafe;
-    border-radius: 10px;
-
-    text-decoration: none;
-
-    color: #2563eb;
-    background: #ffffff;
-
-    font-weight: 600;
-
-    transition: all 0.25s ease;
-}
-
-.edit-location-btn:hover {
-    background: #eff6ff;
-}
-
+/* END FINAL STEP 1 UI */

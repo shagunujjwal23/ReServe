@@ -31,29 +31,31 @@
     />
   </head>
 
-  <body>
+  <body class="provider-add-listing-page">
     <div class="dashboard">
       <!-- ==================================================
            SIDEBAR
       =================================================== -->
 
-      <aside class="sidebar">
-        <div class="sidebar-brand">
-          <div class="logo-wrapper">
+      <!-- ==================================================
+           PROVIDER NAVBAR
+      =================================================== -->
+      <header class="provider-navbar">
+        <a href="/dashboard" class="provider-brand">
+          <div class="brand-logo">
             <img
               src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
               alt="ReServe Logo"
             />
           </div>
 
-          <div class="brand-content">
+          <div class="brand-text">
             <h2>ReServe</h2>
-            <p>Food Rescue Platform</p>
+            <span>Food Rescue Platform</span>
           </div>
-        </div>
+        </a>
 
-        <!-- Navigation -->
-        <nav class="sidebar-nav">
+        <nav class="provider-nav-links">
           <a href="/dashboard">
             <i class="ri-home-5-line"></i>
             <span>Dashboard</span>
@@ -80,30 +82,40 @@
           </a>
 
           <a href="#">
-            <i class="ri-box-3-line"></i>
+            <i class="ri-truck-line"></i>
             <span>Pickups</span>
-          </a>
-
-          <a href="#">
-            <i class="ri-robot-2-line"></i>
-            <span>AI Insights</span>
-          </a>
-
-          <a href="#">
-            <i class="ri-bar-chart-box-line"></i>
-            <span>Analytics</span>
           </a>
         </nav>
 
-        <div class="sidebar-spacer"></div>
+        <div class="provider-navbar-actions">
+          <button
+            type="button"
+            class="navbar-icon-btn notification-btn"
+            id="notificationBtn"
+            aria-label="Notifications"
+          >
+            <i class="ri-notification-3-line"></i>
+            <span class="notification-count" id="notificationCount">3</span>
+          </button>
 
-        <div class="sidebar-footer">
-          <a href="#">
-            <i class="ri-logout-box-r-line"></i>
-            <span>Logout</span>
-          </a>
+          <button type="button" class="profile-menu" id="profileMenu">
+            <div class="profile-avatar">
+              <img
+                id="profileImage"
+                src="/static/images/profile-placeholder.jpg"
+                alt="Profile"
+              />
+            </div>
+
+            <div class="profile-info">
+              <strong id="profileName">Loading...</strong>
+              <span id="profileRole">Donor</span>
+            </div>
+
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
         </div>
-      </aside>
+      </header>
 
       <!-- ==================================================
            MAIN CONTENT
@@ -120,39 +132,6 @@
               <!-- ==================================================
                    PAGE HEADER
               =================================================== -->
-
-              <div class="page-top">
-                <!-- Top Right Actions -->
-                <div class="page-top-actions">
-                  <button
-                    type="button"
-                    class="notification-btn"
-                    id="notificationBtn"
-                  >
-                    <i class="ri-notification-3-line"></i>
-                    <span class="notification-count" id="notificationCount"
-                      >3</span
-                    >
-                  </button>
-
-                  <button type="button" class="profile-menu" id="profileMenu">
-                    <div class="profile-avatar">
-                      <img
-                        id="profileImage"
-                        src="/static/images/profile-placeholder.jpg"
-                        alt="Profile"
-                      />
-                    </div>
-
-                    <div class="profile-info">
-                      <strong id="profileName">Loading...</strong>
-                      <span id="profileRole">Donor</span>
-                    </div>
-
-                    <i class="ri-arrow-down-s-line"></i>
-                  </button>
-                </div>
-              </div>
 
               <!-- ==========================================================
      BREADCRUMB + PAGE TITLE
@@ -177,8 +156,15 @@
                     </p>
                   </div>
 
-                  <!-- AI STATUS -->
+                  <!-- HEADER HERO IMAGE -->
+                  <div class="listing-header-hero">
+                    <img
+                      src="{{ url_for('static', filename='images/hero/add-listing-hero.png') }}"
+                      alt="Good Food Brighter Communities"
+                    />
+                  </div>
 
+                  <!-- AI STATUS -->
                   <div class="ai-status-card">
                     <div class="ai-status-icon">
                       <i class="ri-robot-2-line"></i>
@@ -797,11 +783,34 @@
 
                     <div class="readiness-score-area">
                       <div class="readiness-score">
-                        <div class="readiness-ring">
-                          <span id="readinessScore"> 0% </span>
-                        </div>
+                        <div class="readiness-ring" id="readinessRing">
+                          <svg
+                            class="readiness-ring-svg"
+                            viewBox="0 0 120 120"
+                            aria-hidden="true"
+                          >
+                            <!-- Background ring -->
+                            <circle
+                              class="readiness-ring-bg"
+                              cx="60"
+                              cy="60"
+                              r="50"
+                            ></circle>
 
-                        <small> Ready </small>
+                            <!-- Progress ring -->
+                            <circle
+                              class="readiness-ring-progress"
+                              id="readinessRingProgress"
+                              cx="60"
+                              cy="60"
+                              r="50"
+                            ></circle>
+                          </svg>
+
+                          <div class="readiness-ring-content">
+                            <span id="readinessScore">0%</span>
+                          </div>
+                        </div>
                       </div>
 
                       <div class="readiness-message">
@@ -865,12 +874,6 @@
                           <span> Pricing & Listing Type </span>
                         </div>
                       </div>
-                    </div>
-
-                    <!-- KEEP PROGRESS ELEMENT FOR EXISTING JS -->
-
-                    <div class="progress-bar">
-                      <div class="progress-fill" id="progressFill"></div>
                     </div>
 
                     <!-- AI PLACEHOLDER -->
