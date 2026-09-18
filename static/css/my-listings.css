@@ -1884,3 +1884,1776 @@ body.my-listings-page .toast-close:hover {
     grid-template-columns: 1fr 1fr 28px;
   }
 }
+
+/* ==========================================================
+   MY LISTINGS - FINAL NAVBAR + HERO FIX
+========================================================== */
+
+
+/* ==========================================================
+   NAVBAR
+========================================================== */
+
+.my-listings-page .main-navbar {
+    width: 100%;
+    min-height: 92px;
+    padding: 0 38px;
+
+    display: flex;
+    align-items: center;
+
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+
+/* ==========================================================
+   BRAND
+========================================================== */
+
+.my-listings-page .navbar-brand {
+    flex: 0 0 auto;
+    width: 235px;
+
+    display: flex;
+    align-items: center;
+
+    text-decoration: none;
+}
+
+
+/* Logo */
+
+.my-listings-page .navbar-logo {
+    width: 52px;
+    height: 52px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.my-listings-page .navbar-logo img {
+    width: 48px;
+    height: 48px;
+
+    object-fit: contain;
+}
+
+
+/* Brand text */
+
+.my-listings-page .navbar-brand-text {
+    margin-left: 12px;
+}
+
+.my-listings-page .navbar-brand-text h2 {
+    margin: 0;
+
+    font-size: 26px;
+    line-height: 1.1;
+}
+
+.my-listings-page .navbar-brand-text p {
+    margin: 4px 0 0;
+
+    font-size: 12px;
+}
+
+
+/* ==========================================================
+   NAVIGATION
+========================================================== */
+
+.my-listings-page .navbar-nav {
+    flex: 1 1 auto;
+    min-width: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    white-space: nowrap;
+}
+
+
+/* Navigation links */
+
+.my-listings-page .navbar-nav a {
+    flex-shrink: 0;
+
+    padding: 13px 12px;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    border-radius: 14px;
+
+    text-decoration: none;
+}
+
+
+/* Icons */
+
+.my-listings-page .navbar-nav a i {
+    font-size: 21px;
+}
+
+
+/* ==========================================================
+   RIGHT SIDE
+========================================================== */
+
+.my-listings-page .navbar-right {
+    flex: 0 0 auto;
+
+    min-width: 225px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 18px;
+
+    margin-left: 12px;
+}
+
+
+/* Notification */
+
+.my-listings-page .navbar-notification {
+    flex-shrink: 0;
+
+    position: relative;
+
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    background: transparent;
+
+    cursor: pointer;
+}
+
+.my-listings-page .navbar-notification i {
+    font-size: 25px;
+}
+
+
+/* Profile */
+
+.my-listings-page .navbar-profile {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+
+    min-width: 0;
+
+    border: 0;
+    background: transparent;
+
+    cursor: pointer;
+
+    padding: 5px 0;
+}
+
+
+/* Profile image */
+
+.my-listings-page .navbar-profile img {
+    width: 42px;
+    height: 42px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+}
+
+
+/* Profile information */
+
+.my-listings-page .navbar-profile-info {
+    min-width: 0;
+
+    text-align: left;
+}
+
+.my-listings-page .navbar-profile-info h4 {
+    margin: 0;
+
+    max-width: 150px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 13px;
+}
+
+.my-listings-page .navbar-profile-info p {
+    margin: 2px 0 0;
+
+    font-size: 11px;
+}
+
+
+/* ==========================================================
+   HERO SECTION
+========================================================== */
+
+.my-listings-page .listings-hero {
+    min-height: 145px;
+
+    padding: 22px 55px;
+
+    display: flex;
+    align-items: center;
+
+    box-sizing: border-box;
+
+    gap: 28px;
+
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   HERO DECORATION
+========================================================== */
+
+.my-listings-page .hero-decoration {
+    flex: 0 0 275px;
+
+    display: flex;
+    align-items: center;
+}
+
+
+/* Hero message */
+
+.my-listings-page .hero-message {
+    font-size: 20px;
+    line-height: 1.3;
+}
+
+
+/* ==========================================================
+   HERO HEADING
+========================================================== */
+
+.my-listings-page .listings-hero .page-heading {
+    flex: 1 1 auto;
+
+    min-width: 0;
+}
+
+.my-listings-page .page-eyebrow {
+    font-size: 13px;
+}
+
+.my-listings-page .page-heading h1 {
+    margin: 4px 0 5px;
+
+    font-size: 40px;
+    line-height: 1.05;
+}
+
+.my-listings-page .page-heading p {
+    margin: 0;
+
+    max-width: 500px;
+
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+
+/* ==========================================================
+   HERO FOOD IMAGE
+========================================================== */
+
+/*
+   IMPORTANT:
+   The previous image was too large.
+   This keeps it compact like the reference.
+*/
+
+.my-listings-page .listings-hero-image {
+    flex: 0 0 170px;
+
+    width: 170px;
+    height: 88px;
+
+    overflow: hidden;
+
+    border-radius: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.my-listings-page .listings-hero-image img {
+    width: 170px;
+    height: 88px;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* ==========================================================
+   ADD NEW LISTING BUTTON
+========================================================== */
+
+.my-listings-page .hero-add-btn {
+    flex: 0 0 auto;
+
+    min-width: 185px;
+
+    height: 52px;
+
+    padding: 0 22px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   TOOLBAR
+========================================================== */
+
+.my-listings-page .listings-toolbar {
+    width: calc(100% - 100px);
+
+    margin: 12px auto 14px;
+
+    padding: 14px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    box-sizing: border-box;
+}
+
+
+/* Search gets the most space */
+
+.my-listings-page .listing-search {
+    flex: 1 1 auto;
+
+    min-width: 240px;
+}
+
+
+/* Filters */
+
+.my-listings-page .filter-select {
+    flex: 0 0 auto;
+
+    min-width: 145px;
+}
+
+
+/* Sort */
+
+.my-listings-page .sort-wrapper {
+    flex: 0 0 auto;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+}
+
+.my-listings-page .sort-select {
+    min-width: 170px;
+}
+
+
+/* Clear */
+
+.my-listings-page #clearFilters {
+    flex: 0 0 auto;
+}
+
+
+/* ==========================================================
+   RESPONSIVE NAVBAR
+========================================================== */
+
+@media (max-width: 1450px) {
+
+    .my-listings-page .main-navbar {
+        padding: 0 24px;
+    }
+
+    .my-listings-page .navbar-brand {
+        width: 210px;
+    }
+
+    .my-listings-page .navbar-nav {
+        gap: 2px;
+    }
+
+    .my-listings-page .navbar-nav a {
+        padding: 11px 9px;
+    }
+
+    .my-listings-page .navbar-nav a span {
+        font-size: 13px;
+    }
+
+    .my-listings-page .navbar-right {
+        min-width: 205px;
+    }
+
+    .my-listings-page .navbar-profile-info {
+        display: none;
+    }
+
+    .my-listings-page .navbar-profile {
+        padding: 0;
+    }
+}
+
+
+/* ==========================================================
+   RESPONSIVE HERO
+========================================================== */
+
+@media (max-width: 1200px) {
+
+    .my-listings-page .listings-hero {
+        padding: 20px 35px;
+        gap: 20px;
+    }
+
+    .my-listings-page .hero-decoration {
+        flex-basis: 210px;
+    }
+
+    .my-listings-page .hero-message {
+        font-size: 17px;
+    }
+
+    .my-listings-page .page-heading h1 {
+        font-size: 34px;
+    }
+
+    .my-listings-page .listings-hero-image {
+        width: 145px;
+        height: 78px;
+        flex-basis: 145px;
+    }
+
+    .my-listings-page .listings-hero-image img {
+        width: 145px;
+        height: 78px;
+    }
+
+    .my-listings-page .hero-add-btn {
+        min-width: 160px;
+        padding: 0 16px;
+    }
+}
+
+/* ==========================================================
+   FINAL MY LISTINGS FIX
+   Navbar + Profile + Hero + Toolbar
+========================================================== */
+
+
+/* ==========================================================
+   NAVBAR
+========================================================== */
+
+body.my-listings-page .main-navbar {
+    width: 100%;
+    height: 78px;
+    min-height: 78px;
+
+    padding: 0 32px;
+
+    display: flex;
+    align-items: center;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #edf1ef;
+
+    position: relative;
+    z-index: 50;
+
+    overflow: visible;
+}
+
+
+/* ==========================================================
+   BRAND
+========================================================== */
+
+body.my-listings-page .navbar-brand {
+    width: 205px;
+    min-width: 205px;
+
+    flex: 0 0 205px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 9px;
+}
+
+body.my-listings-page .navbar-logo {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.my-listings-page .navbar-logo img {
+    width: 46px;
+    height: 46px;
+
+    object-fit: contain;
+}
+
+body.my-listings-page .navbar-brand-text {
+    min-width: 0;
+}
+
+body.my-listings-page .navbar-brand-text h2 {
+    margin: 0;
+
+    color: #07883f;
+
+    font-size: 23px;
+    font-weight: 800;
+
+    line-height: 1.05;
+}
+
+body.my-listings-page .navbar-brand-text p {
+    margin: 3px 0 0;
+
+    color: #18245a;
+
+    font-size: 11px;
+    font-weight: 500;
+
+    white-space: nowrap;
+}
+
+
+/* ==========================================================
+   NAVIGATION
+========================================================== */
+
+body.my-listings-page .navbar-nav {
+    flex: 1 1 auto;
+    min-width: 0;
+
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 2px;
+
+    overflow: hidden;
+}
+
+body.my-listings-page .navbar-nav a {
+    height: 44px;
+
+    padding: 0 11px;
+
+    flex: 0 0 auto;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    border-radius: 11px;
+
+    color: #10194a;
+
+    font-size: 13px;
+    font-weight: 550;
+
+    white-space: nowrap;
+
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+body.my-listings-page .navbar-nav a i {
+    font-size: 19px;
+}
+
+body.my-listings-page .navbar-nav a:hover {
+    background: #f0faf5;
+    color: #07883f;
+}
+
+body.my-listings-page .navbar-nav a.active {
+    background: #e7f8ef;
+    color: #07883f;
+}
+
+
+/* ==========================================================
+   RIGHT SIDE — PROFILE MUST STAY VISIBLE
+========================================================== */
+
+body.my-listings-page .navbar-right {
+    width: 245px;
+    min-width: 245px;
+
+    flex: 0 0 245px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-left: 8px;
+}
+
+
+/* Notification */
+
+body.my-listings-page .navbar-notification {
+    width: 40px;
+    height: 40px;
+
+    flex: 0 0 40px;
+
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    background: transparent;
+
+    color: #10194a;
+
+    cursor: pointer;
+}
+
+body.my-listings-page .navbar-notification i {
+    font-size: 23px;
+}
+
+body.my-listings-page .notification-badge {
+    position: absolute;
+
+    top: 1px;
+    right: 0;
+
+    min-width: 17px;
+    height: 17px;
+
+    padding: 0 4px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #f04444;
+    color: #ffffff;
+
+    border: 2px solid #ffffff;
+
+    font-size: 9px;
+    font-weight: 700;
+}
+
+
+/* ==========================================================
+   PROFILE
+========================================================== */
+
+body.my-listings-page .navbar-profile {
+    width: 190px;
+    min-width: 190px;
+
+    padding: 4px 3px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    border: none;
+    background: transparent;
+
+    color: #10194a;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+body.my-listings-page .navbar-profile > img {
+    width: 40px;
+    height: 40px;
+
+    flex: 0 0 40px;
+
+    border-radius: 50%;
+
+    object-fit: cover;
+
+    border: 2px solid #ffffff;
+
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+}
+
+body.my-listings-page .navbar-profile-info {
+    display: block !important;
+
+    flex: 1;
+    min-width: 0;
+}
+
+body.my-listings-page .navbar-profile-info h4 {
+    margin: 0;
+
+    max-width: 125px;
+
+    color: #10194a;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.my-listings-page .navbar-profile-info p {
+    margin: 2px 0 0;
+
+    color: #697691;
+
+    font-size: 10px;
+    font-weight: 500;
+}
+
+body.my-listings-page .navbar-profile > i {
+    flex-shrink: 0;
+
+    font-size: 17px;
+
+    color: #18245a;
+}
+
+
+/* ==========================================================
+   HERO
+========================================================== */
+
+body.my-listings-page .listings-hero {
+    height: 150px;
+    min-height: 150px;
+
+    margin: 0 -38px;
+
+    padding: 15px 50px;
+
+    display: grid;
+
+    grid-template-columns:
+        275px
+        minmax(400px, 1fr)
+        185px
+        205px;
+
+    align-items: center;
+
+    gap: 20px;
+
+    overflow: hidden;
+
+    background: linear-gradient(
+        90deg,
+        #eefbf5 0%,
+        #f8fcfa 50%,
+        #eefaf5 100%
+    );
+
+    border-bottom: 1px solid #e8f0ec;
+}
+
+
+/* ==========================================================
+   HERO LEFT
+========================================================== */
+
+body.my-listings-page .hero-decoration {
+    height: 115px;
+
+    display: flex;
+    align-items: center;
+
+    position: relative;
+}
+
+body.my-listings-page .hero-message {
+    margin-left: 30px;
+
+    color: #07883f;
+
+    font-size: 20px;
+    font-weight: 600;
+
+    line-height: 1.28;
+
+    font-style: italic;
+
+    position: relative;
+    z-index: 2;
+}
+
+body.my-listings-page .hero-message span {
+    margin-left: 3px;
+
+    font-size: 20px;
+}
+
+
+/* Leaves */
+
+body.my-listings-page .hero-leaves {
+    position: absolute;
+
+    right: 0;
+    bottom: -20px;
+
+    width: 125px;
+    height: 110px;
+
+    opacity: 0.18;
+
+    color: #07883f;
+}
+
+
+/* ==========================================================
+   HERO HEADING
+========================================================== */
+
+body.my-listings-page .page-heading {
+    min-width: 0;
+
+    position: relative;
+    z-index: 3;
+}
+
+body.my-listings-page .page-eyebrow {
+    margin-bottom: 5px;
+
+    color: #61708f;
+
+    font-size: 13px;
+    font-weight: 500;
+}
+
+body.my-listings-page .page-heading h1 {
+    margin: 0;
+
+    color: #10194a;
+
+    font-size: 39px;
+    font-weight: 800;
+
+    line-height: 1.05;
+
+    letter-spacing: -1.4px;
+}
+
+body.my-listings-page .page-heading h1 span {
+    color: #07883f;
+}
+
+body.my-listings-page .page-heading p {
+    margin: 7px 0 0;
+
+    max-width: 500px;
+
+    color: #5e6d8d;
+
+    font-size: 14px;
+
+    line-height: 1.45;
+}
+
+
+/* ==========================================================
+   HERO FOOD IMAGE
+========================================================== */
+
+body.my-listings-page .listings-hero-image {
+    width: 185px;
+    height: 90px;
+
+    align-self: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    pointer-events: none;
+}
+
+body.my-listings-page .listings-hero-image img {
+    width: 185px;
+    height: 90px;
+
+    display: block;
+
+    object-fit: cover;
+
+    object-position: center;
+
+    border-radius: 0;
+}
+
+
+/* ==========================================================
+   ADD LISTING BUTTON
+========================================================== */
+
+body.my-listings-page .hero-add-btn {
+    width: 205px;
+    min-width: 205px;
+
+    height: 50px;
+
+    padding: 0 18px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    background: #07883f;
+    color: #ffffff;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 650;
+
+    white-space: nowrap;
+
+    box-shadow: 0 6px 14px rgba(7, 136, 63, 0.16);
+}
+
+body.my-listings-page .hero-add-btn i {
+    font-size: 20px;
+}
+
+
+/* ==========================================================
+   NEW COMPACT TOOLBAR
+========================================================== */
+
+body.my-listings-page .listings-toolbar {
+    width: 100%;
+
+    min-height: 62px;
+
+    margin: 12px 0 14px;
+
+    padding: 10px 12px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    background: #ffffff;
+
+    border: 1px solid #e8eeeb;
+
+    border-radius: 12px;
+
+    box-shadow: 0 3px 12px rgba(16, 24, 40, 0.035);
+}
+
+
+/* Search */
+
+body.my-listings-page .listing-search {
+    width: auto;
+    min-width: 0;
+
+    flex: 1 1 auto;
+
+    height: 40px;
+
+    padding: 0 12px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    border: 1px solid #dbe4e1;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+}
+
+body.my-listings-page .listing-search i {
+    color: #71809d;
+
+    font-size: 18px;
+}
+
+body.my-listings-page .listing-search input {
+    width: 100%;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #172150;
+
+    font-size: 12px;
+}
+
+
+/* ==========================================================
+   FILTER SELECTS
+========================================================== */
+
+body.my-listings-page .filter-select {
+    width: 145px;
+    min-width: 145px;
+
+    height: 40px;
+
+    padding: 0 10px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+
+    border: 1px solid #dbe4e1;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+}
+
+body.my-listings-page .filter-select > i {
+    flex-shrink: 0;
+
+    color: #53668e;
+
+    font-size: 17px;
+}
+
+body.my-listings-page .filter-select select {
+    width: 100%;
+    min-width: 0;
+
+    height: 100%;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #172150;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   SORT
+========================================================== */
+
+body.my-listings-page .sort-wrapper {
+    width: 205px;
+    min-width: 205px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 7px;
+}
+
+body.my-listings-page .sort-wrapper > label {
+    color: #26345f;
+
+    font-size: 12px;
+    font-weight: 500;
+
+    white-space: nowrap;
+}
+
+body.my-listings-page .sort-select {
+    flex: 1;
+
+    width: auto;
+    min-width: 0;
+
+    height: 40px;
+
+    position: relative;
+}
+
+body.my-listings-page .sort-select select {
+    width: 100%;
+    height: 100%;
+
+    padding: 0 30px 0 11px;
+
+    appearance: none;
+
+    border: 1px solid #dbe4e1;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #172150;
+
+    outline: none;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+body.my-listings-page .sort-select > i {
+    position: absolute;
+
+    right: 9px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    pointer-events: none;
+
+    color: #18245a;
+
+    font-size: 17px;
+}
+
+
+/* ==========================================================
+   CLEAR BUTTON
+========================================================== */
+
+body.my-listings-page #clearFilters {
+    width: 78px;
+    min-width: 78px;
+
+    height: 40px;
+
+    padding: 0 10px;
+
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    gap: 5px;
+
+    border: 1px solid #dbe4e1;
+
+    border-radius: 8px;
+
+    background: #ffffff;
+
+    color: #52617f;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+body.my-listings-page #clearFilters:hover {
+    background: #f0faf5;
+
+    border-color: #b9ddcb;
+
+    color: #07883f;
+}
+
+
+/* ==========================================================
+   IMPORTANT — OLD STATUS TABS ARE NOT USED
+========================================================== */
+
+body.my-listings-page .status-tabs {
+    display: none !important;
+}
+
+
+/* ==========================================================
+   LISTINGS GRID
+========================================================== */
+
+body.my-listings-page .listings-grid {
+    display: grid;
+
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+
+/* ==========================================================
+   RESPONSIVE
+========================================================== */
+
+@media (max-width: 1500px) {
+
+    body.my-listings-page .main-navbar {
+        padding-left: 22px;
+        padding-right: 22px;
+    }
+
+    body.my-listings-page .navbar-brand {
+        width: 190px;
+        min-width: 190px;
+        flex-basis: 190px;
+    }
+
+    body.my-listings-page .navbar-nav a {
+        padding-left: 8px;
+        padding-right: 8px;
+
+        gap: 5px;
+
+        font-size: 12px;
+    }
+
+    body.my-listings-page .navbar-nav a i {
+        font-size: 17px;
+    }
+
+    body.my-listings-page .navbar-right {
+        width: 220px;
+        min-width: 220px;
+        flex-basis: 220px;
+    }
+
+    body.my-listings-page .navbar-profile {
+        width: 165px;
+        min-width: 165px;
+    }
+
+    body.my-listings-page .navbar-profile-info h4 {
+        max-width: 105px;
+    }
+
+    body.my-listings-page .listings-hero {
+        margin-left: -25px;
+        margin-right: -25px;
+
+        padding-left: 35px;
+        padding-right: 35px;
+
+        grid-template-columns:
+            230px
+            minmax(300px, 1fr)
+            165px
+            190px;
+    }
+
+    body.my-listings-page .listings-hero-image {
+        width: 165px;
+        height: 82px;
+    }
+
+    body.my-listings-page .listings-hero-image img {
+        width: 165px;
+        height: 82px;
+    }
+
+    body.my-listings-page .hero-add-btn {
+        width: 190px;
+        min-width: 190px;
+    }
+
+    body.my-listings-page .listings-toolbar {
+        gap: 8px;
+    }
+
+    body.my-listings-page .filter-select {
+        width: 130px;
+        min-width: 130px;
+    }
+
+    body.my-listings-page .sort-wrapper {
+        width: 185px;
+        min-width: 185px;
+    }
+}
+
+
+/* ==========================================================
+   TABLET
+========================================================== */
+
+@media (max-width: 1100px) {
+
+    body.my-listings-page .navbar-profile-info {
+        display: none !important;
+    }
+
+    body.my-listings-page .navbar-profile {
+        width: 48px;
+        min-width: 48px;
+
+        justify-content: center;
+    }
+
+    body.my-listings-page .navbar-profile > i {
+        display: none;
+    }
+
+    body.my-listings-page .navbar-right {
+        width: 100px;
+        min-width: 100px;
+        flex-basis: 100px;
+    }
+
+    body.my-listings-page .listings-hero {
+        grid-template-columns: 1fr 160px 170px;
+
+        height: 145px;
+        min-height: 145px;
+    }
+
+    body.my-listings-page .hero-decoration {
+        display: none;
+    }
+
+    body.my-listings-page .listings-hero-image {
+        width: 160px;
+        height: 78px;
+    }
+
+    body.my-listings-page .listings-hero-image img {
+        width: 160px;
+        height: 78px;
+    }
+
+    body.my-listings-page .hero-add-btn {
+        width: 170px;
+        min-width: 170px;
+    }
+
+    body.my-listings-page .listings-toolbar {
+        flex-wrap: wrap;
+    }
+
+    body.my-listings-page .listing-search {
+        flex: 1 1 100%;
+    }
+
+    body.my-listings-page .filter-select {
+        flex: 1 1 150px;
+    }
+
+    body.my-listings-page .sort-wrapper {
+        flex: 1 1 200px;
+    }
+
+    body.my-listings-page #clearFilters {
+        flex: 0 0 80px;
+    }
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media (max-width: 700px) {
+
+    body.my-listings-page .main-navbar {
+        height: auto;
+        min-height: 70px;
+
+        padding: 8px 14px;
+
+        flex-wrap: wrap;
+    }
+
+    body.my-listings-page .navbar-brand {
+        width: auto;
+        min-width: 0;
+        flex: 1;
+    }
+
+    body.my-listings-page .navbar-brand-text p {
+        display: none;
+    }
+
+    body.my-listings-page .navbar-nav {
+        order: 3;
+
+        width: 100%;
+        height: 45px;
+
+        justify-content: flex-start;
+
+        overflow-x: auto;
+    }
+
+    body.my-listings-page .navbar-right {
+        width: auto;
+        min-width: auto;
+        flex-basis: auto;
+    }
+
+    body.my-listings-page .listings-hero {
+        height: auto;
+        min-height: 0;
+
+        margin-left: -14px;
+        margin-right: -14px;
+
+        padding: 22px 14px;
+
+        display: flex;
+        flex-direction: column;
+
+        gap: 12px;
+
+        text-align: center;
+    }
+
+    body.my-listings-page .listings-hero-image {
+        width: 180px;
+        height: 85px;
+    }
+
+    body.my-listings-page .listings-hero-image img {
+        width: 180px;
+        height: 85px;
+    }
+
+    body.my-listings-page .hero-add-btn {
+        width: 190px;
+        min-width: 190px;
+    }
+
+    body.my-listings-page .listings-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    body.my-listings-page .listing-search,
+    body.my-listings-page .filter-select,
+    body.my-listings-page .sort-wrapper,
+    body.my-listings-page #clearFilters {
+        width: 100%;
+        min-width: 0;
+        flex: none;
+    }
+
+    body.my-listings-page .listings-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+body.my-listings-page .hero-message {
+    margin-left: 25px;
+
+    color: #07883f;
+
+    font-family: "Caveat", cursive;
+
+    font-size: 28px;
+    font-weight: 600;
+
+    line-height: 1.08;
+
+    font-style: normal;
+
+    letter-spacing: 0.2px;
+
+    position: relative;
+    z-index: 2;
+}
+
+body.my-listings-page .hero-message span {
+    margin-left: 3px;
+
+    font-family: "Caveat", cursive;
+
+    font-size: 27px;
+}
+
+/* ==========================================================
+   HERO FOOD IMAGE + ADD BUTTON — REFERENCE STYLE
+========================================================== */
+
+.my-listings-page .listings-hero {
+    min-height: 145px;
+
+    padding: 18px 55px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 20px;
+
+    overflow: hidden;
+}
+
+
+/* ==========================================================
+   ADD NEW LISTING BUTTON
+========================================================== */
+
+.my-listings-page .hero-add-btn {
+    order: 3;
+
+    flex: 0 0 auto;
+
+    width: 145px;
+    min-width: 145px;
+
+    height: 38px;
+
+    padding: 0 14px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    background: #07883f;
+    color: #ffffff;
+
+    border-radius: 7px;
+
+    font-size: 11px;
+    font-weight: 650;
+
+    white-space: nowrap;
+
+    box-shadow: 0 5px 12px rgba(7, 136, 63, 0.16);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.my-listings-page .hero-add-btn i {
+    font-size: 16px;
+}
+
+.my-listings-page .hero-add-btn:hover {
+    background: #067537;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 7px 15px rgba(7, 136, 63, 0.20);
+}
+
+
+/* ==========================================================
+   HERO FOOD IMAGE
+========================================================== */
+
+.my-listings-page .listings-hero-image {
+    order: 4;
+
+    flex: 0 0 245px;
+
+    width: 245px;
+    height: 105px;
+
+    margin-left: 0;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+
+    pointer-events: none;
+}
+
+.my-listings-page .listings-hero-image img {
+    width: 245px;
+    height: 105px;
+
+    display: block;
+
+    object-fit: cover;
+    object-position: center center;
+}
+
+@media (min-width: 1201px) {
+    .my-listings-page .listings-hero {
+        padding-left: 55px;
+        padding-right: 25px;
+        gap: 18px;
+    }
+
+    .my-listings-page .hero-add-btn {
+        width: 145px;
+        min-width: 145px;
+    }
+
+    .my-listings-page .listings-hero-image {
+        flex-basis: 250px;
+        width: 250px;
+        height: 105px;
+    }
+
+    .my-listings-page .listings-hero-image img {
+        width: 250px;
+        height: 105px;
+    }
+}
+
+/* ==========================================================
+   HERO BANNER & IMAGE — REFERENCE SIZE & BLEED
+========================================================== */
+
+.my-listings-page .listings-hero {
+  min-height: 160px !important;
+  height: 160px !important;
+  margin: 0 -38px;
+  padding: 0 0 0 50px !important;
+  display: flex !important;
+  align-items: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+  background: linear-gradient(90deg, #eefbf5 0%, #f7fcf9 42%, #e6f7ee 100%) !important;
+  border-bottom: 1px solid #e1ece6;
+}
+
+/* Left script decoration */
+.my-listings-page .hero-decoration {
+  flex: 0 0 230px !important;
+  display: flex !important;
+  align-items: center !important;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* Page heading */
+.my-listings-page .listings-hero .page-heading {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding-left: 10px !important;
+  position: relative !important;
+  z-index: 5 !important;
+}
+
+/* Add New Listing button — shifted to the left */
+.my-listings-page .hero-add-btn {
+  order: 3 !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 175px !important;
+  height: 48px !important;
+  padding: 0 24px !important;
+  margin-left: auto !important;
+  margin-right: 320px !important; /* shifts button left so it doesn't touch the image */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  background: #07883f !important;
+  color: #ffffff !important;
+  border-radius: 9px !important;
+  font-size: 14px !important;
+  font-weight: 650 !important;
+  white-space: nowrap !important;
+  box-shadow: 0 6px 16px rgba(7, 136, 63, 0.22) !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Image container — anchored to the right, full height */
+.my-listings-page .listings-hero-image {
+  order: 4 !important;
+  position: absolute !important;
+  right: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 360px !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: flex-end !important;
+  pointer-events: none !important;
+  z-index: 2 !important;
+  overflow: hidden !important;
+}
+
+/* Make image scale up to fill container */
+.my-listings-page .listings-hero-image img {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  display: block !important;
+  object-fit: contain !important;
+  object-position: right bottom !important;
+  transform: scale(1.15) translate(8px, 6px); /* enlarges image and tucks it flush into corner */
+  transform-origin: right bottom;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.4) 15%, black 45%);
+  mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.4) 15%, black 45%);
+}

@@ -55,7 +55,7 @@ let listings = [];
 let filteredListings = [];
 
 let currentPage = 1;
-const listingsPerPage = 6;
+const listingsPerPage = 12;
 
 let selectedListing = null;
 
@@ -666,7 +666,7 @@ function renderListings() {
        CATEGORY
     ==================================================== */
 
-    const category = clone.querySelector(".category");
+    const category = clone.querySelector(".food-category");
 
     if (category) {
       category.textContent = listing.category;
@@ -686,7 +686,7 @@ function renderListings() {
        FOOD TYPE
     ==================================================== */
 
-    const foodType = clone.querySelector(".food-type-text");
+   const foodType = clone.querySelector(".dietary-type");
 
     if (foodType) {
       foodType.textContent = listing.foodType;
