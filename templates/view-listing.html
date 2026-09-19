@@ -14,15 +14,10 @@
 
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-    />
-
-    <!-- Sidebar CSS -->
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/sidebar.css') }}"
     />
 
     <!-- View Listing CSS -->
@@ -32,534 +27,575 @@
     />
   </head>
 
-  <body>
-    <div class="dashboard">
-      <!-- ==========================================================
-           SIDEBAR
-      =========================================================== -->
+  <body class="view-listing-page">
+    <!-- ==========================================================
+     NAVBAR
+=========================================================== -->
 
-      <aside class="sidebar">
-        <!-- Brand -->
+    <header class="main-navbar">
+      <!-- BRAND -->
 
-        <div class="sidebar-brand">
-          <div class="logo-wrapper">
-            <img
-              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
-              alt="ReServe Logo"
-            />
-          </div>
-
-          <div class="brand-content">
-            <h2>ReServe</h2>
-            <p>Food Rescue Platform</p>
-          </div>
+      <a href="/dashboard" class="navbar-brand">
+        <div class="navbar-logo">
+          <img
+            src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+            alt="ReServe Logo"
+          />
         </div>
 
-        <!-- Navigation -->
-
-        <nav class="sidebar-nav">
-          <a href="/dashboard">
-            <i class="ri-home-5-line"></i>
-            <span>Dashboard</span>
-          </a>
-
-          <a href="/add-listings">
-            <i class="ri-restaurant-line"></i>
-            <span>Add Listings</span>
-          </a>
-
-          <a href="/my-listings" class="active">
-            <i class="ri-store-2-line"></i>
-            <span>My Listings</span>
-          </a>
-
-          <a href="#">
-            <i class="ri-file-list-3-line"></i>
-            <span>Requests</span>
-          </a>
-
-          <a href="#">
-            <i class="ri-box-3-line"></i>
-            <span>Pickups</span>
-          </a>
-
-          <a href="#">
-            <i class="ri-robot-2-line"></i>
-            <span>AI Insights</span>
-          </a>
-
-          <a href="#">
-            <i class="ri-bar-chart-box-line"></i>
-            <span>Analytics</span>
-          </a>
-        </nav>
-
-        <!-- Footer -->
-
-        <div class="sidebar-footer">
-          <a href="/logout">
-            <i class="ri-logout-box-r-line"></i>
-            <span>Logout</span>
-          </a>
+        <div class="navbar-brand-text">
+          <h2>ReServe</h2>
+          <p>Food Rescue Platform</p>
         </div>
-      </aside>
+      </a>
 
-      <!-- ==========================================================
-           MAIN CONTENT
-      =========================================================== -->
+      <!-- NAVIGATION -->
 
-      <div class="main-content">
-        <main class="content-wrapper">
-          <!-- ======================================================
-               TOPBAR
-          ======================================================= -->
+      <nav class="navbar-nav">
+        <a href="/dashboard">
+          <i class="ri-home-5-line"></i>
+          <span>Dashboard</span>
+        </a>
 
-          <header class="topbar">
-            <div class="topbar-right">
-              <!-- Notification -->
+        <a href="/add-listings">
+          <i class="ri-restaurant-line"></i>
+          <span>Add Listing</span>
+        </a>
 
-              <button class="icon-btn" id="notificationBtn" type="button">
-                <i class="ri-notification-3-line"></i>
+        <a href="/my-listings" class="active">
+          <i class="ri-store-2-line"></i>
+          <span>My Listings</span>
+        </a>
 
-                <span id="notificationCount" class="badge">3</span>
-              </button>
+        <a href="#">
+          <i class="ri-hand-heart-line"></i>
+          <span>Donations</span>
+        </a>
 
-              <!-- Profile -->
+        <a href="#">
+          <i class="ri-file-list-3-line"></i>
+          <span>Requests</span>
+        </a>
 
-              <button class="profile" type="button">
-                <img
-                  src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
-                  alt="Profile"
-                />
+        <a href="#">
+          <i class="ri-truck-line"></i>
+          <span>Pickups</span>
+        </a>
 
-                <div>
-                  <h4>{{ user.name if user.name else 'Restaurant Owner' }}</h4>
+        <a href="#">
+          <i class="ri-bar-chart-box-line"></i>
+          <span>Impact</span>
+        </a>
 
-                  <p>{{ user.role if user.role else 'Restaurant Owner' }}</p>
-                </div>
+        <a href="#">
+          <i class="ri-message-3-line"></i>
+          <span>Messages</span>
+        </a>
+      </nav>
 
-                <i class="ri-arrow-down-s-line"></i>
-              </button>
-            </div>
-          </header>
+      <!-- RIGHT SIDE -->
 
-          <!-- ======================================================
-               PAGE TOP
-          ======================================================= -->
+      <div class="navbar-right">
+        <!-- Notification -->
 
-          <div class="details-top">
-            <a href="/my-listings" class="back-link">
-              <i class="ri-arrow-left-line"></i>
-              Back to My Listings
-            </a>
+        <button
+          class="navbar-notification"
+          id="notificationBtn"
+          type="button"
+          aria-label="Notifications"
+        >
+          <i class="ri-notification-3-line"></i>
 
-            <div class="details-top-actions">
-              <!-- AI Ready -->
+          <span id="notificationCount" class="notification-badge"> 3 </span>
+        </button>
 
-              <span class="ai-ready-top">
-                <i class="ri-sparkling-2-line"></i>
-                AI Ready
-              </span>
+        <!-- Profile -->
 
-              <!-- Listing Actions -->
-              <div class="top-action-group">
-                <!-- Duplicate -->
-                <button
-                  type="button"
-                  class="top-action-btn duplicate-action-btn"
-                  id="duplicateListingBtn"
-                  title="Duplicate Listing"
-                  aria-label="Duplicate Listing"
-                >
-                  <i class="ri-file-copy-line"></i>
-                </button>
+        <button class="navbar-profile" type="button">
+          <img
+            id="headerProfileImage"
+            src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
+            alt="Profile"
+          />
 
-                <!-- Pause / Resume -->
-                <button
-                  type="button"
-                  class="top-action-btn pause-action-btn"
-                  id="pauseListingBtn"
-                  title="Pause Listing"
-                  aria-label="Pause Listing"
-                >
-                  <i class="ri-pause-circle-line"></i>
-                </button>
-              </div>
-            </div>
+          <div class="navbar-profile-info">
+            <h4>{{ user.name if user.name else 'Restaurant Owner' }}</h4>
+
+            <p>{{ user.role if user.role else 'Provider' }}</p>
           </div>
 
-          <!-- ======================================================
-               LISTING MAIN AREA
-          ======================================================= -->
-
-          <section class="listing-details-layout">
-            <!-- ====================================================
-                 LEFT CONTENT
-            ===================================================== -->
-
-            <div class="listing-main">
-              <!-- ==================================================
-                   IMAGE + BASIC INFORMATION
-              =================================================== -->
-
-              <div class="listing-overview">
-                <!-- IMAGE -->
-
-                <div class="listing-gallery">
-                  <div class="main-image-wrapper">
-                    <img
-                      id="listingImage"
-                      src="/static/images/food-placeholder.jpg"
-                      alt="Food Image"
-                    />
-
-                    <span id="listingStatusBadge" class="status-badge">
-                      Available
-                    </span>
-                  </div>
-                </div>
-
-                <!-- BASIC DETAILS -->
-
-                <div class="listing-summary">
-                  <h1 id="listingTitle">Loading listing...</h1>
-
-                  <!-- Details -->
-
-                  <div class="listing-meta">
-                    <!-- Food Type -->
-
-                    <div class="meta-row">
-                      <i class="ri-leaf-line"></i>
-
-                      <span>Food Type</span>
-
-                      <strong id="foodType">—</strong>
-                    </div>
-
-                    <!-- Category -->
-
-                    <div class="meta-row">
-                      <i class="ri-folder-line"></i>
-
-                      <span>Category</span>
-
-                      <strong id="foodCategory">—</strong>
-                    </div>
-
-                    <!-- Listing Type -->
-
-                    <div class="meta-row">
-                      <i class="ri-price-tag-3-line"></i>
-
-                      <span>Listing Type</span>
-
-                      <strong id="listingType">—</strong>
-                    </div>
-
-                    <!-- Pickup -->
-
-                    <div class="meta-row">
-                      <i class="ri-time-line"></i>
-
-                      <span>Pickup Time</span>
-
-                      <strong id="pickupTime">—</strong>
-                    </div>
-
-                    <!-- Expiry -->
-
-                    <div class="meta-row">
-                      <i class="ri-timer-line"></i>
-
-                      <span>Best Before</span>
-
-                      <strong id="expiryDate">—</strong>
-                    </div>
-
-                    <!-- Quantity -->
-
-                    <div class="meta-row">
-                      <i class="ri-stack-line"></i>
-
-                      <span>Quantity</span>
-
-                      <strong id="listingQuantity">—</strong>
-                    </div>
-
-                    <!-- Price -->
-
-                    <div class="meta-row">
-                      <i class="ri-money-rupee-circle-line"></i>
-
-                      <span>Price</span>
-
-                      <strong id="listingPrice">—</strong>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- ==================================================
-                   DESCRIPTION
-              =================================================== -->
-
-              <section class="detail-section">
-                <h3>Description</h3>
-
-                <p id="listingDescription">Loading description...</p>
-              </section>
-
-              <!-- ==================================================
-                   PICKUP INFORMATION
-              =================================================== -->
-
-              <section class="detail-section">
-                <h3>Pickup Information</h3>
-
-                <div class="pickup-info-grid">
-                  <!-- Pickup Start -->
-
-                  <div class="pickup-info-item">
-                    <i class="ri-calendar-line"></i>
-
-                    <div>
-                      <span>Pickup Start</span>
-
-                      <strong id="pickupStart"> — </strong>
-                    </div>
-                  </div>
-
-                  <!-- Pickup End -->
-
-                  <div class="pickup-info-item">
-                    <i class="ri-calendar-check-line"></i>
-
-                    <div>
-                      <span>Pickup End</span>
-
-                      <strong id="pickupEnd"> — </strong>
-                    </div>
-                  </div>
-
-                  <!-- Pickup Instructions -->
-
-                  <div class="pickup-info-item">
-                    <i class="ri-information-line"></i>
-
-                    <div>
-                      <span>Pickup Instructions</span>
-
-                      <strong id="pickupInstructions"> — </strong>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </div>
-
-            <!-- ====================================================
-                 RIGHT SIDEBAR
-            ===================================================== -->
-
-            <aside class="details-sidebar">
-              <!-- ==================================================
-                   LISTING STATUS
-              =================================================== -->
-
-              <section class="detail-card">
-                <h3>Listing Status</h3>
-
-                <div class="status-details">
-                  <!-- Status -->
-
-                  <div class="status-row">
-                    <span>Status</span>
-
-                    <strong id="sideStatus" class="small-status">
-                      Available
-                    </strong>
-                  </div>
-
-                  <!-- Listed On -->
-
-                  <div class="status-row">
-                    <span>Listed On</span>
-
-                    <strong id="listedOn">—</strong>
-                  </div>
-
-                  <!-- Listing ID -->
-
-                  <div class="status-row">
-                    <span>Listing ID</span>
-
-                    <strong id="listingId">—</strong>
-                  </div>
-
-                  <!-- Views -->
-
-                  <div class="status-row">
-                    <span>Views</span>
-
-                    <strong id="sideViews">0</strong>
-                  </div>
-
-                  <!-- Reservations -->
-
-                  <div class="status-row">
-                    <span>Reservations</span>
-
-                    <strong id="sideReservations">0</strong>
-                  </div>
-
-                  <!-- Remaining Quantity -->
-
-                  <div class="status-row">
-                    <span>Remaining Quantity</span>
-
-                    <strong id="remainingQuantity">—</strong>
-                  </div>
-                </div>
-
-                <!-- Actions -->
-
-                <div class="status-actions">
-                  <button
-                    type="button"
-                    class="edit-listing-btn"
-                    id="editListingBtn"
-                  >
-                    <i class="ri-edit-line"></i>
-                    Edit Listing
-                  </button>
-
-                  <button
-                    type="button"
-                    class="remove-listing-btn"
-                    id="removeListingBtn"
-                  >
-                    <i class="ri-delete-bin-line"></i>
-                    Remove Listing
-                  </button>
-                </div>
-              </section>
-
-              <!-- ==================================================
-                   PERFORMANCE
-              =================================================== -->
-
-              <section class="detail-card">
-                <h3>Performance Overview</h3>
-
-                <div class="performance-grid">
-                  <!-- Views -->
-
-                  <div class="performance-item">
-                    <i class="ri-eye-line"></i>
-
-                    <strong id="performanceViews"> 0 </strong>
-
-                    <span>Views</span>
-                  </div>
-
-                  <!-- Reservations -->
-
-                  <div class="performance-item">
-                    <i class="ri-calendar-check-line"></i>
-
-                    <strong id="performanceReservations"> 0 </strong>
-
-                    <span>Reservations</span>
-                  </div>
-
-                  <!-- Recovery -->
-
-                  <div class="performance-item">
-                    <i class="ri-recycle-line"></i>
-
-                    <strong id="performanceRecovery"> 0% </strong>
-
-                    <span>Recovery Chance</span>
-                  </div>
-                </div>
-              </section>
-
-              <!-- ==================================================
-                   FOOD INFORMATION
-              =================================================== -->
-
-              <section class="detail-card">
-                <h3>Food Information</h3>
-
-                <div class="food-information">
-                  <!-- Original Price -->
-
-                  <div class="info-line">
-                    <span>Original Price</span>
-
-                    <strong id="originalPrice"> — </strong>
-                  </div>
-
-                  <!-- Discounted Price -->
-
-                  <div class="info-line">
-                    <span>Discounted Price</span>
-
-                    <strong id="discountedPrice"> — </strong>
-                  </div>
-
-                  <!-- Unit -->
-
-                  <div class="info-line">
-                    <span>Unit</span>
-
-                    <strong id="unit"> — </strong>
-                  </div>
-
-                  <!-- City -->
-
-                  <div class="info-line">
-                    <span>City</span>
-
-                    <strong id="city"> — </strong>
-                  </div>
-                </div>
-              </section>
-
-              <!-- ==================================================
-                   RECENT RESERVATIONS
-              =================================================== -->
-
-              <section class="detail-card recent-reservations-card">
-                <div class="recent-reservations-header">
-                  <h3>Recent Reservations</h3>
-
-                  <button type="button" class="view-all-reservations">
-                    View All
-                  </button>
-                </div>
-
-                <div id="recentReservations" class="recent-reservations">
-                  <!-- Empty state until reservation API is available -->
-
-                  <div class="no-reservations">
-                    <i class="ri-calendar-event-line"></i>
-
-                    <strong> No reservations yet </strong>
-
-                    <p>Reservations for this listing will appear here.</p>
-                  </div>
-                </div>
-              </section>
-            </aside>
-          </section>
-        </main>
+          <i class="ri-arrow-down-s-line"></i>
+        </button>
       </div>
-    </div>
+    </header>
 
     <!-- ==========================================================
-         JAVASCRIPT
-    =========================================================== -->
+     MAIN CONTENT
+=========================================================== -->
+
+    <main class="view-listing-main">
+      <!-- ========================================================
+       PAGE HEADER
+  ========================================================= -->
+
+      <section class="listing-page-header">
+        <div class="breadcrumb">
+          <a href="/my-listings"> My Listings </a>
+
+          <i class="ri-arrow-right-s-line"></i>
+
+          <strong id="breadcrumbTitle"> Listing Details </strong>
+        </div>
+
+        <div class="listing-header-row">
+          <!-- HEADER ACTIONS -->
+
+          <div class="details-top-actions">
+            <span class="ai-ready-top">
+              <i class="ri-sparkling-2-line"></i>
+              AI Ready
+            </span>
+
+            <!-- Duplicate -->
+
+            <button
+              type="button"
+              class="top-action-btn duplicate-action-btn"
+              id="duplicateListingBtn"
+              title="Duplicate Listing"
+              aria-label="Duplicate Listing"
+            >
+              <i class="ri-file-copy-line"></i>
+              <span>Duplicate</span>
+            </button>
+
+            <!-- Pause / Resume -->
+
+            <button
+              type="button"
+              class="top-action-btn pause-action-btn"
+              id="pauseListingBtn"
+              title="Pause Listing"
+              aria-label="Pause Listing"
+            >
+              <i class="ri-pause-circle-line"></i>
+              <span>Pause Listing</span>
+            </button>
+
+            <!-- More -->
+
+            <button
+              type="button"
+              class="top-action-btn more-action-btn"
+              title="More Actions"
+              aria-label="More Actions"
+            >
+              <i class="ri-more-2-fill"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================================
+       LISTING CONTENT
+  ========================================================= -->
+
+      <section class="listing-details-layout">
+        <!-- ======================================================
+         LEFT / MAIN CONTENT
+    ======================================================= -->
+
+        <div class="listing-main">
+          <!-- ====================================================
+           OVERVIEW CARD
+      ===================================================== -->
+
+          <section class="listing-overview">
+            <!-- IMAGE -->
+
+            <div class="listing-gallery">
+              <div class="main-image-wrapper">
+                <img
+                  id="listingImage"
+                  src="/static/images/food-placeholder.jpg"
+                  alt="Food Image"
+                />
+
+                <span id="listingStatusBadge" class="status-badge">
+                  Available
+                </span>
+              </div>
+            </div>
+
+            <!-- BASIC INFORMATION -->
+
+            <div class="listing-summary">
+              <div class="summary-title-row">
+                <div>
+                  <span class="summary-category"> Food Listing </span>
+
+                  <h2 id="summaryListingTitle">Loading listing...</h2>
+                </div>
+              </div>
+
+              <!-- TAGS -->
+
+              <div class="listing-tags">
+                <span class="listing-tag">
+                  <i class="ri-restaurant-line"></i>
+                  <span id="summaryCategory">Meals</span>
+                </span>
+
+                <span class="listing-tag">
+                  <i class="ri-leaf-line"></i>
+                  <span id="summaryFoodType">Vegetarian</span>
+                </span>
+
+                <span class="listing-tag">
+                  <i class="ri-stack-line"></i>
+                  <span id="summaryQuantity">—</span>
+                </span>
+              </div>
+
+              <!-- DESCRIPTION -->
+
+              <p id="listingDescription" class="listing-description">
+                Loading description...
+              </p>
+
+              <!-- DETAILS GRID -->
+
+              <div class="listing-info-grid">
+                <!-- FOOD TYPE -->
+
+                <div class="listing-info-item">
+                  <div class="info-icon">
+                    <i class="ri-leaf-line"></i>
+                  </div>
+
+                  <div>
+                    <span>Food Type</span>
+                    <strong id="foodType">—</strong>
+                  </div>
+                </div>
+
+                <!-- CATEGORY -->
+
+                <div class="listing-info-item">
+                  <div class="info-icon">
+                    <i class="ri-folder-line"></i>
+                  </div>
+
+                  <div>
+                    <span>Category</span>
+                    <strong id="foodCategory">—</strong>
+                  </div>
+                </div>
+
+                <!-- LISTING TYPE -->
+
+                <div class="listing-info-item">
+                  <div class="info-icon">
+                    <i class="ri-price-tag-3-line"></i>
+                  </div>
+
+                  <div>
+                    <span>Listing Type</span>
+                    <strong id="listingType">—</strong>
+                  </div>
+                </div>
+
+                <!-- QUANTITY -->
+
+                <div class="listing-info-item">
+                  <div class="info-icon">
+                    <i class="ri-stack-line"></i>
+                  </div>
+
+                  <div>
+                    <span>Quantity</span>
+                    <strong id="listingQuantity">—</strong>
+                  </div>
+                </div>
+
+                <!-- PRICE -->
+
+                <div class="listing-info-item">
+                  <div class="info-icon">
+                    <i class="ri-money-rupee-circle-line"></i>
+                  </div>
+
+                  <div>
+                    <span>Price</span>
+                    <strong id="listingPrice">—</strong>
+                  </div>
+                </div>
+
+                <!-- UNIT -->
+
+                <div class="listing-info-item">
+                  <div class="info-icon">
+                    <i class="ri-box-3-line"></i>
+                  </div>
+
+                  <div>
+                    <span>Unit</span>
+                    <strong id="unit">—</strong>
+                  </div>
+                </div>
+
+                <!-- PREPARATION TIME -->
+
+                <div class="listing-info-item">
+                  <div class="info-icon">
+                    <i class="ri-calendar-line"></i>
+                  </div>
+
+                  <div>
+                    <span>Preparation Time</span>
+                    <strong id="preparationTime">—</strong>
+                  </div>
+                </div>
+
+                <!-- BEST BEFORE -->
+
+                <div class="listing-info-item">
+                  <div class="info-icon">
+                    <i class="ri-time-line"></i>
+                  </div>
+
+                  <div>
+                    <span>Best Before</span>
+                    <strong id="expiryDate">—</strong>
+                  </div>
+                </div>
+
+                <!-- AVAILABLE UNTIL -->
+
+                <div class="listing-info-item">
+                  <div class="info-icon">
+                    <i class="ri-timer-line"></i>
+                  </div>
+
+                  <div>
+                    <span>Available Until</span>
+                    <strong id="pickupEnd">—</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ====================================================
+           PICKUP INFORMATION
+      ===================================================== -->
+
+          <section class="detail-section">
+            <div class="section-heading">
+              <div class="section-icon">
+                <i class="ri-map-pin-line"></i>
+              </div>
+
+              <div>
+                <h3>Pickup Information</h3>
+                <p>Where and when the food can be collected</p>
+              </div>
+            </div>
+
+            <div class="pickup-info-grid">
+              <!-- LOCATION -->
+
+              <div class="pickup-info-item">
+                <div class="pickup-icon">
+                  <i class="ri-store-2-line"></i>
+                </div>
+
+                <div>
+                  <span>Pickup Location</span>
+
+                  <strong id="pickupLocation"> — </strong>
+
+                  <small id="city"> — </small>
+                </div>
+              </div>
+
+              <!-- PICKUP START -->
+
+              <div class="pickup-info-item">
+                <div class="pickup-icon">
+                  <i class="ri-calendar-line"></i>
+                </div>
+
+                <div>
+                  <span>Pickup Start</span>
+
+                  <strong id="pickupStart"> — </strong>
+                </div>
+              </div>
+
+              <!-- PICKUP END -->
+
+              <div class="pickup-info-item">
+                <div class="pickup-icon">
+                  <i class="ri-calendar-check-line"></i>
+                </div>
+
+                <div>
+                  <span>Pickup End</span>
+
+                  <strong id="pickupEndInfo"> — </strong>
+                </div>
+              </div>
+
+              <!-- INSTRUCTIONS -->
+
+              <div class="pickup-info-item">
+                <div class="pickup-icon">
+                  <i class="ri-information-line"></i>
+                </div>
+
+                <div>
+                  <span>Pickup Instructions</span>
+
+                  <strong id="pickupInstructions"> — </strong>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- ======================================================
+         RIGHT SIDEBAR
+    ======================================================= -->
+
+        <aside class="details-sidebar">
+          <!-- ====================================================
+           LISTING STATUS
+      ===================================================== -->
+
+          <section class="detail-card">
+            <div class="detail-card-header">
+              <div>
+                <span class="card-label"> Listing </span>
+
+                <h3>Listing Status</h3>
+              </div>
+
+              <span id="sideStatus" class="small-status"> Available </span>
+            </div>
+
+            <div class="status-details">
+              <!-- LISTED ON -->
+
+              <div class="status-row">
+                <span>Listed On</span>
+
+                <strong id="listedOn">—</strong>
+              </div>
+
+              <!-- LISTING ID -->
+
+              <div class="status-row">
+                <span>Listing ID</span>
+
+                <strong id="listingId">—</strong>
+              </div>
+
+              <!-- VIEWS -->
+
+              <div class="status-row">
+                <span>Views</span>
+
+                <strong id="sideViews">0</strong>
+              </div>
+
+              <!-- RESERVATIONS -->
+
+              <div class="status-row">
+                <span>Reservations</span>
+
+                <strong id="sideReservations">0</strong>
+              </div>
+
+              <!-- REMAINING -->
+
+              <div class="status-row">
+                <span>Remaining Quantity</span>
+
+                <strong id="remainingQuantity">—</strong>
+              </div>
+            </div>
+
+            <!-- ACTIONS -->
+
+            <div class="status-actions">
+              <button
+                type="button"
+                class="edit-listing-btn"
+                id="editListingBtn"
+              >
+                <i class="ri-edit-line"></i>
+                Edit Listing
+              </button>
+
+              <button
+                type="button"
+                class="remove-listing-btn"
+                id="removeListingBtn"
+              >
+                <i class="ri-delete-bin-line"></i>
+                Remove Listing
+              </button>
+            </div>
+          </section>
+
+          <!-- ====================================================
+           AI INSIGHTS
+      ===================================================== -->
+
+          <section class="detail-card ai-insights-card">
+            <div class="detail-card-header">
+              <div>
+                <span class="card-label"> ReServe AI </span>
+
+                <h3>AI Insights</h3>
+              </div>
+
+              <i class="ri-sparkling-2-line ai-card-icon"></i>
+            </div>
+
+            <div class="ai-insight-content">
+              <!-- RECOVERY -->
+
+              <div class="ai-insight-row">
+                <span>
+                  <i class="ri-recycle-line"></i>
+                  Recovery Chance
+                </span>
+
+                <strong id="performanceRecovery"> 0% </strong>
+              </div>
+
+              <!-- RECOMMENDATION -->
+
+              <div class="ai-recommendation">
+                <i class="ri-lightbulb-line"></i>
+
+                <div>
+                  <span>Recommendation</span>
+
+                  <strong id="aiRecommendation"> Analyzing listing... </strong>
+                </div>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <!-- ==========================================================
+     JAVASCRIPT
+=========================================================== -->
 
     <script src="{{ url_for('static', filename='js/view-listing.js') }}"></script>
   </body>

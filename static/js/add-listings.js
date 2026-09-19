@@ -550,8 +550,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       availableUntil.required = true;
       availableUntil.disabled = false;
-
-      preparationTime.value = "";
     } else {
       // Freshly Prepared Food
 
@@ -682,24 +680,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const completed = Object.values(checks).filter(Boolean).length;
     const percent = Math.round((completed / total) * 100);
 
-   // Update percentage
-readinessScore.textContent = `${percent}%`;
+    // Update percentage
+    readinessScore.textContent = `${percent}%`;
 
-// Update normal progress bar
-if (progressFill) {
-    progressFill.style.width = `${percent}%`;
-}
+    // Update normal progress bar
+    if (progressFill) {
+      progressFill.style.width = `${percent}%`;
+    }
 
-// Update circular readiness ring
-if (readinessRingProgress) {
+    // Update circular readiness ring
+    if (readinessRingProgress) {
+      const circumference = 314;
 
-    const circumference = 314;
+      const offset = circumference - (percent / 100) * circumference;
 
-    const offset =
-        circumference - (percent / 100) * circumference;
-
-    readinessRingProgress.style.strokeDashoffset = offset;
-}
+      readinessRingProgress.style.strokeDashoffset = offset;
+    }
 
     // Update the completed counter
     const readinessCompleted = document.getElementById("readinessCompleted");
@@ -1434,6 +1430,8 @@ if (readinessRingProgress) {
        EXPIRY
     ================================================= */
 
+      preparationTime.value = listing.preparation_time || "";
+
       const hasRealExpiry =
         listing.expiry_date &&
         listing.pickup_end &&
@@ -1841,6 +1839,8 @@ if (readinessRingProgress) {
       discounted_price: isDonation ? 0 : Number(sellingPrice.value || 0),
 
       expiry_date: hasExpiry.checked ? expiryDate.value : availableUntil.value,
+
+      preparation_time: preparationTime.value,
 
       pickup_start: new Date().toISOString(),
 
@@ -2981,6 +2981,8 @@ if (readinessRingProgress) {
       discounted_price: isDonation ? 0 : Number(sellingPrice.value || 0),
 
       expiry_date: hasExpiry.checked ? expiryDate.value : availableUntil.value,
+
+      preparation_time: hasExpiry.checked ? null : preparationTime.value,
 
       /*
        Keep original pickup start.

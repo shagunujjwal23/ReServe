@@ -6,6 +6,7 @@ from bson import ObjectId
 from bson.errors import InvalidId
 from flask import Blueprint, jsonify, request, session
 from pymongo.errors import PyMongoError
+from pymongo import ReturnDocument
 
 from config.database import get_collection
 from services.lifecycle import (
@@ -41,6 +42,7 @@ REQUIRED_FIELDS = (
 OPTIONAL_FIELDS = (
     "landmark",
     "pickup_instructions",
+    "preparation_time",
     "freshness_score",
     "recovery_probability",
     "carbon_saved",
@@ -467,6 +469,24 @@ def create_listing():
             )
         ),
 
+        "preparation_time": (
+            payload.get(
+                "preparation_time",
+                ""
+            ).strip()
+            if isinstance(
+                payload.get(
+                    "preparation_time",
+                    ""
+                ),
+                str
+            )
+            else payload.get(
+                "preparation_time",
+                ""
+            )
+        ),
+
         "freshness_score": payload.get(
             "freshness_score",
             0
@@ -495,8 +515,9 @@ def create_listing():
 
         # Statistics
         "views": 0,
+"viewed_by": [],
 
-        "reservations": 0,
+"reservations": 0,
 
         "original_quantity": quantity,
 
@@ -898,6 +919,11 @@ def get_public_listings():
                     ""
                 ),
 
+                "preparation_time": listing.get(
+                    "preparation_time",
+                    ""
+                ),
+
                 "pickup_start": listing.get(
                     "pickup_start",
                     ""
@@ -905,6 +931,11 @@ def get_public_listings():
 
                 "pickup_end": listing.get(
                     "pickup_end",
+                    ""
+                ),
+
+                "preparation_time": listing.get(
+                    "preparation_time",
                     ""
                 ),
 
@@ -1173,6 +1204,11 @@ def get_my_listings():
                 ""
             ),
 
+            "preparation_time": listing.get(
+                "preparation_time",
+                ""
+            ),
+
             "pickup_start": listing.get(
                 "pickup_start",
                 ""
@@ -1180,6 +1216,11 @@ def get_my_listings():
 
             "pickup_end": listing.get(
                 "pickup_end",
+                ""
+            ),
+
+            "preparation_time": listing.get(
+                "preparation_time",
                 ""
             ),
 
@@ -1285,6 +1326,90 @@ def get_my_listings():
 
 
 # ==========================================================
+# RECORD CUSTOMER VIEW
+# POST /api/listings/<listing_id>/view
+# ==========================================================
+
+@listings.route(
+    "/api/listings/<listing_id>/view",
+    methods=["POST"]
+)
+def record_listing_view(listing_id):
+    """Record one unique customer view for a listing."""
+
+    refresh_lifecycle()
+
+    session_user_id = session.get("user_id")
+
+    if not session_user_id:
+        return jsonify({
+            "success": False,
+            "message": "Authentication is required."
+        }), 401
+
+    try:
+        user_id = ObjectId(session_user_id)
+        listing_object_id = ObjectId(listing_id)
+    except (InvalidId, TypeError):
+        return jsonify({
+            "success": False,
+            "message": "Invalid user or listing ID."
+        }), 400
+
+    listings_collection = get_collection("food_listings")
+
+    if listings_collection is None:
+        return jsonify({
+            "success": False,
+            "message": "MongoDB is currently unavailable."
+        }), 500
+
+    try:
+        # $ne + $addToSet makes the view unique per user per listing.
+        listing = listings_collection.find_one_and_update(
+            {
+                "_id": listing_object_id,
+                "status": "available",
+                "listing_type": "sell",
+                "viewed_by": {"$ne": user_id}
+            },
+            {
+                "$inc": {"views": 1},
+                "$addToSet": {"viewed_by": user_id}
+            },
+            return_document=ReturnDocument.AFTER
+        )
+
+        if listing is None:
+            # Either the listing was already viewed by this user,
+            # or it is not an available Sell listing.
+            listing = listings_collection.find_one({
+                "_id": listing_object_id,
+                "status": "available",
+                "listing_type": "sell"
+            })
+
+    except PyMongoError as error:
+        print("MongoDB listing view error:", error)
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to record listing view."
+        }), 500
+
+    if listing is None:
+        return jsonify({
+            "success": False,
+            "message": "Listing not found or is no longer available."
+        }), 404
+
+    return jsonify({
+        "success": True,
+        "views": listing.get("views", 0)
+    }), 200
+
+
+# ==========================================================
 # GET SINGLE PUBLIC SELL LISTING
 # GET /api/listings/<listing_id>
 # ==========================================================
@@ -1295,10 +1420,11 @@ def get_my_listings():
 )
 def get_listing(listing_id):
     """
-    Return one available Sell listing.
+    Return one listing owned by the logged-in provider.
 
-    Donate listings are not accessible through
-    the public User Marketplace endpoint.
+    This endpoint is used by the provider's My Listings
+    page, so active, paused, completed, expired and
+    cancelled listings can be viewed.
     """
 
     refresh_lifecycle()
@@ -1338,23 +1464,54 @@ def get_listing(listing_id):
         }), 500
 
     # ==========================================================
-    # FIND ONLY SELL LISTING
+    # AUTHENTICATE PROVIDER
+    # ==========================================================
+
+    session_user_id = session.get(
+        "user_id"
+    )
+
+    if not session_user_id:
+
+        return jsonify({
+            "success": False,
+            "message": "Authentication is required."
+        }), 401
+
+    try:
+
+        owner_id = ObjectId(
+            session_user_id
+        )
+
+    except (InvalidId, TypeError):
+
+        session.clear()
+
+        return jsonify({
+            "success": False,
+            "message": "Invalid user session."
+        }), 401
+
+    # ==========================================================
+    # FIND PROVIDER'S LISTING
     # ==========================================================
 
     try:
 
-        listing = listings_collection.find_one({
-
-            "_id": listing_object_id,
-
-            "status": "available",
-
-            # IMPORTANT:
-            # Donate listings must never be returned
-            # through the User Marketplace details API.
-            "listing_type": "sell",
-        })
-
+       listing = listings_collection.find_one_and_update(
+    {
+        "_id": listing_object_id,
+        "owner_id": owner_id
+    },
+    {
+        "$inc": {
+            "views": 1
+        }
+    },
+    return_document=ReturnDocument.AFTER
+)
+       
     except PyMongoError as error:
 
         print(
@@ -1461,6 +1618,11 @@ def get_listing(listing_id):
 
         "pickup_end": listing.get(
             "pickup_end",
+            ""
+        ),
+
+        "preparation_time": listing.get(
+            "preparation_time",
             ""
         ),
 
@@ -1752,6 +1914,7 @@ def update_listing(listing_id):
         "original_price",
         "discounted_price",
         "expiry_date",
+        "preparation_time",
         "pickup_start",
         "pickup_end",
         "address",
@@ -1884,6 +2047,28 @@ def update_listing(listing_id):
         }), 400
 
     update_data["quantity"] = update_quantity
+
+    # ==========================================================
+# PREPARATION / EXPIRY
+# ==========================================================
+
+    if "preparation_time" in payload:
+
+        if payload.get("preparation_time"):
+            # Freshly prepared food
+            update_data["preparation_time"] = str(
+            payload["preparation_time"]
+        ).strip()
+
+        # Remove old expiry information
+        update_data["expiry_date"] = None
+
+    else:
+        # Packaged food
+        update_data["preparation_time"] = None
+
+        if payload.get("expiry_date"):
+            update_data["expiry_date"] = payload["expiry_date"]
 
     # ==========================================================
     # VALIDATE PICKUP
@@ -2045,6 +2230,14 @@ def update_listing(listing_id):
                                 "description",
                                 existing_listing.get(
                                     "description",
+                                    ""
+                                )
+                            ),
+
+                            "preparation_time": update_data.get(
+                                "preparation_time",
+                                existing_listing.get(
+                                    "preparation_time",
                                     ""
                                 )
                             ),

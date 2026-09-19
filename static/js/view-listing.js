@@ -15,7 +15,7 @@ const API_BASE_URL = "/api/listings";
 let listing = null;
 
 /* ==========================================================
-   REUSABLE UI - TOAST & CONFIRMATION MODAL
+   REUSABLE UI - TOAST
 ========================================================== */
 
 function showToast(message, type = "success") {
@@ -116,13 +116,9 @@ function showConfirmModal({
 
         <div class="confirm-content">
 
-          <h3>
-            ${escapeHTML(title)}
-          </h3>
+          <h3>${escapeHTML(title)}</h3>
 
-          <p>
-            ${escapeHTML(message)}
-          </p>
+          <p>${escapeHTML(message)}</p>
 
         </div>
 
@@ -184,19 +180,31 @@ function showConfirmModal({
 ========================================================== */
 
 /* ----------------------------------------------------------
-   Main
+   Header / Summary
+---------------------------------------------------------- */
+
+const breadcrumbTitle = document.getElementById("breadcrumbTitle");
+
+const summaryListingTitle = document.getElementById("summaryListingTitle");
+
+const summaryCategory = document.getElementById("summaryCategory");
+
+const summaryFoodType = document.getElementById("summaryFoodType");
+
+const summaryQuantity = document.getElementById("summaryQuantity");
+
+/* ----------------------------------------------------------
+   Image / Main Listing
 ---------------------------------------------------------- */
 
 const listingImage = document.getElementById("listingImage");
 
 const listingStatusBadge = document.getElementById("listingStatusBadge");
 
-const listingTitle = document.getElementById("listingTitle");
-
 const listingDescription = document.getElementById("listingDescription");
 
 /* ----------------------------------------------------------
-   Basic Information
+   Listing Information
 ---------------------------------------------------------- */
 
 const foodType = document.getElementById("foodType");
@@ -205,23 +213,31 @@ const foodCategory = document.getElementById("foodCategory");
 
 const listingType = document.getElementById("listingType");
 
-const pickupTime = document.getElementById("pickupTime");
-
-const expiryDate = document.getElementById("expiryDate");
-
 const listingQuantity = document.getElementById("listingQuantity");
 
 const listingPrice = document.getElementById("listingPrice");
 
-/* ----------------------------------------------------------
-   Pickup
----------------------------------------------------------- */
+const unit = document.getElementById("unit");
 
-const pickupStart = document.getElementById("pickupStart");
+const preparationTime = document.getElementById("preparationTime");
+
+const expiryDate = document.getElementById("expiryDate");
 
 const pickupEnd = document.getElementById("pickupEnd");
 
+/* ----------------------------------------------------------
+   Pickup Information
+---------------------------------------------------------- */
+
+const pickupLocation = document.getElementById("pickupLocation");
+
+const pickupStart = document.getElementById("pickupStart");
+
+const pickupEndInfo = document.getElementById("pickupEndInfo");
+
 const pickupInstructions = document.getElementById("pickupInstructions");
+
+const city = document.getElementById("city");
 
 /* ----------------------------------------------------------
    Sidebar - Status
@@ -240,28 +256,12 @@ const sideReservations = document.getElementById("sideReservations");
 const remainingQuantity = document.getElementById("remainingQuantity");
 
 /* ----------------------------------------------------------
-   Performance
+   AI Insights
 ---------------------------------------------------------- */
-
-const performanceViews = document.getElementById("performanceViews");
-
-const performanceReservations = document.getElementById(
-  "performanceReservations",
-);
 
 const performanceRecovery = document.getElementById("performanceRecovery");
 
-/* ----------------------------------------------------------
-   Food Information
----------------------------------------------------------- */
-
-const originalPrice = document.getElementById("originalPrice");
-
-const discountedPrice = document.getElementById("discountedPrice");
-
-const unit = document.getElementById("unit");
-
-const city = document.getElementById("city");
+const aiRecommendation = document.getElementById("aiRecommendation");
 
 /* ----------------------------------------------------------
    Recent Reservations
@@ -292,27 +292,14 @@ document.addEventListener("DOMContentLoaded", init);
 function init() {
   console.log("ReServe View Listing Loaded");
 
-  /* --------------------------------------------------------
-     Get listing ID from URL
-  -------------------------------------------------------- */
-
   const params = new URLSearchParams(window.location.search);
 
   const id = params.get("id");
 
-  /* --------------------------------------------------------
-     ID is required
-  -------------------------------------------------------- */
-
   if (!id) {
     showPageError("Listing ID is missing.");
-
     return;
   }
-
-  /* --------------------------------------------------------
-     Load listing
-  -------------------------------------------------------- */
 
   loadListing(id);
 }
@@ -351,6 +338,7 @@ async function loadListing(id) {
 
       return;
     }
+
     /* ------------------------------------------------------
        Not Found
     ------------------------------------------------------ */
@@ -370,19 +358,19 @@ async function loadListing(id) {
     }
 
     /* ------------------------------------------------------
-       Store listing
+       Store Listing
     ------------------------------------------------------ */
 
     listing = data.listing;
 
     /* ------------------------------------------------------
-       Render listing
+       Render Listing
     ------------------------------------------------------ */
 
     renderListing(listing);
 
     /* ------------------------------------------------------
-       Render reservations
+       Render Reservations
     ------------------------------------------------------ */
 
     renderRecentReservations(
@@ -405,13 +393,51 @@ async function loadListing(id) {
 
 function renderListing(data) {
   /* ========================================================
+     BASIC VALUES
+  ======================================================== */
+
+  const title = data.food_title || "Untitled Food Listing";
+
+  const category = data.category || "Not specified";
+
+  const foodTypeValue = data.food_type || "Not specified";
+
+  const quantity = Number(data.quantity) || 0;
+
+  const unitValue = data.unit || "—";
+
+  const quantityText = `${quantity} ${unitValue}`.trim();
+
+  /* ========================================================
+     BREADCRUMB
+  ======================================================== */
+
+  setText(breadcrumbTitle, title);
+
+  /* ========================================================
+     SUMMARY TITLE
+  ======================================================== */
+
+  setText(summaryListingTitle, title);
+
+  /* ========================================================
+     SUMMARY TAGS
+  ======================================================== */
+
+  setText(summaryCategory, category);
+
+  setText(summaryFoodType, foodTypeValue);
+
+  setText(summaryQuantity, quantityText);
+
+  /* ========================================================
      IMAGE
   ======================================================== */
 
   if (listingImage) {
     listingImage.src = data.image || "/static/images/food-placeholder.jpg";
 
-    listingImage.alt = data.food_title || "Food Image";
+    listingImage.alt = title;
 
     listingImage.onerror = function () {
       this.onerror = null;
@@ -425,6 +451,7 @@ function renderListing(data) {
   ======================================================== */
 
   const status = formatStatus(data.status);
+
   updatePauseResumeButton(data.status);
 
   if (listingStatusBadge) {
@@ -444,79 +471,116 @@ function renderListing(data) {
   }
 
   /* ========================================================
-     BASIC INFORMATION
+     DESCRIPTION
   ======================================================== */
-
-  setText(listingTitle, data.food_title || "Untitled Food Listing");
 
   setText(listingDescription, data.description || "No description available.");
 
-  setText(foodType, data.food_type || "Not specified");
+  /* ========================================================
+     LISTING INFORMATION
+  ======================================================== */
 
-  setText(foodCategory, data.category || "Not specified");
+  setText(foodType, foodTypeValue);
+
+  setText(foodCategory, category);
 
   setText(listingType, formatListingType(data.listing_type));
 
-  /* ========================================================
-     PICKUP
-  ======================================================== */
-
-  setText(pickupTime, formatPickupRange(data.pickup_start, data.pickup_end));
-
-  setText(pickupStart, formatDateTime(data.pickup_start));
-
-  setText(pickupEnd, formatDateTime(data.pickup_end));
-
-  /* ========================================================
-     EXPIRY
-  ======================================================== */
-
-  setText(expiryDate, formatDateTime(data.expiry_date));
-
-  /* ========================================================
-     QUANTITY
-  ======================================================== */
-
-  const quantity = Number(data.quantity) || 0;
-
-  const quantityText = `${quantity} ${data.unit || ""}`.trim();
-
   setText(listingQuantity, quantityText);
 
-  setText(
-    remainingQuantity,
-    data.remaining_quantity !== undefined
-      ? `${Number(data.remaining_quantity) || 0} ${data.unit || ""}`.trim()
-      : quantityText,
-  );
-
-  setText(unit, data.unit || "—");
+  setText(unit, unitValue);
 
   /* ========================================================
      PRICE
   ======================================================== */
 
-  const discounted = Number(data.discounted_price) || 0;
+const normalizedType = String(data.listing_type || "")
+  .trim()
+  .toLowerCase();
 
-  const original = Number(data.original_price) || 0;
+const discounted =
+  Number(
+    data.discounted_price ??
+    data.selling_price ??
+    data.sale_price ??
+    data.final_price ??
+    data.price ??
+    0
+  ) || 0;
 
-  if (listingPrice) {
-    if (String(data.listing_type || "").toLowerCase() === "donation") {
-      listingPrice.textContent = "Free";
-    } else if (discounted > 0) {
-      listingPrice.textContent = `₹${discounted}`;
-    } else {
-      listingPrice.textContent = "—";
-    }
+const original =
+  Number(
+    data.original_price ??
+    data.originalPrice ??
+    0
+  ) || 0;
+
+if (listingPrice) {
+
+  /* Donation listings */
+  if (
+    normalizedType === "donation" ||
+    normalizedType === "donate"
+  ) {
+    listingPrice.textContent = "Free";
   }
 
-  setText(originalPrice, original > 0 ? `₹${original}` : "Free");
+  /* Sale price */
+  else if (discounted > 0) {
+    listingPrice.textContent = `₹${discounted}`;
+  }
 
-  setText(discountedPrice, discounted > 0 ? `₹${discounted}` : "Free");
+  /* Original price fallback */
+  else if (original > 0) {
+    listingPrice.textContent = `₹${original}`;
+  }
+
+  else {
+    listingPrice.textContent = "—";
+  }
+}
 
   /* ========================================================
-     PICKUP INSTRUCTIONS
+     PREPARATION TIME
   ======================================================== */
+
+  setText(
+    preparationTime,
+    formatPreparationTime(
+      data.preparation_time ??
+        data.prepared_at ??
+        data.preparation_date ??
+        data.preparation_datetime ??
+        data.preparationTime,
+    ),
+  );
+
+  /* ========================================================
+     BEST BEFORE
+  ======================================================== */
+
+  setText(expiryDate, formatDateTime(data.expiry_date));
+
+  /* ========================================================
+     AVAILABLE UNTIL
+  ======================================================== */
+
+  setText(pickupEnd, formatDateTime(data.pickup_end));
+
+  /* ========================================================
+     PICKUP INFORMATION
+  ======================================================== */
+
+  setText(
+    pickupLocation,
+    data.pickup_location || data.location || data.address || "—",
+  );
+
+  setText(city, data.city || "—");
+
+  setText(pickupStart, formatDateTime(data.pickup_start));
+
+  setText(pickupEndInfo, formatDateTime(data.pickup_end));
 
   setText(
     pickupInstructions,
@@ -539,8 +603,6 @@ function renderListing(data) {
 
   setText(sideViews, views);
 
-  setText(performanceViews, views);
-
   /* ========================================================
      RESERVATIONS
   ======================================================== */
@@ -549,21 +611,73 @@ function renderListing(data) {
 
   setText(sideReservations, reservations);
 
-  setText(performanceReservations, reservations);
-
   /* ========================================================
-     RECOVERY
+     REMAINING QUANTITY
   ======================================================== */
 
-  const recovery = Number(data.recovery_probability) || 0;
+  const remaining =
+    data.remaining_quantity !== undefined && data.remaining_quantity !== null
+      ? Number(data.remaining_quantity)
+      : quantity;
 
-  setText(performanceRecovery, `${recovery}%`);
+  setText(remainingQuantity, `${remaining} ${unitValue}`.trim());
 
   /* ========================================================
-     CITY
+     AI INSIGHTS
   ======================================================== */
 
-  setText(city, data.city || "—");
+  renderAIInsights(data);
+}
+
+/* ==========================================================
+   RENDER AI INSIGHTS
+========================================================== */
+
+function renderAIInsights(data) {
+
+  /* --------------------------------------------------------
+     Recovery Chance
+  -------------------------------------------------------- */
+
+  const recovery =
+    data.recovery_probability ??
+    data.recoveryProbability ??
+    data.recovery_chance ??
+    0;
+
+  const recoveryNumber =
+    Number(recovery);
+
+  if (!Number.isNaN(recoveryNumber)) {
+
+    setText(
+      performanceRecovery,
+      `${recoveryNumber}%`
+    );
+
+  } else {
+
+    setText(
+      performanceRecovery,
+      recovery
+    );
+  }
+
+  /* --------------------------------------------------------
+     AI Recommendation
+  -------------------------------------------------------- */
+
+  const recommendation =
+    data.ai_recommendation ??
+    data.aiRecommendation ??
+    data.recommendation ??
+    data.recommended_action;
+
+  setText(
+    aiRecommendation,
+    recommendation ||
+      "No recommendation available"
+  );
 }
 
 /* ==========================================================
@@ -575,16 +689,12 @@ function renderRecentReservations(reservations) {
     return;
   }
 
-  /* --------------------------------------------------------
-     Make sure we have an array
-  -------------------------------------------------------- */
-
   if (!Array.isArray(reservations)) {
     reservations = [];
   }
 
   /* --------------------------------------------------------
-     Empty state
+     Empty State
   -------------------------------------------------------- */
 
   if (reservations.length === 0) {
@@ -608,7 +718,7 @@ function renderRecentReservations(reservations) {
   }
 
   /* --------------------------------------------------------
-     Show latest reservations
+     Latest 3
   -------------------------------------------------------- */
 
   const latestReservations = reservations.slice(0, 3);
@@ -616,34 +726,6 @@ function renderRecentReservations(reservations) {
   recentReservations.innerHTML = latestReservations
     .map((reservation) => createReservationHTML(reservation))
     .join("");
-}
-
-/* ==========================================================
-   UPDATE PAUSE / RESUME BUTTON
-========================================================== */
-
-function updatePauseResumeButton(status) {
-  if (!pauseListingBtn) {
-    return;
-  }
-
-  const normalizedStatus = String(status || "")
-    .trim()
-    .toLowerCase();
-
-  if (normalizedStatus === "paused") {
-    pauseListingBtn.innerHTML = '<i class="ri-play-circle-line"></i>';
-
-    pauseListingBtn.title = "Resume Listing";
-
-    pauseListingBtn.setAttribute("aria-label", "Resume Listing");
-  } else {
-    pauseListingBtn.innerHTML = '<i class="ri-pause-circle-line"></i>';
-
-    pauseListingBtn.title = "Pause Listing";
-
-    pauseListingBtn.setAttribute("aria-label", "Pause Listing");
-  }
 }
 
 /* ==========================================================
@@ -734,6 +816,42 @@ function formatReservationStatus(status) {
 
     default:
       return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  }
+}
+
+/* ==========================================================
+   UPDATE PAUSE / RESUME BUTTON
+========================================================== */
+
+function updatePauseResumeButton(status) {
+  if (!pauseListingBtn) {
+    return;
+  }
+
+  const normalizedStatus = String(status || "")
+    .trim()
+    .toLowerCase();
+
+  const isPaused = normalizedStatus === "paused";
+
+  if (isPaused) {
+    pauseListingBtn.innerHTML = `
+      <i class="ri-play-circle-line"></i>
+      <span>Resume Listing</span>
+    `;
+
+    pauseListingBtn.title = "Resume Listing";
+
+    pauseListingBtn.setAttribute("aria-label", "Resume Listing");
+  } else {
+    pauseListingBtn.innerHTML = `
+      <i class="ri-pause-circle-line"></i>
+      <span>Pause Listing</span>
+    `;
+
+    pauseListingBtn.title = "Pause Listing";
+
+    pauseListingBtn.setAttribute("aria-label", "Pause Listing");
   }
 }
 
@@ -840,23 +958,74 @@ function formatDateTime(value) {
 }
 
 /* ==========================================================
-   FORMAT PICKUP RANGE
+   FORMAT PREPARATION TIME
 ========================================================== */
 
-function formatPickupRange(start, end) {
-  if (!start && !end) {
-    return "Pickup time not specified";
+function formatPreparationTime(value) {
+  if (value === undefined || value === null || value === "") {
+    return "—";
   }
 
-  if (start && end) {
-    return `${formatDateTime(start)} - ${formatDateTime(end)}`;
+  const text = String(value).trim();
+
+  /* --------------------------------------------------------
+     Time-only value
+     Examples:
+     14:30
+     14:30:00
+     02:30 PM
+  -------------------------------------------------------- */
+
+  const timeOnly24 = /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/;
+
+  const match24 = text.match(timeOnly24);
+
+  if (match24) {
+    let hours = Number(match24[1]);
+    const minutes = match24[2];
+
+    const period = hours >= 12 ? "PM" : "AM";
+
+    hours = hours % 12 || 12;
+
+    return `${hours}:${minutes} ${period}`;
   }
 
-  if (start) {
-    return formatDateTime(start);
+  /* --------------------------------------------------------
+     12-hour time
+     Example:
+     02:30 PM
+  -------------------------------------------------------- */
+
+  const timeOnly12 = /^(\d{1,2}):([0-5]\d)\s*(AM|PM)$/i;
+
+  const match12 = text.match(timeOnly12);
+
+  if (match12) {
+    return `${match12[1]}:${match12[2]} ${match12[3].toUpperCase()}`;
   }
 
-  return formatDateTime(end);
+  /* --------------------------------------------------------
+     Full date + time
+  -------------------------------------------------------- */
+
+  const date = new Date(value);
+
+  if (!Number.isNaN(date.getTime())) {
+    return date.toLocaleString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  }
+
+  /* --------------------------------------------------------
+     Fallback
+  -------------------------------------------------------- */
+
+  return text;
 }
 
 /* ==========================================================
@@ -901,13 +1070,11 @@ function escapeHTML(value) {
 function showPageError(message) {
   console.error("View Listing:", message);
 
-  if (listingTitle) {
-    listingTitle.textContent = "Unable to Load Listing";
-  }
+  setText(breadcrumbTitle, "Error");
 
-  if (listingDescription) {
-    listingDescription.textContent = message;
-  }
+  setText(summaryListingTitle, "Unable to Load Listing");
+
+  setText(listingDescription, message);
 }
 
 /* ==========================================================
@@ -920,7 +1087,9 @@ if (editListingBtn) {
       return;
     }
 
-    window.location.href = `/add-listings?id=${encodeURIComponent(listing.id)}&mode=edit`;
+    window.location.href = `/add-listings?id=${encodeURIComponent(
+      listing.id,
+    )}&mode=edit`;
   });
 }
 
@@ -936,9 +1105,13 @@ if (removeListingBtn) {
 
     const confirmed = await showConfirmModal({
       title: "Remove Listing?",
+
       message: `Are you sure you want to remove "${listing.food_title}"? This action cannot be undone.`,
+
       confirmText: "Remove Listing",
+
       cancelText: "Keep Listing",
+
       type: "danger",
     });
 
@@ -963,9 +1136,14 @@ if (removeListingBtn) {
       const data = await response.json().catch(() => ({}));
 
       if (response.status === 401) {
-        alert(data.message || "Your session has expired. Please login again.");
+        showToast(
+          data.message || "Your session has expired. Please login again.",
+          "error",
+        );
 
-        window.location.href = "/login";
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1200);
 
         return;
       }
@@ -982,7 +1160,10 @@ if (removeListingBtn) {
     } catch (error) {
       console.error("Remove Listing Error:", error);
 
-      alert(error.message || "Unable to remove listing. Please try again.");
+      showToast(
+        error.message || "Unable to remove listing. Please try again.",
+        "error",
+      );
     }
   });
 }
@@ -999,9 +1180,13 @@ if (duplicateListingBtn) {
 
     const confirmed = await showConfirmModal({
       title: "Duplicate Listing?",
+
       message: `A new listing will be created using "${listing.food_title}" as the template.`,
+
       confirmText: "Duplicate",
+
       cancelText: "Cancel",
+
       type: "warning",
     });
 
@@ -1027,29 +1212,28 @@ if (duplicateListingBtn) {
 
       const data = await response.json().catch(() => ({}));
 
-      /* Authentication */
-
       if (response.status === 401) {
-        alert(data.message || "Your session has expired. Please login again.");
+        showToast(
+          data.message || "Your session has expired. Please login again.",
+          "error",
+        );
 
-        window.location.href = "/login";
+        setTimeout(() => {
+          window.location.href = "/login";
+        }, 1200);
 
         return;
       }
-
-      /* API Error */
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Unable to duplicate the listing.");
       }
 
-      /* Success */
-
       showToast(data.message || "Listing duplicated successfully.", "success");
 
-      /* Return to My Listings */
-
-      window.location.href = "/my-listings";
+      setTimeout(() => {
+        window.location.href = "/my-listings";
+      }, 700);
     } catch (error) {
       console.error("Duplicate Listing Error:", error);
 
@@ -1057,6 +1241,8 @@ if (duplicateListingBtn) {
         error.message || "Unable to duplicate the listing. Please try again.",
         "error",
       );
+    } finally {
+      duplicateListingBtn.disabled = false;
     }
   });
 }
@@ -1081,18 +1267,19 @@ if (pauseListingBtn) {
 
     const confirmed = await showConfirmModal({
       title: isPaused ? "Resume Listing?" : "Pause Listing?",
+
       message: `Are you sure you want to ${actionText} "${listing.food_title}"?`,
+
       confirmText: isPaused ? "Resume Listing" : "Pause Listing",
+
       cancelText: "Cancel",
+
       type: "warning",
     });
 
     if (!confirmed) {
       return;
     }
-    /* --------------------------------------------------------
-       Prevent double click
-    -------------------------------------------------------- */
 
     pauseListingBtn.disabled = true;
 
@@ -1112,10 +1299,6 @@ if (pauseListingBtn) {
 
       const data = await response.json().catch(() => ({}));
 
-      /* ------------------------------------------------------
-         Authentication
-      ------------------------------------------------------ */
-
       if (response.status === 401) {
         showToast(
           data.message || "Your session has expired. Please login again.",
@@ -1127,35 +1310,23 @@ if (pauseListingBtn) {
         }, 1200);
 
         return;
-
-        window.location.href = "/login";
-
-        return;
       }
-
-      /* ------------------------------------------------------
-         API Error
-      ------------------------------------------------------ */
 
       if (!response.ok || !data.success) {
         throw new Error(data.message || "Unable to update listing status.");
       }
 
-      /* ------------------------------------------------------
-         Update local listing
-      ------------------------------------------------------ */
+      /* ----------------------------------------------------
+           Update local listing
+        ---------------------------------------------------- */
 
       listing.status = data.status;
 
-      /* ------------------------------------------------------
-         Format status for UI
-      ------------------------------------------------------ */
-
       const formattedStatus = formatStatus(data.status);
 
-      /* ------------------------------------------------------
-         Update main status badge
-      ------------------------------------------------------ */
+      /* ----------------------------------------------------
+           Main Badge
+        ---------------------------------------------------- */
 
       if (listingStatusBadge) {
         listingStatusBadge.textContent = formattedStatus;
@@ -1165,9 +1336,9 @@ if (pauseListingBtn) {
         listingStatusBadge.classList.add(formattedStatus.toLowerCase());
       }
 
-      /* ------------------------------------------------------
-         Update sidebar status
-      ------------------------------------------------------ */
+      /* ----------------------------------------------------
+           Sidebar Status
+        ---------------------------------------------------- */
 
       if (sideStatus) {
         sideStatus.textContent = formattedStatus;
@@ -1177,15 +1348,15 @@ if (pauseListingBtn) {
         sideStatus.classList.add(formattedStatus.toLowerCase());
       }
 
-      /* ------------------------------------------------------
-         Update Pause / Resume icon
-      ------------------------------------------------------ */
+      /* ----------------------------------------------------
+           Pause / Resume Button
+        ---------------------------------------------------- */
 
       updatePauseResumeButton(data.status);
 
-      /* ------------------------------------------------------
-         Success
-      ------------------------------------------------------ */
+      /* ----------------------------------------------------
+           Success
+        ---------------------------------------------------- */
 
       showToast(
         data.message || "Listing status updated successfully.",
