@@ -159,17 +159,22 @@ def get_provider_pickup_location(owner_id):
             provider.get("address", "")
         ).strip()
 
+        area = str(
+            provider.get("area", "")
+        ).strip()
+
         city = str(
             provider.get("city", "")
         ).strip()
 
-        if not address or not city:
+        if not address or not area or not city:
             return None
 
         return {
-            "address": address,
-            "city": city,
-        }
+    "address": address,
+    "area": area,
+    "city": city,
+}
 
     except PyMongoError as error:
 
@@ -430,6 +435,8 @@ def create_listing():
     listing_document.update({
 
         "address": pickup_location["address"],
+
+        "area": pickup_location["area"],
 
         "city": pickup_location["city"],
 
@@ -943,6 +950,11 @@ def get_public_listings():
                     "address",
                     ""
                 ),
+
+                "area": listing.get(
+    "area",
+    ""
+),
 
                 "city": listing.get(
                     "city",
@@ -2114,6 +2126,10 @@ def update_listing(listing_id):
 
     update_data["address"] = pickup_location[
         "address"
+    ]
+
+    update_data["area"] = pickup_location[
+        "area"
     ]
 
     update_data["city"] = pickup_location[

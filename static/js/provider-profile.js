@@ -249,10 +249,10 @@ function populateProfile(profile) {
   setValue("pincode", profile.pincode || "");
 
   /* --------------------------------------------------------
-     SERVING AREAS
-  -------------------------------------------------------- */
+   AREA
+-------------------------------------------------------- */
 
-  setValue("servingAreas", profile.serving_areas || "");
+  setValue("area", profile.area || "");
 
   /* --------------------------------------------------------
      WORKING DAYS
@@ -635,6 +635,8 @@ function setupFormValidation() {
 
   const pincode = document.getElementById("pincode");
 
+  const area = document.getElementById("area");
+
   const openingTime = document.getElementById("openingTime");
 
   const closingTime = document.getElementById("closingTime");
@@ -720,6 +722,16 @@ function setupFormValidation() {
       pincode.value = pincode.value.slice(0, 6);
 
       validatePincode(false);
+    });
+  }
+
+  /* --------------------------------------------------------
+   AREA
+-------------------------------------------------------- */
+
+  if (area) {
+    area.addEventListener("input", () => {
+      validateRequiredField(area, "areaMessage");
     });
   }
 
@@ -1100,6 +1112,8 @@ function setupFormSubmit() {
 
     const pincode = document.getElementById("pincode");
 
+    const area = document.getElementById("area");
+
     const openingTime = document.getElementById("openingTime");
 
     const closingTime = document.getElementById("closingTime");
@@ -1131,6 +1145,8 @@ function setupFormSubmit() {
     const validState = validateRequiredField(state, "stateMessage");
 
     const validPincode = validatePincode(true);
+
+    const validArea = validateRequiredField(area, "areaMessage");
 
     const validOpeningTime = validateRequiredField(
       openingTime,
@@ -1199,6 +1215,7 @@ function setupFormSubmit() {
       !validCity ||
       !validState ||
       !validPincode ||
+      !validArea ||
       !validOpeningTime ||
       !validClosingTime ||
       !validCuisineTypes ||
@@ -1235,12 +1252,6 @@ function setupFormSubmit() {
       otherCuisine && otherCuisineCheckbox && otherCuisineCheckbox.checked
         ? otherCuisine.value.trim()
         : "";
-
-    /* ----------------------------------------------------
-         SERVING AREAS
-      ---------------------------------------------------- */
-
-    const servingAreas = document.getElementById("servingAreas");
 
     /* ----------------------------------------------------
          UPLOAD NEW IMAGES
@@ -1297,7 +1308,7 @@ function setupFormSubmit() {
 
       pincode: pincode.value.trim(),
 
-      serving_areas: servingAreas?.value.trim() || "",
+      area: area.value.trim(),
 
       working_days: workingDays,
 
@@ -1471,13 +1482,13 @@ function showMissingFields(fields) {
 
     pincode: "pincode",
 
+    area: "area",
+
     opening_time: "openingTime",
 
     closing_time: "closingTime",
 
     about: "about",
-
-    serving_areas: "servingAreas",
   };
 
   fields.forEach((field) => {

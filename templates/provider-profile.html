@@ -506,11 +506,10 @@
                     </div>
                     <p class="field-message" id="pincodeMessage"></p>
                   </div>
-
                   <div class="form-group">
-                    <label for="servingAreas">
-                      Serving Areas
-                      <span class="optional">Optional</span>
+                    <label for="area">
+                      Area
+                      <span class="required">*</span>
                     </label>
 
                     <div class="input-wrapper">
@@ -518,18 +517,18 @@
 
                       <input
                         type="text"
-                        id="servingAreas"
-                        name="serving_areas"
-                        placeholder="e.g. Indiranagar, HSR Layout, Koramangala"
-                        maxlength="250"
+                        id="area"
+                        name="area"
+                        placeholder="Enter your area"
+                        maxlength="100"
                       />
                     </div>
 
                     <small class="field-hint">
-                      Areas where you can provide or distribute food.
+                      Enter the local area where customers can collect the food.
                     </small>
 
-                    <div id="servingAreasMessage" class="field-message"></div>
+                    <div id="areaMessage" class="field-message"></div>
                   </div>
                 </div>
               </section>

@@ -1166,6 +1166,10 @@ def ngo_claims_page():
             "pincode",
             ""
         ),
+
+        "area": user_record.get(
+    "area", ""
+),
     }
 
     return render_template(

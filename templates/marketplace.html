@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Marketplace | ReServe</title>
+    <title>Explore Food | ReServe</title>
 
     <!-- Remix Icons -->
     <link
@@ -33,6 +33,7 @@
       href="{{ url_for('static', filename='css/marketplace.css') }}"
     />
 
+    <!-- Existing shared styles -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/my-listings.css') }}"
@@ -81,6 +82,11 @@
           <i class="ri-heart-3-line"></i>
           <span>Favorites</span>
         </a>
+
+        <a href="/messages">
+          <i class="ri-message-3-line"></i>
+          <span>Messages</span>
+        </a>
       </nav>
 
       <!-- Right Actions -->
@@ -97,18 +103,6 @@
           <span class="notification-badge" id="notificationCount"> 0 </span>
         </button>
 
-        <!-- Messages -->
-        <button
-          type="button"
-          class="navbar-icon-btn"
-          id="messageBtn"
-          title="Messages"
-        >
-          <i class="ri-message-3-line"></i>
-
-          <span class="notification-badge" id="messageCount"> 0 </span>
-        </button>
-
         <!-- Profile -->
         <div class="user-profile-wrapper">
           <button type="button" class="user-profile-btn" id="profileMenuBtn">
@@ -121,9 +115,8 @@
             </div>
 
             <div class="profile-info">
-              <strong id="profileName"> Loading... </strong>
-
-              <span id="profileRole"> User </span>
+              <strong id="profileName">Loading...</strong>
+              <span id="profileRole">User</span>
             </div>
 
             <i class="ri-arrow-down-s-line"></i>
@@ -152,206 +145,412 @@
       </div>
     </header>
 
-    <!-- ======================================================
-     MAIN CONTENT
-======================================================= -->
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================== -->
 
-    <div class="main-content">
-      <main class="content-wrapper">
-        <!-- ==================================================
-         PAGE HEADER
-    =================================================== -->
+    <main class="marketplace-page">
+      <!-- =======================================================
+           HERO
+      ======================================================== -->
 
-        <section class="page-header">
-          <div class="page-heading">
-            <h1>Explore Food</h1>
+      <section class="marketplace-hero">
+        <img
+          class="marketplace-hero-image"
+          src="{{ url_for('static', filename='images/hero/explore-food-hero.png') }}"
+          alt="Fresh surplus food"
+        />
+
+        <div class="marketplace-hero-overlay">
+          <div class="marketplace-hero-content">
+            <span class="hero-eyebrow"> GOOD FOOD FINDS A BETTER HOME </span>
+
+            <h1>
+              Delicious
+              <span>Food</span>
+              <br />
+              Better Choices
+            </h1>
 
             <p>
-              Discover affordable meals and food donations shared by
-              restaurants, bakeries, NGOs and community kitchens near you.
+              Discover fresh, quality food from local businesses and help reduce
+              food waste.
             </p>
+
+            <div class="hero-benefits">
+              <div class="hero-benefit">
+                <div class="benefit-icon">
+                  <i class="ri-leaf-line"></i>
+                </div>
+
+                <div>
+                  <strong>Reduce</strong>
+                  <span>Food Waste</span>
+                </div>
+              </div>
+
+              <div class="hero-benefit">
+                <div class="benefit-icon">
+                  <i class="ri-group-line"></i>
+                </div>
+
+                <div>
+                  <strong>Support</strong>
+                  <span>Local Businesses</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        <!-- ==================================================
-         FILTER TOOLBAR
-    =================================================== -->
+      <!-- =======================================================
+           SEARCH
+      ======================================================== -->
 
-        <section class="filter-toolbar">
-          <!-- Search -->
-          <div class="search-filter">
+      <section class="explore-search-section">
+        <div class="explore-search-bar">
+          <div class="explore-search-input">
             <i class="ri-search-line"></i>
 
             <input
               id="listingSearch"
-              type="text"
-              placeholder="Search food, provider or category..."
+              type="search"
+              placeholder="Search for food, dishes or restaurants..."
+              autocomplete="off"
             />
+
+            <button
+              type="button"
+              class="search-clear-btn hidden"
+              id="searchClearBtn"
+              aria-label="Clear search"
+            >
+              <i class="ri-close-line"></i>
+            </button>
           </div>
 
-          <!-- Category -->
-          <div class="filter-select">
-            <i class="ri-folder-line"></i>
+          <button type="button" class="explore-search-btn" id="searchBtn">
+            Search
+            <i class="ri-arrow-right-line"></i>
+          </button>
+        </div>
 
-            <select id="categoryFilter">
-              <option value="">All Categories</option>
-            </select>
+        <!-- Search Suggestions -->
+        <div class="search-suggestions hidden" id="searchSuggestions"></div>
+      </section>
+
+      <!-- =======================================================
+           AVAILABLE FOOD
+      ======================================================== -->
+
+      <section class="available-food-section">
+        <!-- Section Header -->
+        <div class="section-top-row">
+          <div class="section-heading">
+            <h2>Available Food</h2>
+
+            <p id="listingLocationText">
+              Fresh food available in your selected city
+            </p>
           </div>
 
-          <!-- Provider Filter -->
-          <div class="filter-select">
-            <i class="ri-store-2-line"></i>
+          <div class="section-location-sort">
+            <!-- Filters -->
+            <button type="button" class="filter-toggle-btn" id="filterToggle">
+              <i class="ri-equalizer-3-line"></i>
+              Filters
+            </button>
 
-            <select id="providerFilter">
-              <option value="">All Partners</option>
-            </select>
+            <!-- Sort -->
+            <div class="sort-control">
+              <i class="ri-sort-desc"></i>
+
+              <select id="sortBy">
+                <option value="nearest">Sort by: Nearest</option>
+
+                <option value="newest">Newest First</option>
+
+                <option value="expiry">Expiring Soon</option>
+
+                <option value="priceLow">Price: Low to High</option>
+
+                <option value="priceHigh">Price: High to Low</option>
+              </select>
+
+              <i class="ri-arrow-down-s-line"></i>
+            </div>
           </div>
+        </div>
 
-          <!-- Location Filter -->
-          <div class="filter-select">
-            <i class="ri-map-pin-line"></i>
+        <!-- =====================================================
+             FILTER PANEL
+        ====================================================== -->
 
-            <select id="locationFilter">
-              <option value="">All Locations</option>
+        <div class="advanced-filter-panel hidden" id="advancedFilterPanel">
+          <!-- Filter Header -->
+          <div class="filter-panel-header">
+            <div>
+              <h3>Filter Food</h3>
 
-              <!-- Dynamic Locations -->
-            </select>
-          </div>
-
-          <!-- Sort -->
-          <div class="filter-select">
-            <i class="ri-sort-desc"></i>
-
-            <select id="sortBy">
-              <option value="">Sort By</option>
-              <option value="newest">Newest First</option>
-              <option value="expiry">Expiring Soon</option>
-              <option value="priceLow">Price: Low to High</option>
-              <option value="priceHigh">Price: High to Low</option>
-            </select>
-          </div>
-
-          <div class="filter-actions">
-            <div class="food-toggle-wrapper">
-              <label class="food-switch" title="Show Veg Only">
-                <input type="checkbox" id="vegOnlyToggle" />
-                <span class="slider"></span>
-              </label>
+              <span> Refine your food choices </span>
             </div>
 
             <button
-              id="clearFilters"
-              class="filter-reset-btn"
               type="button"
-              title="Clear Filters"
+              class="filter-panel-close"
+              id="filterPanelClose"
+              aria-label="Close filters"
             >
-              <i class="ri-filter-off-line"></i>
+              <i class="ri-close-line"></i>
             </button>
           </div>
-        </section>
 
-        <!-- ==================================================
-         LISTINGS SECTION
-    =================================================== -->
+          <!-- Filter Grid -->
+          <div class="filter-panel-grid">
+            <!-- Category -->
+            <div class="filter-field">
+              <label for="categoryFilter"> Category </label>
 
-        <section class="listings-section">
-          <!-- Listings Grid -->
+              <div class="filter-select">
+                <i class="ri-folder-line"></i>
 
-          <div class="listings-grid" id="listingsContainer">
-            <!-- Dynamic Listings -->
+                <select id="categoryFilter">
+                  <option value="">All Categories</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Food Partner -->
+            <div class="filter-field">
+              <label for="providerFilter"> Food Partner </label>
+
+              <div class="filter-select">
+                <i class="ri-store-2-line"></i>
+
+                <select id="providerFilter">
+                  <option value="">All Partners</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Area -->
+            <div class="filter-field">
+              <label for="locationFilter"> Area </label>
+
+              <div class="filter-select">
+                <i class="ri-map-pin-line"></i>
+
+                <select id="locationFilter">
+                  <option value="">All Areas</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Food Type -->
+            <div class="filter-field">
+              <label for="foodTypeFilter"> Food Type </label>
+
+              <div class="filter-select">
+                <i class="ri-restaurant-2-line"></i>
+
+                <select id="foodTypeFilter">
+                  <option value="">All Food Types</option>
+
+                  <option value="Vegetarian">Vegetarian</option>
+
+                  <option value="Vegan">Vegan</option>
+
+                  <option value="Non-Vegetarian">Non-Vegetarian</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Price Range -->
+            <div class="filter-field">
+              <label for="priceFilter"> Price Range </label>
+
+              <div class="filter-select">
+                <i class="ri-money-rupee-circle-line"></i>
+
+                <select id="priceFilter">
+                  <option value="">Any Price</option>
+
+                  <option value="under50">Under ₹50</option>
+
+                  <option value="50to100">₹50 – ₹100</option>
+
+                  <option value="100to250">₹100 – ₹250</option>
+
+                  <option value="above250">Above ₹250</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Food Preference -->
+            <div class="filter-field filter-field-toggle">
+              <label> Food Preference </label>
+
+              <label class="veg-toggle">
+                <span>
+                  <i class="ri-leaf-line"></i>
+                  Vegetarian Only
+                </span>
+
+                <input type="checkbox" id="vegOnlyToggle" />
+
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Clear Filters -->
+            <div class="filter-field filter-clear-field">
+              <button type="button" id="clearFilters" class="filter-reset-btn">
+                <i class="ri-filter-off-line"></i>
+                Clear All Filters
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- =====================================================
+             ACTIVE FILTERS
+        ====================================================== -->
+
+        <div class="active-filters hidden" id="activeFilters"></div>
+
+        <!-- =====================================================
+             LISTINGS GRID
+        ====================================================== -->
+
+        <div class="listings-grid" id="listingsContainer">
+          <!-- Dynamic Listings -->
+        </div>
+
+        <!-- =====================================================
+             EMPTY STATE
+        ====================================================== -->
+
+        <section class="empty-state hidden" id="emptyState">
+          <div class="empty-icon">
+            <i class="ri-search-eye-line"></i>
           </div>
 
-          <!-- Empty State -->
+          <h2>No Food Found</h2>
 
-          <section class="empty-state hidden" id="emptyState">
-            <div class="empty-icon">
-              <i class="ri-inbox-2-line"></i>
-            </div>
+          <p>
+            We couldn't find food matching your current search or filters. Try
+            something else.
+          </p>
 
-            <h2>No Listings Found</h2>
-
-            <p>
-              No food listings match your current filters. Try adjusting your
-              search criteria.
-            </p>
-          </section>
-
-          <!-- Loading State -->
-
-          <section class="loading-state" id="loadingState">
-            <div class="loader"></div>
-
-            <p>Loading available food listings...</p>
-          </section>
+          <button type="button" class="empty-reset-btn" id="emptyResetBtn">
+            <i class="ri-refresh-line"></i>
+            Clear Search & Filters
+          </button>
         </section>
 
-        <!-- ==================================================
+        <!-- =====================================================
+             LOADING STATE
+        ====================================================== -->
+
+        <section class="loading-state" id="loadingState">
+          <div class="loader"></div>
+
+          <p>Finding fresh food near you...</p>
+        </section>
+
+        <!-- =====================================================
+             LOAD MORE
+        ====================================================== -->
+
+        <div class="load-more-wrapper" id="loadMoreWrapper">
+          <button type="button" class="load-more-btn" id="loadMoreBtn">
+            <span> Load More Listings </span>
+
+            <i class="ri-arrow-down-line"></i>
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- =========================================================
          LISTING CARD TEMPLATE
-    =================================================== -->
+    ========================================================== -->
 
-        <template id="listingTemplate">
-          <article class="listing-card" data-id="">
-            <!-- Food Image -->
+    <template id="listingTemplate">
+      <article class="listing-card" data-id="">
+        <!-- Food Image -->
+        <div class="listing-image-wrapper">
+          <img
+            class="food-image"
+            src="/static/images/food-placeholder.jpg"
+            alt="Food Image"
+          />
 
-            <div class="listing-image-wrapper">
-              <img
-                class="food-image"
-                src="/static/images/food-placeholder.jpg"
-                alt="Food Image"
-              />
+          <span class="status-badge"> Available </span>
 
-              <span class="status-badge"> Available </span>
+          <!-- Favorite -->
+          <button type="button" class="favorite-btn" title="Save for later">
+            <i class="ri-heart-3-line"></i>
+          </button>
+        </div>
+
+        <!-- Card Body -->
+        <div class="listing-card-body">
+          <!-- Food Name -->
+          <h3 class="food-name">Food Name</h3>
+
+          <!-- Provider -->
+          <!-- Provider + Category + Food Type -->
+          <div class="provider-name">
+            <i class="ri-store-2-line provider-store-icon"></i>
+
+            <span class="provider-text"> Provider Name </span>
+
+            <i class="ri-verified-badge-fill verified-icon"></i>
+
+            <span class="category-tag"> Meals </span>
+
+            <span class="food-type-tag"> Vegetarian </span>
+          </div>
+
+          <!-- Information -->
+          <div class="card-info-row info-inline">
+            <div class="info-item distance-info">
+              <i class="ri-map-pin-line"></i>
+
+              <span class="distance"> 1.2 km </span>
             </div>
 
-            <!-- Card Body -->
+            <div class="info-item">
+              <i class="ri-time-line"></i>
 
-            <div class="listing-card-body">
-              <!-- Provider -->
-
-              <div class="title-row">
-                <h3 class="food-name">Food Name</h3>
-                <h4 class="provider-name">
-                  <span class="provider-text">Provider Name</span>
-                  <i class="ri-verified-badge-fill verified-icon"></i>
-                </h4>
-              </div>
-
-              <!-- Information -->
-
-              <div class="card-info-row info-inline">
-                <div class="info-item">
-                  <i class="ri-group-line"></i>
-                  <span class="quantity">10 Portions</span>
-                </div>
-
-                <div class="info-item">
-                  <i class="ri-time-line"></i>
-                  <span class="pickup-time">Pickup Before 6:00 PM</span>
-                </div>
-              </div>
-              <!-- Footer -->
-
-              <div class="listing-card-footer">
-                <div class="price-section">
-                  <span class="current-price"> ₹50 </span>
-
-                  <span class="old-price"> ₹100 </span>
-                </div>
-
-                <button type="button" class="card-btn view-btn">
-                  View Details
-                </button>
-              </div>
+              <span class="pickup-time"> Today, 7:00 PM </span>
             </div>
-          </article>
-        </template>
-      </main>
+          </div>
 
-      <!-- =========================================================
+          <!-- Footer -->
+          <div class="listing-card-footer">
+            <div class="price-section">
+              <span class="current-price"> ₹50 </span>
+
+              <span class="old-price"> ₹100 </span>
+
+              <span class="discount-badge"> 50% OFF </span>
+            </div>
+
+            <button type="button" class="card-btn view-btn">
+              View Details
+            </button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <!-- =========================================================
          JAVASCRIPT
     ========================================================== -->
 
-      <script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
-    </div>
+    <script src="{{ url_for('static', filename='js/marketplace.js') }}"></script>
   </body>
 </html>

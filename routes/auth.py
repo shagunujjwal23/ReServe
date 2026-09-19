@@ -483,7 +483,7 @@ PROVIDER_PROFILE_FIELDS = (
     "city",
     "state",
     "pincode",
-    "serving_areas",
+    "area",
     "working_days",
     "about",
     "profile_images",
@@ -738,8 +738,8 @@ def get_provider_profile():
             ""
         ),
 
-        "serving_areas": user.get(
-            "serving_areas",
+        "area": user.get(
+            "area",
             ""
         ),
 
@@ -861,6 +861,7 @@ def update_provider_profile():
         "city",
         "state",
         "pincode",
+        "area",
         "about",
     )
 
@@ -915,8 +916,8 @@ def update_provider_profile():
         payload.get("website", "")
     ).strip()
 
-    serving_areas = str(
-        payload.get("serving_areas", "")
+    area = str(
+        payload.get("area", "")
     ).strip()
 
     opening_time = str(
@@ -1139,8 +1140,8 @@ def update_provider_profile():
         "pincode":
             pincode,
 
-        "serving_areas":
-            serving_areas,
+        "area":
+            area,
 
         # --------------------------------------------------
         # PROVIDER DETAILS

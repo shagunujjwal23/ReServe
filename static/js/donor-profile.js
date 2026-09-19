@@ -162,7 +162,7 @@ function populateProfile(profile) {
 
   setText("organizationCuisine", formatCuisineTypes(profile));
 
-  setText("organizationServingAreas", profile.serving_areas || "—");
+ setText("organizationArea", profile.area || "—");
 
   setText("organizationAbout", profile.about || "—");
 
@@ -805,7 +805,7 @@ async function saveProfileImages(profileImages) {
 
     pincode: currentProfile.pincode || "",
 
-    serving_areas: currentProfile.serving_areas || "",
+   area: currentProfile.area || "",
 
     working_days: Array.isArray(currentProfile.working_days)
       ? currentProfile.working_days

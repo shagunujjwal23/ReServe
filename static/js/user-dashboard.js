@@ -308,12 +308,9 @@ async function loadUserLocation() {
 
     if (data.success && data.profile) {
       currentLocation = {
-        area: data.profile.area || "",
-
+        area: data.profile.pickup_area || "",
         city: data.profile.city || "",
-
         state: data.profile.state || "",
-
         address: data.profile.address || "",
       };
 
@@ -380,6 +377,7 @@ function updateLocationUI() {
 
 function changeLocation() {
   const currentCity = currentLocation?.city || "Lucknow";
+  const currentArea = currentLocation?.area || "";
 
   const city = prompt("Enter your city:", currentCity);
 
@@ -387,12 +385,18 @@ function changeLocation() {
     return;
   }
 
+  const area = prompt("Enter your area:", currentArea);
+
+  if (!area || !area.trim()) {
+    return;
+  }
+
   currentLocation = {
+    area: area.trim(),
     city: city.trim(),
-
     state: currentLocation?.state || "Uttar Pradesh",
-
     country: "India",
+    address: currentLocation?.address || "",
   };
 
   localStorage.setItem("reserveUserLocation", JSON.stringify(currentLocation));
@@ -433,15 +437,22 @@ async function loadNearbyListings() {
 
     let filtered = allListings.filter((listing) => {
       const listingArea = (listing.area || "").trim().toLowerCase();
-
       const listingCity = (listing.city || "").trim().toLowerCase();
 
-      if (userArea && listingArea) {
-        return listingArea === userArea;
-      }
+      /*
+     Dashboard nearby logic:
+     Same area = nearby.
 
-      if (userCity && listingCity) {
-        return listingCity === userCity;
+     If both sides also have city information,
+     city must match as well.
+  */
+
+      if (userArea && listingArea) {
+        if (userCity && listingCity) {
+          return listingArea === userArea && listingCity === userCity;
+        }
+
+        return listingArea === userArea;
       }
 
       return false;
@@ -451,10 +462,6 @@ async function loadNearbyListings() {
        If location filtering finds nothing,
        show available listings rather than a blank dashboard.
     ------------------------------------------------------ */
-
-    if (!filtered.length) {
-      filtered = allListings;
-    }
 
     nearbyListings = filtered;
 
