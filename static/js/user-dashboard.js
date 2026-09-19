@@ -1,5 +1,6 @@
 /* ==========================================================
    ReServe - Individual User Dashboard
+   Final Marketplace Dashboard
 ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -19,53 +20,42 @@ const API_BASE = "/api";
 let currentUser = null;
 let currentLocation = null;
 
-let recommendedListings = [];
 let nearbyListings = [];
-
-let upcomingReservation = null;
+let allListings = [];
 
 /* ==========================================================
    DOM ELEMENTS
 ========================================================== */
 
 const elements = {
+  /* Profile */
   profileName: document.getElementById("profileName"),
   profileRole: document.getElementById("profileRole"),
   profileImage: document.getElementById("profileImage"),
 
-  welcomeUserName: document.getElementById("welcomeUserName"),
-
+  /* Location */
   userLocation: document.getElementById("userLocation"),
-  currentLocation: document.getElementById("currentLocation"),
-
-  changeLocationBtn: document.getElementById("changeLocationBtn"),
   locationBtn: document.getElementById("locationBtn"),
 
+  /* Search */
   foodSearch: document.getElementById("foodSearch"),
   searchBtn: document.getElementById("searchBtn"),
   searchSuggestions: document.getElementById("searchSuggestions"),
 
-  exploreFoodBtn: document.getElementById("exploreFoodBtn"),
-
-  recommendedFoodGrid: document.getElementById("recommendedFoodGrid"),
-  recommendedEmpty: document.getElementById("recommendedEmpty"),
-
+  /* Listings */
   nearbyFoodGrid: document.getElementById("nearbyFoodGrid"),
   nearbyEmpty: document.getElementById("nearbyEmpty"),
 
-  upcomingReservation: document.getElementById("upcomingReservation"),
-  noReservation: document.getElementById("noReservation"),
-
+  /* Notifications */
   notificationCount: document.getElementById("notificationCount"),
-  messageCount: document.getElementById("messageCount"),
 
+  /* Profile menu */
   profileMenuBtn: document.getElementById("profileMenuBtn"),
   profileDropdown: document.getElementById("profileDropdown"),
-
   logoutBtn: document.getElementById("logoutBtn"),
 
+  /* Notification button */
   notificationBtn: document.getElementById("notificationBtn"),
-  messageBtn: document.getElementById("messageBtn"),
 };
 
 /* ==========================================================
@@ -76,14 +66,10 @@ async function initDashboard() {
   setupEventListeners();
 
   await loadUserProfile();
+
   await loadUserLocation();
 
-  await Promise.all([
-    loadRecommendedListings(),
-    loadNearbyListings(),
-    loadUpcomingReservation(),
-    loadNotificationCounts(),
-  ]);
+  await Promise.all([loadNearbyListings(), loadNotificationCount()]);
 }
 
 /* ==========================================================
@@ -91,7 +77,10 @@ async function initDashboard() {
 ========================================================== */
 
 function setupEventListeners() {
-  /* Search */
+  /* --------------------------------------------------------
+     Search
+  -------------------------------------------------------- */
+
   elements.searchBtn?.addEventListener("click", handleSearch);
 
   elements.foodSearch?.addEventListener("keydown", (event) => {
@@ -102,17 +91,16 @@ function setupEventListeners() {
 
   elements.foodSearch?.addEventListener("input", handleSearchSuggestions);
 
-  /* Explore */
-  elements.exploreFoodBtn?.addEventListener("click", () => {
-    window.location.href = "/explore-food";
-  });
-
-  /* Location */
-  elements.changeLocationBtn?.addEventListener("click", changeLocation);
+  /* --------------------------------------------------------
+     Location
+  -------------------------------------------------------- */
 
   elements.locationBtn?.addEventListener("click", changeLocation);
 
-  /* Profile */
+  /* --------------------------------------------------------
+     Profile Dropdown
+  -------------------------------------------------------- */
+
   elements.profileMenuBtn?.addEventListener("click", (event) => {
     event.stopPropagation();
 
@@ -120,6 +108,7 @@ function setupEventListeners() {
   });
 
   /* Close dropdown */
+
   document.addEventListener("click", (event) => {
     if (
       elements.profileDropdown &&
@@ -130,17 +119,40 @@ function setupEventListeners() {
     }
   });
 
-  /* Logout */
+  /* --------------------------------------------------------
+     Logout
+  -------------------------------------------------------- */
+
   elements.logoutBtn?.addEventListener("click", logoutUser);
 
-  /* Notifications */
+  /* --------------------------------------------------------
+     Notifications
+  -------------------------------------------------------- */
+
   elements.notificationBtn?.addEventListener("click", () => {
     window.location.href = "/notifications";
   });
 
-  /* Messages */
-  elements.messageBtn?.addEventListener("click", () => {
-    window.location.href = "/messages";
+  /* --------------------------------------------------------
+   Close search suggestions on outside click
+-------------------------------------------------------- */
+
+  document.addEventListener("click", (event) => {
+    if (!elements.foodSearch || !elements.searchSuggestions) {
+      return;
+    }
+
+    const clickedSearch = elements.foodSearch.contains(event.target);
+
+    const clickedSuggestions = elements.searchSuggestions.contains(
+      event.target,
+    );
+
+    const clickedSearchButton = elements.searchBtn?.contains(event.target);
+
+    if (!clickedSearch && !clickedSuggestions && !clickedSearchButton) {
+      elements.searchSuggestions.classList.add("hidden");
+    }
   });
 }
 
@@ -150,12 +162,6 @@ function setupEventListeners() {
 
 async function loadUserProfile() {
   try {
-    /* ========================================================
-       1. FETCH FRESH USER DATA FROM BACKEND FIRST
-       This prevents stale provider/restaurant profile images
-       from appearing on the user dashboard.
-    ======================================================== */
-
     const response = await fetch(`${API_BASE}/user/profile`, {
       method: "GET",
       credentials: "include",
@@ -166,15 +172,18 @@ async function loadUserProfile() {
 
       if (data.success && data.profile) {
         currentUser = data.profile;
+
         localStorage.setItem("user", JSON.stringify(currentUser));
+
         updateUserProfile();
+
         return;
       }
     }
 
-    /* ========================================================
-       2. FALL BACK TO SAVED USER DATA ONLY IF BACKEND FAILS
-    ======================================================== */
+    /* ------------------------------------------------------
+       Fallback to localStorage
+    ------------------------------------------------------ */
 
     const storedUser = localStorage.getItem("user");
 
@@ -184,7 +193,9 @@ async function loadUserProfile() {
 
         if (parsedUser && typeof parsedUser === "object") {
           currentUser = parsedUser;
+
           updateUserProfile();
+
           return;
         }
       } catch (error) {
@@ -192,15 +203,15 @@ async function loadUserProfile() {
       }
     }
 
-    if (!currentUser) {
-      currentUser = {
-        full_name: "User",
-        role: "User",
-        profile_image: null,
-      };
+    /* Default */
 
-      updateUserProfile();
-    }
+    currentUser = {
+      full_name: "User",
+      role: "User",
+      profile_image: null,
+    };
+
+    updateUserProfile();
   } catch (error) {
     console.error("Profile loading error:", error);
 
@@ -208,34 +219,23 @@ async function loadUserProfile() {
 
     if (storedUser) {
       try {
-        const parsedUser = JSON.parse(storedUser);
+        currentUser = JSON.parse(storedUser);
 
-        if (parsedUser && typeof parsedUser === "object") {
-          currentUser = parsedUser;
-          updateUserProfile();
-        }
+        updateUserProfile();
+
+        return;
       } catch (error) {
         console.warn("Invalid stored user data.");
       }
     }
 
-    if (!currentUser) {
-      currentUser = {
-        full_name: "User",
-        role: "User",
-        profile_image: null,
-      };
-
-      updateUserProfile();
-    }
-
-    currentLocation = {
-      city: "Unknown",
-      country: "India",
-      address: "",
+    currentUser = {
+      full_name: "User",
+      role: "User",
+      profile_image: null,
     };
 
-    updateLocationUI();
+    updateUserProfile();
   }
 }
 
@@ -244,22 +244,25 @@ async function loadUserProfile() {
 ========================================================== */
 
 function updateUserProfile() {
-  if (!currentUser) return;
+  if (!currentUser) {
+    return;
+  }
 
   const name = currentUser.full_name || "User";
+
+  /* Profile name */
 
   if (elements.profileName) {
     elements.profileName.textContent = name;
   }
 
-  if (elements.welcomeUserName) {
-    elements.welcomeUserName.textContent = name.split(" ")[0];
-  }
+  /* Profile role */
 
   if (elements.profileRole) {
-    const role = currentUser.role || "User";
-    elements.profileRole.textContent = formatRole(role);
+    elements.profileRole.textContent = formatRole(currentUser.role || "User");
   }
+
+  /* Profile image */
 
   if (elements.profileImage) {
     const image =
@@ -275,16 +278,8 @@ function updateUserProfile() {
 }
 
 /* ==========================================================
-   NAME HELPERS
+   ROLE FORMATTER
 ========================================================== */
-
-function getFirstName(name) {
-  if (!name) {
-    return "there";
-  }
-
-  return name.trim().split(/\s+/)[0];
-}
 
 function formatRole(role) {
   if (!role) {
@@ -312,24 +307,43 @@ async function loadUserLocation() {
     const data = await response.json();
 
     if (data.success && data.profile) {
-      console.log(data.profile);
-
       currentLocation = {
         area: data.profile.area || "",
+
         city: data.profile.city || "",
+
         state: data.profile.state || "",
+
         address: data.profile.address || "",
       };
 
       updateLocationUI();
+
       return;
     }
   } catch (error) {
     console.error("Location load error:", error);
   }
 
+  /* Fallback */
+
+  const savedLocation = localStorage.getItem("reserveUserLocation");
+
+  if (savedLocation) {
+    try {
+      currentLocation = JSON.parse(savedLocation);
+
+      updateLocationUI();
+
+      return;
+    } catch (error) {
+      console.warn("Invalid saved location.");
+    }
+  }
+
   currentLocation = {
     city: "Lucknow",
+    state: "Uttar Pradesh",
     country: "India",
   };
 
@@ -341,7 +355,9 @@ async function loadUserLocation() {
 ========================================================== */
 
 function updateLocationUI() {
-  if (!currentLocation) return;
+  if (!currentLocation) {
+    return;
+  }
 
   let locationText = "";
 
@@ -356,10 +372,6 @@ function updateLocationUI() {
   if (elements.userLocation) {
     elements.userLocation.textContent = locationText;
   }
-
-  if (elements.currentLocation) {
-    elements.currentLocation.textContent = locationText;
-  }
 }
 
 /* ==========================================================
@@ -367,7 +379,9 @@ function updateLocationUI() {
 ========================================================== */
 
 function changeLocation() {
-  const city = prompt("Enter your city:", currentLocation?.city || "Lucknow");
+  const currentCity = currentLocation?.city || "Lucknow";
+
+  const city = prompt("Enter your city:", currentCity);
 
   if (!city || !city.trim()) {
     return;
@@ -375,6 +389,9 @@ function changeLocation() {
 
   currentLocation = {
     city: city.trim(),
+
+    state: currentLocation?.state || "Uttar Pradesh",
+
     country: "India",
   };
 
@@ -383,52 +400,14 @@ function changeLocation() {
   updateLocationUI();
 
   loadNearbyListings();
-  loadRecommendedListings();
 }
 
 /* ==========================================================
-   RECOMMENDED LISTINGS
-========================================================== */
-
-async function loadRecommendedListings() {
-  showListingLoading(elements.recommendedFoodGrid);
-
-  try {
-    const response = await fetch(`${API_BASE}/listings`, {
-      method: "GET",
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error("Unable to load recommendations");
-    }
-
-    const data = await response.json();
-
-    const allListings = data.listings || [];
-
-    const userCity = (currentLocation?.city || "").toLowerCase();
-
-    recommendedListings = allListings.filter((listing) => {
-      return listing.city && listing.city.toLowerCase() === userCity;
-    });
-
-    renderRecommendedListings();
-  } catch (error) {
-    console.error("Recommended listings error:", error);
-
-    recommendedListings = [];
-
-    renderRecommendedListings();
-  }
-}
-
-/* ==========================================================
-   NEARBY LISTINGS
+   LOAD NEARBY LISTINGS
 ========================================================== */
 
 async function loadNearbyListings() {
-  showListingLoading(elements.nearbyFoodGrid);
+  showListingLoading();
 
   try {
     const response = await fetch(`${API_BASE}/listings`, {
@@ -437,18 +416,47 @@ async function loadNearbyListings() {
     });
 
     if (!response.ok) {
-      throw new Error("Unable to load nearby listings");
+      throw new Error("Unable to load listings");
     }
 
     const data = await response.json();
 
-    const allListings = data.listings || [];
+    allListings = Array.isArray(data.listings) ? data.listings : [];
 
-    const userArea = (currentLocation?.area || "").toLowerCase();
+    const userArea = (currentLocation?.area || "").trim().toLowerCase();
 
-    nearbyListings = allListings.filter((listing) => {
-      return listing.area && listing.area.toLowerCase() === userArea;
+    const userCity = (currentLocation?.city || "").trim().toLowerCase();
+
+    /* ------------------------------------------------------
+       First try area + city
+    ------------------------------------------------------ */
+
+    let filtered = allListings.filter((listing) => {
+      const listingArea = (listing.area || "").trim().toLowerCase();
+
+      const listingCity = (listing.city || "").trim().toLowerCase();
+
+      if (userArea && listingArea) {
+        return listingArea === userArea;
+      }
+
+      if (userCity && listingCity) {
+        return listingCity === userCity;
+      }
+
+      return false;
     });
+
+    /* ------------------------------------------------------
+       If location filtering finds nothing,
+       show available listings rather than a blank dashboard.
+    ------------------------------------------------------ */
+
+    if (!filtered.length) {
+      filtered = allListings;
+    }
+
+    nearbyListings = filtered;
 
     renderNearbyListings();
   } catch (error) {
@@ -461,58 +469,37 @@ async function loadNearbyListings() {
 }
 
 /* ==========================================================
-   RENDER RECOMMENDED
-========================================================== */
-
-function renderRecommendedListings() {
-  if (!elements.recommendedFoodGrid) {
-    return;
-  }
-
-  elements.recommendedFoodGrid.innerHTML = "";
-
-  if (!recommendedListings.length) {
-    elements.recommendedFoodGrid.classList.add("hidden");
-
-    elements.recommendedEmpty?.classList.remove("hidden");
-
-    return;
-  }
-
-  elements.recommendedFoodGrid.classList.remove("hidden");
-
-  elements.recommendedEmpty?.classList.add("hidden");
-
-  recommendedListings.slice(0, 4).forEach((listing) => {
-    elements.recommendedFoodGrid.appendChild(createFoodCard(listing));
-  });
-}
-
-/* ==========================================================
-   RENDER NEARBY
+   RENDER NEARBY LISTINGS
 ========================================================== */
 
 function renderNearbyListings() {
-  if (!elements.nearbyFoodGrid) {
+  const grid = elements.nearbyFoodGrid;
+
+  if (!grid) {
     return;
   }
 
-  elements.nearbyFoodGrid.innerHTML = "";
+  grid.innerHTML = "";
 
   if (!nearbyListings.length) {
-    elements.nearbyFoodGrid.classList.add("hidden");
+    grid.classList.add("hidden");
 
     elements.nearbyEmpty?.classList.remove("hidden");
 
     return;
   }
 
-  elements.nearbyFoodGrid.classList.remove("hidden");
+  grid.classList.remove("hidden");
 
   elements.nearbyEmpty?.classList.add("hidden");
 
-  nearbyListings.slice(0, 4).forEach((listing) => {
-    elements.nearbyFoodGrid.appendChild(createFoodCard(listing));
+  /*
+     Show the first 8 listings.
+     CSS automatically creates 4 columns.
+  */
+
+  nearbyListings.slice(0, 12).forEach((listing) => {
+    grid.appendChild(createFoodCard(listing));
   });
 }
 
@@ -523,35 +510,18 @@ function renderNearbyListings() {
 function createFoodCard(listing) {
   const card = document.createElement("article");
 
-  card.className = "food-card";
+  card.className = "listing-card";
 
-  /* ========================================================
-     LISTING DATA
-  ======================================================== */
+  const id = listing.id || listing._id || "";
 
-  const id = listing.id || "";
+  const name = listing.food_title || listing.foodName || "Food Listing";
 
-  const name = listing.food_title || "Food Listing";
-
-  const category = listing.category || "Food";
-
-  /* ========================================================
-     PROVIDER DATA
-  ======================================================== */
-
-  const provider = listing.provider_name || "Local Food Provider";
-
-  const providerImage = listing.provider_image || "";
-
-  const providerVerified = listing.provider_verified !== false;
-
-  /* ========================================================
-     FOOD DATA
-  ======================================================== */
+  const provider =
+    listing.provider_name || listing.providerName || "Local Food Provider";
 
   const image = listing.image || "/static/images/food-placeholder.jpg";
 
-  const listingType = listing.listing_type || "sell";
+  const listingType = String(listing.listing_type || "sell").toLowerCase();
 
   const price = Number(listing.discounted_price) || 0;
 
@@ -561,165 +531,253 @@ function createFoodCard(listing) {
 
   const unit = listing.unit || "";
 
-  const city = listing.city || "";
-
   const pickupStart = listing.pickup_start || "";
 
   const pickupEnd = listing.pickup_end || "";
 
+  const distance = listing.distance || listing.distance_km || "";
+
   const discount = calculateDiscount(originalPrice, price, listingType);
 
-  /* ========================================================
-     PROVIDER DISPLAY
-     Do not render the provider profile image inside the user
-     dashboard listing cards. We want the listing's food photo
-     to remain the main visual, not the restaurant avatar.
-  ======================================================== */
+  /* --------------------------------------------------------
+     Distance
+  -------------------------------------------------------- */
 
-  const providerHTML = "";
+  let distanceText = "Nearby";
 
-  /* ========================================================
-     CARD HTML
-  ======================================================== */
+  if (distance !== "" && distance !== null && distance !== undefined) {
+    const numericDistance = Number(distance);
+
+    if (!Number.isNaN(numericDistance)) {
+      distanceText = `${numericDistance.toFixed(1)} km`;
+    } else {
+      distanceText = String(distance);
+    }
+  }
+
+  /* --------------------------------------------------------
+     Pickup text
+  -------------------------------------------------------- */
+
+  let pickupText = "";
+
+  if (pickupStart && pickupEnd) {
+    pickupText = `${formatTime(pickupStart)} – ${formatTime(pickupEnd)}`;
+  } else if (pickupEnd) {
+    pickupText = formatTime(pickupEnd);
+  } else if (pickupStart) {
+    pickupText = formatTime(pickupStart);
+  }
+
+  /* --------------------------------------------------------
+     Price
+  -------------------------------------------------------- */
+
+  let priceHTML = "";
+
+  if (listingType === "donation" || listingType === "donate") {
+    priceHTML = `
+      <span class="current-price">
+        Free
+      </span>
+    `;
+  } else {
+    priceHTML = `
+      <span class="current-price">
+        ₹${formatPrice(price)}
+      </span>
+
+      ${
+        originalPrice > price
+          ? `
+            <span class="old-price">
+              ₹${formatPrice(originalPrice)}
+            </span>
+          `
+          : ""
+      }
+    `;
+  }
+
+  /* --------------------------------------------------------
+     Card
+  -------------------------------------------------------- */
 
   card.innerHTML = `
 
-    <div class="food-card-image">
+    <!-- Food Image -->
+
+    <div class="food-image">
 
       <img
         src="${escapeAttribute(image)}"
         alt="${escapeAttribute(name)}"
         loading="lazy"
         onerror="this.src='/static/images/food-placeholder.jpg'"
-      >
+      />
 
-      ${
-        discount
-          ? `
-            <span class="food-discount">
-              ${discount}% OFF
-            </span>
-          `
-          : ""
-      }
+
+      <!-- Distance -->
+
+      <span class="distance-badge">
+
+        <i class="ri-map-pin-line"></i>
+
+        ${escapeHTML(distanceText)}
+
+      </span>
+
+
+      <!-- Favourite -->
 
       <button
         type="button"
-        class="food-favorite"
+        class="favorite-btn"
         data-id="${escapeAttribute(id)}"
         title="Add to favorites"
       >
+
         <i class="ri-heart-3-line"></i>
+
       </button>
 
     </div>
 
 
-    <div class="food-card-content">
+    <!-- Card Body -->
+
+    <div class="card-body">
+
+
+      <!-- Food Name -->
 
       <h3
+        class="food-name"
         title="${escapeAttribute(name)}"
       >
         ${escapeHTML(name)}
       </h3>
 
 
-      <div class="food-provider">
+      <!-- Provider -->
 
-        ${providerHTML}
+      <div class="provider-name">
+
+        <i class="ri-store-2-line"></i>
 
         <span>
           ${escapeHTML(provider)}
         </span>
 
-        ${
-          providerVerified
-            ? `
-              <i
-                class="ri-verified-badge-fill verified-icon"
-                title="Verified provider"
-              ></i>
-            `
-            : ""
-        }
-
       </div>
 
 
-      <div class="food-meta">
+      <!-- Meta -->
 
-        ${
-          quantity && unit
-            ? `
-              <span>
-                <i class="ri-archive-line"></i>
-                ${escapeHTML(quantity)} ${escapeHTML(unit)}
-              </span>
-            `
-            : ""
-        }
+     <div class="listing-meta">
 
-        ${
-          pickupEnd
-            ? `
-              <span>
-                <i class="ri-time-line"></i>
-                ${formatPickupTime(pickupEnd)}
-              </span>
-            `
-            : ""
-        }
+  ${
+    pickupText
+      ? `
+        <span>
 
-      </div>
+          <i class="ri-time-line"></i>
 
+          ${escapeHTML(pickupText)}
 
-     <div class="food-card-bottom">
-
-  <span
-    class="food-price ${listingType === "donate" ? "donation" : ""}"
-  >
-    ${listingType === "donate" ? "Free" : `₹${price}`}
-  </span>
+        </span>
+      `
+      : ""
+  }
 
 </div>
 
+      <!-- Footer -->
+
+      <div class="card-footer">
+
+        <div>
+
+          ${priceHTML}
+
+        </div>
+
+
+        <button
+          type="button"
+          class="view-btn"
+        >
+
+          View Details
+
+          <i class="ri-arrow-right-line"></i>
+
+        </button>
+
+      </div>
+
     </div>
+
   `;
 
   /* ========================================================
-     FAVORITE
+     FAVORITE BUTTON
   ======================================================== */
 
-  const favoriteBtn = card.querySelector(".food-favorite");
+  const favoriteBtn = card.querySelector(".favorite-btn");
 
-  favoriteBtn?.addEventListener("click", (event) => {
+  favoriteBtn?.addEventListener("click", async (event) => {
     event.stopPropagation();
 
-    toggleFavorite(id, favoriteBtn);
+    await toggleFavorite(id, favoriteBtn);
+  });
+
+  /* ========================================================
+     VIEW DETAILS
+  ======================================================== */
+
+  const viewBtn = card.querySelector(".view-btn");
+
+  viewBtn?.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    openListing(id);
   });
 
   /* ========================================================
      CARD CLICK
-     
-     UPDATED ROUTE:
-     /listing/<listing_id>
   ======================================================== */
 
   card.addEventListener("click", () => {
-    if (!id) return;
-
-    window.location.href = `/listing/${encodeURIComponent(id)}`;
+    openListing(id);
   });
 
   return card;
 }
 
 /* ==========================================================
-   DISCOUNT
+   OPEN LISTING
+========================================================== */
+
+function openListing(id) {
+  if (!id) {
+    return;
+  }
+
+  /*
+     User-facing listing detail route.
+  */
+
+  window.location.href = `/listing/${encodeURIComponent(id)}`;
+}
+
+/* ==========================================================
+   DISCOUNT CALCULATION
 ========================================================== */
 
 function calculateDiscount(originalPrice, price, listingType) {
   if (
+    listingType === "donation" ||
     listingType === "donate" ||
     !originalPrice ||
     !price ||
@@ -732,247 +790,69 @@ function calculateDiscount(originalPrice, price, listingType) {
 }
 
 /* ==========================================================
-   FORMAT PICKUP TIME
+   FORMAT PRICE
 ========================================================== */
 
-function formatPickupTime(value) {
+function formatPrice(value) {
+  const number = Number(value);
+
+  if (Number.isNaN(number)) {
+    return "0";
+  }
+
+  return number.toLocaleString("en-IN", {
+    maximumFractionDigits: 0,
+  });
+}
+
+/* ==========================================================
+   FORMAT TIME
+========================================================== */
+
+function formatTime(value) {
   if (!value) {
     return "";
+  }
+
+  const stringValue = String(value).trim();
+
+  /*
+     Handle time-only values:
+     14:30
+     14:30:00
+     02:30 PM
+  */
+
+  if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(stringValue)) {
+    const parts = stringValue.split(":");
+
+    let hours = Number(parts[0]);
+
+    const minutes = parts[1];
+
+    if (hours >= 0 && hours <= 23) {
+      const suffix = hours >= 12 ? "PM" : "AM";
+
+      hours = hours % 12 || 12;
+
+      return `${hours}:${minutes} ${suffix}`;
+    }
+  }
+
+  if (/^\d{1,2}:\d{2}\s?(AM|PM)$/i.test(stringValue)) {
+    return stringValue;
   }
 
   const date = new Date(value);
 
   if (Number.isNaN(date.getTime())) {
-    return value;
+    return stringValue;
   }
 
-  const today = new Date();
-
-  const sameDay = date.toDateString() === today.toDateString();
-
-  const time = date.toLocaleTimeString("en-IN", {
+  return date.toLocaleTimeString("en-IN", {
     hour: "numeric",
     minute: "2-digit",
   });
-
-  if (sameDay) {
-    return `Today ${time}`;
-  }
-
-  return (
-    date.toLocaleDateString("en-IN", {
-      day: "numeric",
-      month: "short",
-    }) + ` ${time}`
-  );
-}
-
-/* ==========================================================
-   RESERVATION
-========================================================== */
-
-async function loadUpcomingReservation() {
-  showReservationLoading();
-
-  try {
-    const response = await fetch(`${API_BASE}/reservations/upcoming`, {
-      method: "GET",
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error("Unable to load reservation");
-    }
-
-    const data = await response.json();
-
-    upcomingReservation = data.reservation || data || null;
-
-    renderUpcomingReservation();
-  } catch (error) {
-    console.error("Reservation error:", error);
-
-    upcomingReservation = null;
-
-    renderUpcomingReservation();
-  }
-}
-
-/* ==========================================================
-   RENDER RESERVATION
-========================================================== */
-
-function renderUpcomingReservation() {
-  if (!elements.upcomingReservation) {
-    return;
-  }
-
-  if (!upcomingReservation) {
-    elements.upcomingReservation.classList.add("hidden");
-
-    elements.noReservation?.classList.remove("hidden");
-
-    return;
-  }
-
-  elements.noReservation?.classList.add("hidden");
-
-  elements.upcomingReservation.classList.remove("hidden");
-
-  const reservation = upcomingReservation;
-
-  const listing = reservation.listing || reservation;
-
-  const name =
-    listing.foodName || listing.food_title || listing.name || "Food Listing";
-
-  const image =
-    listing.imageUrl || listing.image || "/static/images/food-placeholder.jpg";
-
-  const provider =
-    listing.providerName ||
-    listing.provider_name ||
-    listing.ownerName ||
-    listing.restaurantName ||
-    "Food Provider";
-
-  const pickupTime =
-    reservation.pickupTime ||
-    listing.availableUntil ||
-    listing.pickup_end ||
-    "";
-
-  const status = reservation.status || "Reserved";
-
-  const reservationId = reservation._id || reservation.id || "";
-
-  elements.upcomingReservation.innerHTML = `
-
-    <div class="reservation-card">
-
-      <div class="reservation-image">
-
-        <img
-          src="${escapeAttribute(image)}"
-          alt="${escapeAttribute(name)}"
-          onerror="this.src='/static/images/food-placeholder.jpg'"
-        >
-
-      </div>
-
-
-      <div class="reservation-details">
-
-        <span class="reservation-status">
-          ${escapeHTML(status)}
-        </span>
-
-        <h3>
-          ${escapeHTML(name)}
-        </h3>
-
-        <p>
-          ${escapeHTML(provider)}
-        </p>
-
-
-        <div class="reservation-meta">
-
-          <span>
-            <i class="ri-calendar-line"></i>
-            ${formatPickupTime(pickupTime)}
-          </span>
-
-          ${
-            reservation.location
-              ? `
-                <span>
-                  <i class="ri-map-pin-line"></i>
-                  ${escapeHTML(reservation.location)}
-                </span>
-              `
-              : ""
-          }
-
-        </div>
-
-      </div>
-
-
-      <button
-        type="button"
-        class="reservation-action"
-        data-id="${escapeAttribute(reservationId)}"
-      >
-        View Details
-      </button>
-
-    </div>
-  `;
-
-  elements.upcomingReservation
-    .querySelector(".reservation-action")
-    ?.addEventListener("click", () => {
-      if (!reservationId) {
-        return;
-      }
-
-      window.location.href = `/reservation/${encodeURIComponent(
-        reservationId,
-      )}`;
-    });
-}
-
-/* ==========================================================
-   RESERVATION LOADING
-========================================================== */
-
-function showReservationLoading() {
-  if (!elements.upcomingReservation) {
-    return;
-  }
-
-  elements.upcomingReservation.classList.remove("hidden");
-
-  elements.noReservation?.classList.add("hidden");
-
-  elements.upcomingReservation.innerHTML = `
-
-    <div class="reservation-loading">
-
-      <i class="ri-loader-4-line"></i>
-
-      <span>
-        Loading reservation...
-      </span>
-
-    </div>
-
-  `;
-}
-
-/* ==========================================================
-   LISTING LOADING
-========================================================== */
-
-function showListingLoading(grid) {
-  if (!grid) return;
-
-  grid.classList.remove("hidden");
-
-  grid.innerHTML = `
-
-    <div class="listing-loading">
-
-      <i class="ri-loader-4-line"></i>
-
-      <span>
-        Finding food near you...
-      </span>
-
-    </div>
-
-  `;
 }
 
 /* ==========================================================
@@ -982,13 +862,26 @@ function showListingLoading(grid) {
 function handleSearch() {
   const query = elements.foodSearch?.value.trim();
 
+  /* Nothing typed */
+
   if (!query) {
-    window.location.href = "/explore-food";
+    elements.searchSuggestions?.classList.add("hidden");
+
+    window.location.href = "/marketplace";
 
     return;
   }
 
-  window.location.href = `/explore-food?search=${encodeURIComponent(query)}`;
+  /* Hide suggestions */
+
+  elements.searchSuggestions?.classList.add("hidden");
+
+  /*
+     Send the actual search query
+     to Marketplace.
+  */
+
+  window.location.href = `/marketplace?search=${encodeURIComponent(query)}`;
 }
 
 /* ==========================================================
@@ -1002,73 +895,180 @@ function handleSearchSuggestions() {
 
   const query = elements.foodSearch.value.trim().toLowerCase();
 
-  if (query.length < 2) {
+  /* Empty search */
+
+  if (!query) {
     elements.searchSuggestions.classList.add("hidden");
 
     return;
   }
 
-  const allListings = [...recommendedListings, ...nearbyListings];
+  /* --------------------------------------------------------
+     Search ALL loaded listings
+  -------------------------------------------------------- */
 
-  const unique = new Map();
+  const matches = allListings
+    .filter((listing) => {
+      const foodName = String(
+        listing.food_title || listing.foodName || "",
+      ).toLowerCase();
 
-  allListings.forEach((listing) => {
-    const name = listing.food_title || "";
+      const provider = String(
+        listing.provider_name || listing.providerName || "",
+      ).toLowerCase();
 
-    if (name.toLowerCase().includes(query)) {
-      unique.set(listing.id || name, listing);
-    }
-  });
+      const category = String(listing.category || "").toLowerCase();
 
-  const matches = [...unique.values()].slice(0, 5);
+      const foodType = String(
+        listing.food_type || listing.foodType || "",
+      ).toLowerCase();
+
+      const area = String(listing.area || "").toLowerCase();
+
+      const city = String(listing.city || "").toLowerCase();
+
+      return (
+        foodName.includes(query) ||
+        provider.includes(query) ||
+        category.includes(query) ||
+        foodType.includes(query) ||
+        area.includes(query) ||
+        city.includes(query)
+      );
+    })
+    .sort((a, b) => {
+      const aName = String(a.food_title || a.foodName || "").toLowerCase();
+
+      const bName = String(b.food_title || b.foodName || "").toLowerCase();
+
+      /*
+         Exact/starting food-name matches
+         come first.
+      */
+
+      const aScore =
+        aName === query
+          ? 4
+          : aName.startsWith(query)
+            ? 3
+            : aName.includes(query)
+              ? 2
+              : 1;
+
+      const bScore =
+        bName === query
+          ? 4
+          : bName.startsWith(query)
+            ? 3
+            : bName.includes(query)
+              ? 2
+              : 1;
+
+      return bScore - aScore;
+    })
+    .slice(0, 6);
+
+  /* --------------------------------------------------------
+     No results
+  -------------------------------------------------------- */
 
   if (!matches.length) {
-    elements.searchSuggestions.classList.add("hidden");
+    elements.searchSuggestions.innerHTML = `
+
+      <div class="search-no-results">
+
+        <i class="ri-search-line"></i>
+
+        <span>
+          No matching food or restaurant found
+        </span>
+
+      </div>
+
+    `;
+
+    elements.searchSuggestions.classList.remove("hidden");
 
     return;
   }
+
+  /* --------------------------------------------------------
+     Suggestions
+  -------------------------------------------------------- */
 
   elements.searchSuggestions.innerHTML = matches
     .map((listing) => {
-      const id = listing.id || "";
+      const id = listing.id || listing._id || "";
 
-      const name = listing.food_title || "Food";
+      const name = listing.food_title || listing.foodName || "Food Listing";
+
+      const provider =
+        listing.provider_name || listing.providerName || "Local Provider";
+
+      const category = listing.category || "Food";
+
+      const image = listing.image || "/static/images/food-placeholder.jpg";
 
       return `
 
-          <button
-            type="button"
-            class="search-suggestion"
-            data-id="${escapeAttribute(id)}"
-          >
+        <button
+          type="button"
+          class="search-suggestion"
+          data-id="${escapeAttribute(id)}"
+        >
 
-            <i class="ri-search-line"></i>
+          <img
+            src="${escapeAttribute(image)}"
+            alt="${escapeAttribute(name)}"
+            onerror="this.src='/static/images/food-placeholder.jpg'"
+          />
 
-            <span>
+          <span class="search-suggestion-content">
+
+            <strong>
               ${escapeHTML(name)}
-            </span>
+            </strong>
 
-          </button>
+            <small>
+              ${escapeHTML(provider)}
+            </small>
 
-        `;
+          </span>
+
+          <span class="search-suggestion-category">
+            ${escapeHTML(category)}
+          </span>
+
+          <i class="ri-arrow-right-s-line"></i>
+
+        </button>
+
+      `;
     })
     .join("");
 
   elements.searchSuggestions.classList.remove("hidden");
 
+  /* --------------------------------------------------------
+     Suggestion click
+  -------------------------------------------------------- */
+
   elements.searchSuggestions
     .querySelectorAll(".search-suggestion")
     .forEach((button) => {
-      button.addEventListener("click", () => {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
         const id = button.dataset.id;
 
-        if (!id) return;
+        if (!id) {
+          return;
+        }
 
-        /*
-            UPDATED ROUTE
-          */
+        elements.searchSuggestions.classList.add("hidden");
 
-        window.location.href = `/listing/${encodeURIComponent(id)}`;
+        openListing(id);
       });
     });
 }
@@ -1078,7 +1078,9 @@ function handleSearchSuggestions() {
 ========================================================== */
 
 async function toggleFavorite(listingId, button) {
-  if (!listingId) return;
+  if (!listingId) {
+    return;
+  }
 
   try {
     const response = await fetch(`${API_BASE}/favorites/toggle`, {
@@ -1118,10 +1120,10 @@ async function toggleFavorite(listingId, button) {
 }
 
 /* ==========================================================
-   NOTIFICATIONS
+   NOTIFICATION COUNT
 ========================================================== */
 
-async function loadNotificationCounts() {
+async function loadNotificationCount() {
   try {
     const response = await fetch(`${API_BASE}/notifications/counts`, {
       method: "GET",
@@ -1129,21 +1131,17 @@ async function loadNotificationCounts() {
     });
 
     if (!response.ok) {
-      throw new Error("Unable to load notification counts");
+      throw new Error("Unable to load notification count");
     }
 
     const data = await response.json();
 
+    const count = Number(data.notifications || 0);
+
     if (elements.notificationCount) {
-      elements.notificationCount.textContent = Number(data.notifications || 0);
+      elements.notificationCount.textContent = count;
 
-      updateBadgeVisibility(elements.notificationCount, data.notifications);
-    }
-
-    if (elements.messageCount) {
-      elements.messageCount.textContent = Number(data.messages || 0);
-
-      updateBadgeVisibility(elements.messageCount, data.messages);
+      updateBadgeVisibility(elements.notificationCount, count);
     }
   } catch (error) {
     console.error("Notification count error:", error);
@@ -1155,7 +1153,9 @@ async function loadNotificationCounts() {
 ========================================================== */
 
 function updateBadgeVisibility(badge, count) {
-  if (!badge) return;
+  if (!badge) {
+    return;
+  }
 
   badge.style.display = Number(count) > 0 ? "flex" : "none";
 }
@@ -1175,12 +1175,42 @@ async function logoutUser() {
   } finally {
     localStorage.removeItem("reserveUserLocation");
 
+    localStorage.removeItem("user");
+
     window.location.href = "/";
   }
 }
 
 /* ==========================================================
-   SECURITY / HTML HELPERS
+   LISTING LOADING
+========================================================== */
+
+function showListingLoading() {
+  if (!elements.nearbyFoodGrid) {
+    return;
+  }
+
+  elements.nearbyFoodGrid.classList.remove("hidden");
+
+  elements.nearbyEmpty?.classList.add("hidden");
+
+  elements.nearbyFoodGrid.innerHTML = `
+
+    <div class="listing-loading">
+
+      <i class="ri-loader-4-line"></i>
+
+      <span>
+        Finding fresh food near you...
+      </span>
+
+    </div>
+
+  `;
+}
+
+/* ==========================================================
+   HTML SECURITY HELPERS
 ========================================================== */
 
 function escapeHTML(value) {

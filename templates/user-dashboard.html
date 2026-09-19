@@ -27,10 +27,9 @@
 
   <body>
     <div class="user-dashboard">
-
       <!-- =========================================================
-         NAVBAR
-    ========================================================== -->
+           NAVBAR
+      ========================================================== -->
 
       <header class="user-navbar">
         <!-- Logo -->
@@ -44,7 +43,7 @@
 
           <div class="brand-text">
             <h2>ReServe</h2>
-            <span>From Surplus to Solution.</span>
+            <span>Food Rescue Platform</span>
           </div>
         </a>
 
@@ -57,28 +56,27 @@
 
           <a href="/marketplace">
             <i class="ri-search-line"></i>
-            <span>Explore Food</span>
+            <span>Browse Food</span>
           </a>
 
-          <a href="/my-reservations">
-            <i class="ri-calendar-check-line"></i>
-            <span>My Reservations</span>
+          <a href="/my-requests">
+            <i class="ri-file-list-3-line"></i>
+            <span>My Requests</span>
           </a>
 
-          <a href="/favorites">
-            <i class="ri-heart-3-line"></i>
-            <span>Favorites</span>
+          <a href="/my-pickups">
+            <i class="ri-truck-line"></i>
+            <span>My Pickups</span>
+          </a>
+
+          <a href="/messages">
+            <i class="ri-message-3-line"></i>
+            <span>Messages</span>
           </a>
         </nav>
 
         <!-- Right Actions -->
         <div class="user-navbar-actions">
-          <!-- Location -->
-          <button type="button" class="location-btn" id="locationBtn">
-            <i class="ri-map-pin-line"></i>
-            <span id="userLocation">Lucknow, India</span>
-          </button>
-
           <!-- Notifications -->
           <button
             type="button"
@@ -87,20 +85,7 @@
             title="Notifications"
           >
             <i class="ri-notification-3-line"></i>
-
-            <span class="notification-badge" id="notificationCount"> 0 </span>
-          </button>
-
-          <!-- Messages -->
-          <button
-            type="button"
-            class="navbar-icon-btn"
-            id="messageBtn"
-            title="Messages"
-          >
-            <i class="ri-message-3-line"></i>
-
-            <span class="notification-badge" id="messageCount"> 0 </span>
+            <span class="notification-badge" id="notificationCount">0</span>
           </button>
 
           <!-- Profile -->
@@ -115,9 +100,8 @@
               </div>
 
               <div class="profile-info">
-                <strong id="profileName"> Loading... </strong>
-
-                <span id="profileRole"> User </span>
+                <strong id="profileName">Loading...</strong>
+                <span id="profileRole">User</span>
               </div>
 
               <i class="ri-arrow-down-s-line"></i>
@@ -147,45 +131,10 @@
       </header>
 
       <!-- =========================================================
-         MAIN CONTENT
-    ========================================================== -->
+           MAIN CONTENT
+      ========================================================== -->
 
       <main class="user-main">
-        <!-- =====================================================
-             WELCOME SECTION
-        ====================================================== -->
-
-        <section class="welcome-section">
-          <div class="welcome-content">
-            <span class="welcome-label"> WELCOME BACK </span>
-
-            <h1>
-              Good morning,
-              <span id="welcomeUserName">there</span>
-              👋
-            </h1>
-
-            <p>
-              Discover surplus food near you and give every meal a second
-              chance.
-            </p>
-          </div>
-
-          <!-- Current Location -->
-
-          <div class="current-location">
-            <i class="ri-map-pin-2-line"></i>
-
-            <div>
-              <span>Your location</span>
-
-              <strong id="currentLocation"> Detecting location... </strong>
-            </div>
-
-            <button type="button" id="changeLocationBtn">Change</button>
-          </div>
-        </section>
-
         <!-- =====================================================
              HERO
         ====================================================== -->
@@ -194,186 +143,157 @@
           <!-- Hero Background -->
           <img
             class="hero-background-image"
-            src="{{ url_for('static', filename='images/user-dashboard-hero.png') }}"
-            alt=""
+            src="{{ url_for('static', filename='images/hero/user-dashboard-hero.png') }}"
+            alt="Fresh food"
           />
 
+          <!-- Hero Content -->
           <div class="hero-overlay-content">
-            <span class="hero-badge">
-              <i class="ri-leaf-line"></i>
-              FOOD RESCUE
-            </span>
+            <div class="hero-copy">
+              <div class="hero-main-content">
+                <h1>
+                  Great Food
+                  <br />
+                  Finds a Second Home
+                </h1>
 
-            <h2>
-              Fresh food.
-              <br />
-              Less waste.
-              <br />
-              Better prices.
-            </h2>
+                <p>
+                  Discover delicious surplus food from your favourite local
+                  places.<br />
+                  Good for you, good for the planet!
+                </p>
+              </div>
 
-            <p>
-              Rescue quality surplus food from local restaurants and businesses
-              while helping reduce food waste.
-            </p>
+              <!-- Hero Search -->
+              <div class="hero-search-wrapper">
+                <!-- Food Search -->
+                <div class="hero-search-field">
+                  <i class="ri-search-line"></i>
 
-            <button type="button" class="hero-btn" id="exploreFoodBtn">
-              Explore Food
-              <i class="ri-arrow-right-line"></i>
-            </button>
+                  <input
+                    type="search"
+                    id="foodSearch"
+                    placeholder="Search for meals, bakery, fruits..."
+                    autocomplete="off"
+                  />
+                </div>
+
+                <!-- Location -->
+                <button
+                  type="button"
+                  class="hero-location-field"
+                  id="locationBtn"
+                >
+                  <i class="ri-map-pin-line"></i>
+
+                  <span id="userLocation"> Aashiyana, Lucknow </span>
+                </button>
+
+                <!-- Search Button -->
+                <button type="button" class="hero-search-btn" id="searchBtn">
+                  Search
+                  <i class="ri-arrow-right-line"></i>
+                </button>
+              </div>
+
+              <!-- Search Suggestions -->
+              <div
+                class="search-suggestions hidden"
+                id="searchSuggestions"
+              ></div>
+            </div>
           </div>
         </section>
 
         <!-- =====================================================
-             SEARCH
-        ====================================================== -->
-
-        <section class="search-section">
-          <div class="main-search">
-            <i class="ri-search-line"></i>
-
-            <input
-              type="search"
-              id="foodSearch"
-              placeholder="Search meals, restaurants, categories or locations..."
-              autocomplete="off"
-            />
-
-            <button type="button" id="searchBtn">Search</button>
-          </div>
-
-          <!-- Search Suggestions -->
-
-          <div class="search-suggestions hidden" id="searchSuggestions"></div>
-        </section>
-
-        <!-- =====================================================
-             RECOMMENDED FOOD
+             FRESH LISTINGS
         ====================================================== -->
 
         <section class="listing-section">
           <div class="section-header">
-            <div>
-              <span class="section-label"> RECOMMENDED </span>
+            <div class="section-title-group">
+              <h2>Fresh Listings Near You</h2>
 
-              <h2>Recommended For You</h2>
+              <div class="section-subtitle-row">
+                <span class="section-accent"></span>
 
-              <p>Food selected based on your location and preferences.</p>
+                <p>Real food from real places. Grab it before it's gone!</p>
+              </div>
             </div>
+
+            <a href="/marketplace" class="view-all-link">
+              See All
+              <i class="ri-arrow-right-line"></i>
+            </a>
           </div>
 
-          <!-- Dynamic Listing Grid -->
-
-          <div class="food-grid" id="recommendedFoodGrid">
-            <!-- JavaScript will insert listings here -->
+          <!-- Dynamic Food Grid -->
+          <div class="food-grid" id="nearbyFoodGrid">
+            <!-- JavaScript inserts listings here -->
 
             <div class="listing-loading">
               <i class="ri-loader-4-line"></i>
-              <span>Finding food near you...</span>
+
+              <span> Finding fresh food near you... </span>
             </div>
           </div>
 
           <!-- Empty State -->
-
-          <div class="listing-empty hidden" id="recommendedEmpty">
+          <div class="listing-empty hidden" id="nearbyEmpty">
             <i class="ri-restaurant-line"></i>
 
-            <h3>No recommendations yet</h3>
+            <h3>No food listings nearby</h3>
 
             <p>
-              New surplus food will appear here as nearby restaurants add
-              listings.
+              There are currently no active surplus food listings near your
+              location.
             </p>
-
-            <a href="/marketplace"> Explore Food </a>
-          </div>
-        </section>
-
-        <!-- =====================================================
-             NEARBY LISTINGS
-        ====================================================== -->
-
-        <section class="listing-section nearby-section">
-          <div class="section-header">
-            <div>
-              <span class="section-label"> NEAR YOU </span>
-
-              <h2>Fresh Listings Nearby</h2>
-
-              <p>Recently added surplus food available for pickup.</p>
-            </div>
 
             <a href="/marketplace">
-              View All
+              Browse Food
               <i class="ri-arrow-right-line"></i>
             </a>
-          </div>
-
-          <div class="food-grid" id="nearbyFoodGrid">
-            <!-- JavaScript will insert listings here -->
-
-            <div class="listing-loading">
-              <i class="ri-loader-4-line"></i>
-              <span>Loading nearby listings...</span>
-            </div>
-          </div>
-
-          <div class="listing-empty hidden" id="nearbyEmpty">
-            <i class="ri-map-pin-line"></i>
-
-            <h3>No nearby listings</h3>
-
-            <p>
-              There are no active food listings near your current location right
-              now.
-            </p>
           </div>
         </section>
 
         <!-- =====================================================
-             UPCOMING RESERVATION
+             REVERSE / IMPACT BANNER
         ====================================================== -->
 
-        <section class="reservation-section">
-          <div class="section-header">
-            <div>
-              <span class="section-label"> YOUR ACTIVITY </span>
-
-              <h2>Upcoming Reservation</h2>
+        <section class="impact-banner">
+          <div class="impact-background">
+            <div class="impact-leaf impact-leaf-left">
+              <i class="ri-leaf-line"></i>
             </div>
 
-            <a href="/my-reservations">
-              View Reservations
-              <i class="ri-arrow-right-line"></i>
-            </a>
-          </div>
-
-          <!-- Reservation -->
-
-          <div class="upcoming-reservation" id="upcomingReservation">
-            <!-- JS will populate this -->
-
-            <div class="reservation-loading">
-              <i class="ri-loader-4-line"></i>
-              <span>Loading reservation...</span>
+            <div class="impact-leaf impact-leaf-right">
+              <i class="ri-leaf-line"></i>
             </div>
           </div>
 
-          <!-- No Reservation -->
-
-          <div class="no-reservation hidden" id="noReservation">
-            <div class="empty-icon">
-              <i class="ri-calendar-check-line"></i>
+          <div class="impact-content">
+            <div class="impact-message">
+              <span>
+                A Smaller
+                <br />
+                Waste Footprint
+                <br />
+                A Brighter Tomorrow
+                <i class="ri-heart-3-line"></i>
+              </span>
             </div>
 
-            <div>
-              <h3>No upcoming reservations</h3>
+            <div class="impact-text">
+              <h2>Be a Part of the Change</h2>
 
-              <p>Find something delicious to rescue today.</p>
+              <p>
+                Every rescued meal helps people in need and makes our planet
+                greener.
+              </p>
             </div>
 
-            <a href="/explore-food">
-              Explore Food
+            <a href="/marketplace" class="impact-btn">
+              Explore More Food
               <i class="ri-arrow-right-line"></i>
             </a>
           </div>
@@ -381,8 +301,8 @@
       </main>
 
       <!-- =========================================================
-         JAVASCRIPT
-    ========================================================== -->
+           JAVASCRIPT
+      ========================================================== -->
 
       <script src="{{ url_for('static', filename='js/user-dashboard.js') }}"></script>
     </div>
