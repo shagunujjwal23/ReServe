@@ -1432,24 +1432,20 @@ def record_listing_view(listing_id):
 )
 def get_listing(listing_id):
     """
-    Return one listing owned by the logged-in provider.
+    Return one publicly available Sell listing.
 
-    This endpoint is used by the provider's My Listings
-    page, so active, paused, completed, expired and
-    cancelled listings can be viewed.
+    This endpoint is used by the customer's
+    Food Details page.
     """
 
     refresh_lifecycle()
 
     # ==========================================================
-    # VALIDATE LISTING ID
+    # 1. VALIDATE LISTING ID
     # ==========================================================
 
     try:
-
-        listing_object_id = ObjectId(
-            listing_id
-        )
+        listing_object_id = ObjectId(listing_id)
 
     except (InvalidId, TypeError):
 
@@ -1459,7 +1455,7 @@ def get_listing(listing_id):
         }), 400
 
     # ==========================================================
-    # GET COLLECTION
+    # 2. GET DATABASE COLLECTION
     # ==========================================================
 
     listings_collection = get_collection(
@@ -1476,54 +1472,25 @@ def get_listing(listing_id):
         }), 500
 
     # ==========================================================
-    # AUTHENTICATE PROVIDER
+    # 3. FIND PUBLIC AVAILABLE SELL LISTING
     # ==========================================================
-
-    session_user_id = session.get(
-        "user_id"
-    )
-
-    if not session_user_id:
-
-        return jsonify({
-            "success": False,
-            "message": "Authentication is required."
-        }), 401
 
     try:
 
-        owner_id = ObjectId(
-            session_user_id
+        listing = listings_collection.find_one_and_update(
+            {
+                "_id": listing_object_id,
+                "status": "available",
+                "listing_type": "sell"
+            },
+            {
+                "$inc": {
+                    "views": 1
+                }
+            },
+            return_document=ReturnDocument.AFTER
         )
 
-    except (InvalidId, TypeError):
-
-        session.clear()
-
-        return jsonify({
-            "success": False,
-            "message": "Invalid user session."
-        }), 401
-
-    # ==========================================================
-    # FIND PROVIDER'S LISTING
-    # ==========================================================
-
-    try:
-
-       listing = listings_collection.find_one_and_update(
-    {
-        "_id": listing_object_id,
-        "owner_id": owner_id
-    },
-    {
-        "$inc": {
-            "views": 1
-        }
-    },
-    return_document=ReturnDocument.AFTER
-)
-       
     except PyMongoError as error:
 
         print(
@@ -1538,6 +1505,10 @@ def get_listing(listing_id):
             )
         }), 500
 
+    # ==========================================================
+    # 4. LISTING NOT FOUND
+    # ==========================================================
+
     if listing is None:
 
         return jsonify({
@@ -1549,7 +1520,7 @@ def get_listing(listing_id):
         }), 404
 
     # ==========================================================
-    # PROVIDER
+    # 5. PROVIDER INFORMATION
     # ==========================================================
 
     provider = get_provider_details(
@@ -1557,7 +1528,7 @@ def get_listing(listing_id):
     )
 
     # ==========================================================
-    # DATES
+    # 6. DATES
     # ==========================================================
 
     created_at = listing.get(
@@ -1569,10 +1540,14 @@ def get_listing(listing_id):
     )
 
     # ==========================================================
-    # RESPONSE
+    # 7. RESPONSE DATA
     # ==========================================================
 
     listing_data = {
+
+        # ------------------------------------------------------
+        # Basic listing information
+        # ------------------------------------------------------
 
         "id": str(
             listing["_id"]
@@ -1598,6 +1573,10 @@ def get_listing(listing_id):
             ""
         ),
 
+        # ------------------------------------------------------
+        # Quantity and price
+        # ------------------------------------------------------
+
         "quantity": listing.get(
             "quantity",
             0
@@ -1618,10 +1597,18 @@ def get_listing(listing_id):
             0
         ),
 
+        # ------------------------------------------------------
+        # Expiry
+        # ------------------------------------------------------
+
         "expiry_date": listing.get(
             "expiry_date",
             ""
         ),
+
+        # ------------------------------------------------------
+        # Pickup
+        # ------------------------------------------------------
 
         "pickup_start": listing.get(
             "pickup_start",
@@ -1643,6 +1630,15 @@ def get_listing(listing_id):
             ""
         ),
 
+        # IMPORTANT:
+        # Area is included for the new
+        # area-based location system.
+
+        "area": listing.get(
+            "area",
+            ""
+        ),
+
         "city": listing.get(
             "city",
             ""
@@ -1658,6 +1654,10 @@ def get_listing(listing_id):
             ""
         ),
 
+        # ------------------------------------------------------
+        # Description and image
+        # ------------------------------------------------------
+
         "description": listing.get(
             "description",
             ""
@@ -1667,6 +1667,10 @@ def get_listing(listing_id):
             "image",
             ""
         ),
+
+        # ------------------------------------------------------
+        # Provider
+        # ------------------------------------------------------
 
         "provider_name": provider[
             "provider_name"
@@ -1679,6 +1683,10 @@ def get_listing(listing_id):
         "provider_verified": provider[
             "provider_verified"
         ],
+
+        # ------------------------------------------------------
+        # AI information
+        # ------------------------------------------------------
 
         "freshness_score": listing.get(
             "freshness_score",
@@ -1700,6 +1708,10 @@ def get_listing(listing_id):
             ""
         ),
 
+        # ------------------------------------------------------
+        # Status / statistics
+        # ------------------------------------------------------
+
         "status": listing.get(
             "status",
             "available"
@@ -1715,6 +1727,10 @@ def get_listing(listing_id):
             0
         ),
 
+        # ------------------------------------------------------
+        # Timestamps
+        # ------------------------------------------------------
+
         "created_at": (
             created_at.isoformat()
             if created_at
@@ -1728,14 +1744,14 @@ def get_listing(listing_id):
         ),
     }
 
+    # ==========================================================
+    # 8. SUCCESS RESPONSE
+    # ==========================================================
+
     return jsonify({
-
         "success": True,
-
         "listing": listing_data
-
     }), 200
-
 
 # ==========================================================
 # UPDATE MY LISTING

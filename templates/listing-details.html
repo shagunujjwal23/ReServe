@@ -33,7 +33,6 @@
 
       <header class="user-navbar">
         <!-- BRAND -->
-
         <a href="/user-dashboard" class="user-brand">
           <div class="brand-logo">
             <img
@@ -49,7 +48,6 @@
         </a>
 
         <!-- NAVIGATION -->
-
         <nav class="user-nav-links">
           <a href="/user-dashboard">
             <i class="ri-home-5-line"></i>
@@ -70,23 +68,16 @@
             <i class="ri-heart-3-line"></i>
             <span>Favorites</span>
           </a>
+
+          <a href="/messages">
+            <i class="ri-message-3-line"></i>
+            <span>Messages</span>
+          </a>
         </nav>
 
         <!-- NAVBAR ACTIONS -->
-
         <div class="user-navbar-actions">
-          <!-- LOCATION -->
-
-          <button type="button" class="location-btn" id="locationBtn">
-            <i class="ri-map-pin-line"></i>
-
-            <span id="userLocation"> Lucknow, India </span>
-
-            <i class="ri-arrow-down-s-line"></i>
-          </button>
-
           <!-- NOTIFICATIONS -->
-
           <button
             type="button"
             class="navbar-icon-btn"
@@ -98,21 +89,7 @@
             <span class="notification-badge" id="notificationCount"> 0 </span>
           </button>
 
-          <!-- MESSAGES -->
-
-          <button
-            type="button"
-            class="navbar-icon-btn"
-            id="messageBtn"
-            title="Messages"
-          >
-            <i class="ri-message-3-line"></i>
-
-            <span class="notification-badge" id="messageCount"> 0 </span>
-          </button>
-
           <!-- PROFILE -->
-
           <div class="user-profile-wrapper">
             <button type="button" class="user-profile-btn" id="profileMenuBtn">
               <div class="profile-avatar">
@@ -133,9 +110,8 @@
             </button>
 
             <!-- PROFILE DROPDOWN -->
-
             <div class="profile-dropdown hidden" id="profileDropdown">
-              <a href="/profile">
+              <a href="/user-profile">
                 <i class="ri-user-line"></i>
                 Profile
               </a>
@@ -162,7 +138,7 @@
 
       <main class="listing-details-page" id="listingDetailsPage">
         <!-- =======================================================
-             BREADCRUMB
+             BACK NAVIGATION
         ======================================================== -->
 
         <div class="back-navigation">
@@ -208,39 +184,57 @@
 
           <div class="listing-main-content">
             <!-- ===================================================
-                 TOP LEFT:
-                 IMAGE + FOOD INFORMATION
-            ==================================================== -->
+     FOOD IMAGE + INFORMATION + DESCRIPTION
+==================================================== -->
 
             <section class="listing-top-section">
               <!-- =================================================
-                   FOOD IMAGE
-              ================================================== -->
+       LEFT COLUMN
+       IMAGE + DESCRIPTION
+  ================================================== -->
 
-              <div class="food-image-section">
-                <div class="main-food-image">
-                  <img
-                    id="listingMainImage"
-                    src="/static/images/food-placeholder.jpg"
-                    alt="Food"
-                    loading="eager"
-                  />
+              <div class="food-image-column">
+                <!-- FOOD IMAGE -->
+                <div class="food-image-section">
+                  <div class="main-food-image">
+                    <img
+                      id="listingMainImage"
+                      src="/static/images/food-placeholder.jpg"
+                      alt="Food"
+                      loading="eager"
+                    />
 
-                  <div class="image-placeholder" id="mainImagePlaceholder">
-                    <i class="ri-image-2-line"></i>
-
-                    <span> Food image unavailable </span>
+                    <div class="image-placeholder" id="mainImagePlaceholder">
+                      <i class="ri-image-2-line"></i>
+                      <span>Food image unavailable</span>
+                    </div>
                   </div>
                 </div>
+
+                <!-- =================================================
+         COMPACT DESCRIPTION
+    ================================================== -->
+
+                <section class="details-card description-card">
+                  <div class="details-card-header">
+                    <i class="ri-file-text-line"></i>
+
+                    <h2>Description</h2>
+                  </div>
+
+                  <div class="details-card-content" id="listingDescription">
+                    Loading description...
+                  </div>
+                </section>
               </div>
 
               <!-- =================================================
-                   FOOD INFORMATION
-              ================================================== -->
+       RIGHT COLUMN
+       FOOD INFORMATION
+  ================================================== -->
 
               <div class="food-info-section">
                 <!-- STATUS -->
-
                 <div class="listing-status-row">
                   <span class="listing-status available" id="listingStatus">
                     <span class="status-dot"></span>
@@ -250,7 +244,6 @@
                 </div>
 
                 <!-- TITLE -->
-
                 <div class="listing-title-row">
                   <h1 id="listingFoodTitle">Food Listing</h1>
 
@@ -261,25 +254,17 @@
                   </span>
                 </div>
 
-                <!-- SHORT DESCRIPTION -->
-
-                <p
-                  class="listing-short-description"
-                  id="listingShortDescription"
-                >
-                  Loading food details...
-                </p>
-
-                <!-- FOOD INFORMATION LIST -->
+                <!-- =================================================
+         FOOD INFORMATION LIST
+    ================================================== -->
 
                 <div class="listing-info-list">
                   <!-- PROVIDER -->
-
                   <div class="listing-info-row">
                     <div class="info-label">
                       <i class="ri-store-2-line"></i>
 
-                      <span> Provider </span>
+                      <span>Provider</span>
                     </div>
 
                     <div class="info-value provider-value">
@@ -294,93 +279,71 @@
                   </div>
 
                   <!-- CATEGORY -->
-
                   <div class="listing-info-row">
                     <div class="info-label">
                       <i class="ri-folder-2-line"></i>
 
-                      <span> Category </span>
+                      <span>Category</span>
                     </div>
 
                     <strong id="listingCategory"> Food </strong>
                   </div>
 
                   <!-- FOOD TYPE -->
-
                   <div class="listing-info-row">
                     <div class="info-label">
                       <i class="ri-restaurant-line"></i>
 
-                      <span> Food Type </span>
+                      <span>Food Type</span>
                     </div>
 
                     <strong id="listingFoodType"> Vegetarian </strong>
                   </div>
 
                   <!-- LOCATION -->
-
                   <div class="listing-info-row">
                     <div class="info-label">
                       <i class="ri-map-pin-line"></i>
 
-                      <span> Location </span>
+                      <span>Location</span>
                     </div>
 
                     <strong id="listingLocation"> Loading... </strong>
                   </div>
 
                   <!-- BEST BEFORE -->
-
                   <div class="listing-info-row">
                     <div class="info-label">
                       <i class="ri-time-line"></i>
 
-                      <span> Best Before </span>
+                      <span>Best Before</span>
                     </div>
 
                     <strong id="listingExpiry"> Not specified </strong>
                   </div>
 
-                  <!-- PICKUP TIME -->
-
+                  <!-- PICKUP WINDOW -->
                   <div class="listing-info-row">
                     <div class="info-label">
                       <i class="ri-calendar-check-line"></i>
 
-                      <span> Pickup Time </span>
+                      <span>Pickup Window</span>
                     </div>
 
-                    <strong id="listingPickupTime"> Not specified </strong>
+                    <strong id="listingPickupTime"> Select below </strong>
                   </div>
 
                   <!-- QUANTITY -->
-
                   <div class="listing-info-row">
                     <div class="info-label">
                       <i class="ri-stack-line"></i>
 
-                      <span> Quantity </span>
+                      <span>Quantity</span>
                     </div>
 
                     <strong id="listingQuantity"> 0 </strong>
                   </div>
                 </div>
-              </div>
-            </section>
-
-            <!-- ===================================================
-                 DESCRIPTION
-            ==================================================== -->
-
-            <section class="details-card description-card">
-              <div class="details-card-header">
-                <i class="ri-file-text-line"></i>
-
-                <h2>Description</h2>
-              </div>
-
-              <div class="details-card-content" id="listingDescription">
-                Loading description...
               </div>
             </section>
 
@@ -396,113 +359,112 @@
               </div>
 
               <div class="pickup-details">
-                <!-- Address -->
+                <!-- =================================================
+                     ADDRESS
+                ================================================== -->
+
                 <div class="pickup-detail-row full-width">
                   <i class="ri-map-pin-line"></i>
-                  <div>
-                    <span>Address</span>
-                    <strong id="pickupAddress">Loading...</strong>
+
+                  <div class="pickup-address-content">
+                    <span> Address </span>
+
+                    <strong id="pickupAddress"> Loading... </strong>
+                  </div>
+
+                  <button type="button" class="pickup-map-btn" id="viewMapBtn">
+                    <i class="ri-map-line"></i>
+
+                    <span> View on Map </span>
+                  </button>
+                </div>
+
+                <!-- =================================================
+                     DATE + TIME
+                     SIDE BY SIDE
+                ================================================== -->
+
+                <div class="pickup-date-time-row">
+                  <!-- PICKUP DATE -->
+                  <div class="pickup-detail-row pickup-select-row">
+                    <i class="ri-calendar-line"></i>
+
+                    <div class="pickup-select-content">
+                      <span> Pickup Date </span>
+
+                      <div class="pickup-select-wrapper">
+                        <select id="pickupDate" aria-label="Select pickup date">
+                          <option value="">Select a pickup date</option>
+                        </select>
+
+                        <i class="ri-arrow-down-s-line"></i>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- PICKUP TIME -->
+                  <div class="pickup-detail-row pickup-select-row">
+                    <i class="ri-time-line"></i>
+
+                    <div class="pickup-select-content">
+                      <span> Pickup Time </span>
+
+                      <div class="pickup-select-wrapper">
+                        <select id="pickupTime" aria-label="Select pickup time">
+                          <option value="">Select a pickup time</option>
+                        </select>
+
+                        <i class="ri-arrow-down-s-line"></i>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <!-- Pickup Date -->
-                <div class="pickup-detail-row">
-                  <i class="ri-calendar-line"></i>
-                  <div>
-                    <span>Pickup Date</span>
-                    <strong id="pickupDate">Not specified</strong>
-                  </div>
-                </div>
+                <!-- =================================================
+                     PROVIDER INSTRUCTIONS
+                ================================================== -->
 
-                <!-- Pickup Time -->
-                <div class="pickup-detail-row">
-                  <i class="ri-time-line"></i>
-                  <div>
-                    <span>Pickup Time</span>
-                    <strong id="pickupTime">Not specified</strong>
-                  </div>
-                </div>
-
-                <!-- Instructions -->
                 <div
-                  class="pickup-detail-row full-width"
+                  class="pickup-detail-row full-width provider-instructions-row"
                   id="pickupInstructionsRow"
                 >
-                  <i class="ri-information-line"></i>
+                  <i class="ri-store-3-line"></i>
+
                   <div>
-                    <span>Instructions</span>
+                    <span> Provider Instructions </span>
+
                     <strong id="pickupInstructions">
                       No special instructions.
                     </strong>
                   </div>
                 </div>
-              </div>
-            </section>
 
-            <!-- ===================================================
-                 AI VERIFIED
-            ==================================================== -->
+                <!-- =================================================
+                     USER PICKUP INSTRUCTIONS
+                ================================================== -->
 
-            <section class="details-card ai-verified-card">
-              <div class="details-card-header">
-                <i class="ri-sparkling-2-line"></i>
-
-                <h2>AI Verified</h2>
-              </div>
-
-              <div class="ai-verified-content">
-                <!-- FRESHNESS -->
-
-                <div class="ai-score-item">
-                  <div class="ai-score-icon">
-                    <i class="ri-leaf-line"></i>
+                <div class="pickup-user-instructions full-width">
+                  <div class="user-instructions-icon">
+                    <i class="ri-file-edit-line"></i>
                   </div>
 
-                  <div class="ai-score-text">
-                    <span> Freshness Score </span>
+                  <div class="user-instructions-content">
+                    <label for="instructions">
+                      Your Pickup Instructions
+                      <span> (Optional) </span>
+                    </label>
 
-                    <strong id="aiFreshnessScore"> — </strong>
-                  </div>
-                </div>
+                    <div class="instructions-input-wrapper">
+                      <textarea
+                        id="instructions"
+                        maxlength="200"
+                        placeholder="e.g. I will arrive around 6 PM. Please keep the order ready."
+                      ></textarea>
 
-                <!-- RECOVERY -->
-
-                <div class="ai-score-item">
-                  <div class="ai-score-icon">
-                    <i class="ri-recycle-line"></i>
-                  </div>
-
-                  <div class="ai-score-text">
-                    <span> Recovery Probability </span>
-
-                    <strong id="aiRecoveryProbability"> — </strong>
-                  </div>
-                </div>
-
-                <!-- CARBON -->
-
-                <div class="ai-score-item">
-                  <div class="ai-score-icon">
-                    <i class="ri-earth-line"></i>
-                  </div>
-
-                  <div class="ai-score-text">
-                    <span> Carbon Saved </span>
-
-                    <strong id="aiCarbonSaved"> — </strong>
-                  </div>
-                </div>
-
-                <!-- AI RECOMMENDATION -->
-
-                <!-- AI VERIFICATION -->
-
-                <div class="ai-recommendation">
-                  <i class="ri-sparkling-2-line"></i>
-
-                  <div>
-                    <span>AI Verification</span>
-                    <p id="aiRecommendation">Verified listing • AI analyzed</p>
+                      <span class="character-count" id="characterCount">
+                        0/200
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -510,32 +472,39 @@
           </div>
 
           <!-- =====================================================
-               RIGHT CONTENT
+               RIGHT SIDEBAR
           ====================================================== -->
 
           <aside class="listing-side-content">
+            <!-- ===================================================
+                 RESERVE / ORDER CARD
+            ==================================================== -->
+
             <section class="reserve-card">
+              <!-- HEADER -->
               <div class="reserve-card-header">
-                <h2>
-                  <span id="reserveActionTitle">Reserve this Food</span>
-                </h2>
+                <div class="reserve-heading-icon">
+                  <i class="ri-leaf-line"></i>
+                </div>
+
+                <div>
+                  <h2>Reserve this Food</h2>
+
+                  <p>Good food today, a better tomorrow!</p>
+                </div>
               </div>
 
-              <!-- ======================================================
-       QUANTITY
-  ======================================================= -->
+              <!-- =================================================
+                   QUANTITY
+              ================================================== -->
 
               <div class="reserve-quantity-section">
                 <div class="reserve-label-row">
-                  <label for="reserveQuantity">
-                    Quantity
-                    <span id="reserveUnitLabel">(Units)</span>
-                  </label>
+                  <label for="reserveQuantity"> Select Quantity </label>
                 </div>
 
                 <div class="quantity-availability">
                   <!-- QUANTITY CONTROL -->
-
                   <div class="quantity-control">
                     <button
                       type="button"
@@ -564,49 +533,194 @@
                   </div>
 
                   <!-- AVAILABLE -->
-
                   <div class="available-quantity">
-                    <strong id="availableQuantity">0</strong>
-                    <span>Available</span>
+                    <strong id="availableQuantity"> 0 </strong>
+
+                    <span id="reserveUnitLabel"> Available </span>
                   </div>
                 </div>
               </div>
 
-              <!-- ======================================================
-       PICKUP NOTICE
-  ======================================================= -->
+              <!-- =================================================
+                   PICKUP NOTICE
+              ================================================== -->
 
               <div class="pickup-notice">
                 <i class="ri-shield-check-line"></i>
 
-                <p>Please pick up the food within the given time slot.</p>
+                <p>Please select a pickup date and time before reserving.</p>
               </div>
 
-              <!-- ======================================================
-       PRICE
-  ======================================================= -->
+              <!-- =================================================
+                   PRICE DETAILS
+              ================================================== -->
 
-              <div class="reserve-price-section">
-                <div class="price-main">
-                  <span class="current-price" id="currentPrice"> ₹0 </span>
+              <div class="reserve-price-details">
+                <h3>Price Details</h3>
+
+                <!-- PRICE PER UNIT -->
+                <div class="price-detail-row">
+                  <span> Price (per unit) </span>
+
+                  <div>
+                    <strong id="currentPrice"> ₹0 </strong>
+
+                    <del id="originalPrice"> ₹0 </del>
+                  </div>
                 </div>
 
-                <div class="price-original" id="originalPriceContainer">
-                  <span id="originalPrice"> ₹0 </span>
+                <!-- SUBTOTAL -->
+                <div class="price-detail-row">
+                  <span>
+                    Subtotal (<span id="summaryQuantity"> 1 </span>
+                    <span id="summaryUnit"> unit </span>)
+                  </span>
+
+                  <strong id="subtotalAmount"> ₹0 </strong>
                 </div>
 
-                <span class="discount-badge" id="discountBadge"> 0% OFF </span>
+                <!-- PLATFORM FEE -->
+                <div class="price-detail-row">
+                  <span>
+                    Platform Fee
+
+                    <i
+                      class="ri-information-line"
+                      title="Platform service fee"
+                    ></i>
+                  </span>
+
+                  <strong id="platformFee"> ₹0 </strong>
+                </div>
               </div>
 
-              <!-- ======================================================
-       RESERVE BUTTON
-  ======================================================= -->
+              <!-- =================================================
+                   COMMUNITY SUPPORT
+              ================================================== -->
 
-              <button type="button" class="reserve-now-btn" id="reserveNowBtn">
+              <div class="community-support-section">
+                <!-- HEADER -->
+                <div class="community-support-header">
+                  <div class="community-support-title">
+                    <div class="community-support-icon">
+                      <i class="ri-leaf-line"></i>
+                    </div>
+
+                    <div>
+                      <strong> Support Community </strong>
+
+                      <span>
+                        Help us recover more food and support people in need.
+                      </span>
+                    </div>
+                  </div>
+
+                  <strong id="communitySupport"> ₹0 </strong>
+                </div>
+
+                <!-- PRESET OPTIONS -->
+                <div class="support-options">
+                  <button type="button" class="support-option" data-support="5">
+                    ₹5
+                  </button>
+
+                  <button
+                    type="button"
+                    class="support-option"
+                    data-support="10"
+                  >
+                    ₹10
+                  </button>
+
+                  <button
+                    type="button"
+                    class="support-option"
+                    data-support="20"
+                  >
+                    ₹20
+                  </button>
+
+                  <button
+                    type="button"
+                    class="custom-support-btn"
+                    id="customSupportBtn"
+                    aria-label="Enter custom contribution"
+                    title="Custom contribution"
+                  >
+                    <i class="ri-edit-line"></i>
+
+                    <span> Custom </span>
+                  </button>
+                </div>
+
+                <!-- CUSTOM SUPPORT -->
+                <div
+                  class="custom-support-input hidden"
+                  id="customSupportInput"
+                >
+                  <label for="customSupportAmount"> Custom contribution </label>
+
+                  <div class="custom-amount-wrapper">
+                    <span> ₹ </span>
+
+                    <input
+                      type="number"
+                      id="customSupportAmount"
+                      min="5"
+                      max="500"
+                      step="1"
+                      placeholder="Enter amount"
+                    />
+
+                    <button
+                      type="button"
+                      id="applyCustomSupport"
+                      aria-label="Apply custom contribution"
+                    >
+                      <i class="ri-check-line"></i>
+                    </button>
+                  </div>
+
+                  <small> Minimum ₹5 · Maximum ₹500 </small>
+                </div>
+              </div>
+
+              <!-- DIVIDER -->
+              <div class="summary-divider"></div>
+
+              <!-- =================================================
+                   TOTAL
+              ================================================== -->
+
+              <div class="summary-total">
+                <span> Total Amount </span>
+
+                <strong id="totalAmount"> ₹0 </strong>
+              </div>
+
+              <!-- =================================================
+                   RESERVE BUTTON
+              ================================================== -->
+
+              <button type="button" id="reserveNowBtn" class="reserve-now-btn">
                 <span id="reserveButtonText"> Reserve Now </span>
 
                 <i class="ri-arrow-right-line"></i>
               </button>
+
+              <!-- SAVE -->
+              <button type="button" class="save-food-btn" id="saveFoodBtn">
+                <i class="ri-heart-3-line"></i>
+
+                <span> Save for Later </span>
+              </button>
+
+              <!-- SECURE -->
+              <div class="secure-message">
+                <i class="ri-lock-line"></i>
+
+                <span> Secure & Safe Reservation </span>
+              </div>
             </section>
 
             <!-- ===================================================
@@ -616,29 +730,32 @@
             <section class="provider-card">
               <div class="provider-card-header">
                 <h2>About the Provider</h2>
+
+                <a href="#" id="viewProviderProfile">
+                  View Profile
+                  <i class="ri-arrow-right-line"></i>
+                </a>
               </div>
 
               <div class="provider-main">
                 <!-- PROVIDER AVATAR -->
-
                 <div class="provider-avatar">
                   <i class="ri-store-3-line"></i>
                 </div>
 
                 <!-- PROVIDER DETAILS -->
-
                 <div class="provider-details">
                   <div class="provider-name-row">
                     <h3 id="providerCardName">Food Provider</h3>
 
                     <span class="verified-provider-badge">
                       <i class="ri-verified-badge-fill"></i>
+
                       Verified
                     </span>
                   </div>
 
                   <!-- RATING -->
-
                   <div class="provider-rating">
                     <i class="ri-star-fill"></i>
 
@@ -649,24 +766,7 @@
                 </div>
               </div>
 
-              <!-- PROVIDER STATS -->
-
-              <div class="provider-stats">
-                <div class="provider-stat">
-                  <span> Total Donations </span>
-
-                  <strong id="providerDonations"> 0 </strong>
-                </div>
-
-                <div class="provider-stat">
-                  <span> Response Rate </span>
-
-                  <strong id="providerResponseRate"> 0% </strong>
-                </div>
-              </div>
-
               <!-- PROVIDER MESSAGE -->
-
               <div class="provider-message">
                 <i class="ri-double-quotes-l"></i>
 

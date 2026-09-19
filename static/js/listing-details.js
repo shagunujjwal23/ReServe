@@ -1,10 +1,6 @@
 /* ==========================================================
-   ReServe - Individual Listing Details
+   ReServe - Individual Listing Details + Reservation
    listing-details.js
-========================================================== */
-
-/* ==========================================================
-   API CONFIGURATION
 ========================================================== */
 
 const API_BASE_URL = "/api";
@@ -14,8 +10,21 @@ const API_BASE_URL = "/api";
 ========================================================== */
 
 let currentListing = null;
+
 let availableQuantity = 0;
 let currentUnitPrice = 0;
+
+let selectedSlot = null;
+let selectedPickupDate = null;
+
+let communitySupport = 0;
+
+/* ==========================================================
+   PLATFORM FEE
+========================================================== */
+
+const PLATFORM_FEE_RATE = 0.05;
+const MAX_PLATFORM_FEE = 20;
 
 /* ==========================================================
    DOM READY
@@ -36,6 +45,8 @@ async function initializeListingDetails() {
     setupReservationButton();
     setupReportButton();
     setupBackButton();
+    setupInstructions();
+    setupCommunitySupport();
 
     await loadProfile();
     await loadListing();
@@ -49,7 +60,7 @@ async function initializeListingDetails() {
 ========================================================== */
 
 function getListingId() {
-  const pathParts = window.location.pathname.split("/");
+  const pathParts = window.location.pathname.split("/").filter(Boolean);
 
   const listingIndex = pathParts.indexOf("listing");
 
@@ -67,62 +78,66 @@ function getListingId() {
 async function loadListing() {
   const listingId = getListingId();
 
-  const loadingElement = document.getElementById("listingLoading");
-
   if (!listingId) {
     hideListingLoading();
     showListingError("Invalid listing.");
     return;
   }
 
-  // Show loading while fetching
+  const loadingElement = document.getElementById("listingLoading");
+
   if (loadingElement) {
     loadingElement.classList.remove("hidden");
   }
 
   try {
-    const response = await fetch(`${API_BASE_URL}/listings/${listingId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
+    const response = await fetch(
+      `${API_BASE_URL}/listings/${encodeURIComponent(listingId)}`,
+      {
+        method: "GET",
+        credentials: "same-origin",
+        headers: {
+          Accept: "application/json",
+        },
       },
-    });
+    );
 
-    if (!response.ok) {
-      throw new Error(`Failed to load listing. Status: ${response.status}`);
+    let result = {};
+
+    try {
+      result = await response.json();
+    } catch {
+      throw new Error("Invalid server response.");
     }
 
-    const result = await response.json();
+    if (!response.ok) {
+      throw new Error(
+        result.message || `Failed to load listing. Status: ${response.status}`,
+      );
+    }
 
-    /*
-     * Supports:
-     * { listing: {...} }
-     * and direct {...}
-     */
     currentListing = result.listing || result;
-    console.log(JSON.stringify(currentListing, null, 2));
 
     if (!currentListing) {
       throw new Error("Listing data not found.");
     }
 
-    // Render all listing information
+    console.log("Listing Loaded:", JSON.stringify(currentListing, null, 2));
+
     renderListing(currentListing);
 
-    // IMPORTANT:
-    // Hide the large loading area after successful rendering
     hideListingLoading();
   } catch (error) {
     console.error("Load listing error:", error);
 
     hideListingLoading();
 
-    showListingError("Unable to load this food listing.");
+    showListingError(error.message || "Unable to load this food listing.");
   }
 }
 
 /* ==========================================================
-   HIDE LISTING LOADING
+   HIDE LOADING
 ========================================================== */
 
 function hideListingLoading() {
@@ -151,56 +166,59 @@ function renderListing(listing) {
 ========================================================== */
 
 function renderBasicInformation(listing) {
-  setText(
-    "listingFoodTitle",
-    getValue(
-      listing,
-      ["foodName", "food_title", "name", "title"],
-      "Food Listing",
-    ),
+  const foodTitle = getValue(
+    listing,
+    ["food_title", "foodName", "food_name", "name", "title"],
+    "Food Listing",
   );
 
-  setText(
-    "listingShortDescription",
-    getValue(
-      listing,
-      ["shortDescription", "summary"],
-      "Loading food details...",
-    ),
+  const shortDescription = getValue(
+    listing,
+    ["shortDescription", "short_description", "summary", "description"],
+    "Loading food details...",
   );
 
-  setText(
-    "providerName",
-    getValue(
-      listing,
-      ["provider_name", "providerName", "ownerName", "sellerName"],
-      "Food Provider",
-    ),
+  const providerName = getValue(
+    listing,
+    ["provider_name", "providerName", "ownerName", "sellerName"],
+    "Food Provider",
   );
 
-  setText(
-    "providerCardName",
-    getValue(
-      listing,
-      ["provider_name", "providerName", "ownerName", "sellerName"],
-      "Food Provider",
-    ),
+  const category = getValue(listing, ["category", "foodCategory"], "Food");
+
+  const foodType = getValue(
+    listing,
+    ["food_type", "foodType", "type"],
+    "Vegetarian",
   );
 
-  setText(
-    "listingCategory",
-    getValue(listing, ["category", "foodCategory"], "Food"),
-  );
+  const area = getValue(listing, ["area", "pickup_area"], "");
 
-  const foodType = getValue(listing, ["foodType", "type"], "Vegetarian");
+  const city = getValue(listing, ["city", "pickupCity"], "");
+
+  let location = "";
+
+  if (area && city) {
+    location = `${area}, ${city}`;
+  } else {
+    location = area || city || "Location unavailable";
+  }
+
+  setText("listingFoodTitle", foodTitle);
+
+  setText("listingShortDescription", shortDescription);
+
+  setText("providerName", providerName);
+
+  setText("providerCardName", providerName);
+
+  setText("listingCategory", category);
 
   setText("listingFoodType", foodType);
-  setText("foodTypeText", ` ${foodType} `);
 
-  setText(
-    "listingLocation",
-    getValue(listing, ["location", "city", "pickupCity"], "Lucknow"),
-  );
+  setText("foodTypeText", foodType);
+
+  setText("listingLocation", location);
 
   setText(
     "listingExpiry",
@@ -214,7 +232,7 @@ function renderBasicInformation(listing) {
     ),
   );
 
-  setText("listingPickupTime", formatPickupTime(listing));
+  setText("listingPickupTime", getPickupWindowText(listing));
 
   const quantity = getNumericValue(
     listing,
@@ -225,10 +243,6 @@ function renderBasicInformation(listing) {
   const unit = getValue(listing, ["unit", "quantityUnit"], "Units");
 
   setText("listingQuantity", `${formatNumber(quantity)} ${unit}`);
-
-  setText("availableQuantity", `${formatNumber(quantity)} ${unit}`);
-
-  setText("reserveUnitLabel", ` (${unit})`);
 
   availableQuantity = quantity;
 }
@@ -241,7 +255,9 @@ function renderFoodImage(listing) {
   const image = document.getElementById("listingMainImage");
   const placeholder = document.getElementById("mainImagePlaceholder");
 
-  if (!image) return;
+  if (!image) {
+    return;
+  }
 
   const imageUrl = getValue(
     listing,
@@ -291,49 +307,47 @@ function showImagePlaceholder() {
 ========================================================== */
 
 function renderPickupInformation(listing) {
-  setText(
-    "pickupAddress",
-    getValue(listing, ["pickupAddress", "address"], "Not specified"),
-  );
+  const address = getValue(listing, ["address", "pickupAddress"], "");
 
-  const pickupDate = getValue(
-    listing,
-    ["pickupDate", "pickup_date", "date", "pickup_start"],
-    null,
-  );
+  const area = getValue(listing, ["area", "pickup_area"], "");
 
-  setText("pickupDate", pickupDate ? formatDate(pickupDate) : "Not specified");
-  setText("pickupTime", formatPickupTime(listing));
+  const city = getValue(listing, ["city", "pickupCity"], "");
 
-  const instructions = getValue(
+  let fullAddress = address;
+
+  if (area && !fullAddress.toLowerCase().includes(area.toLowerCase())) {
+    fullAddress += fullAddress ? `, ${area}` : area;
+  }
+
+  if (city && !fullAddress.toLowerCase().includes(city.toLowerCase())) {
+    fullAddress += fullAddress ? `, ${city}` : city;
+  }
+
+  setText("pickupAddress", fullAddress || "Address unavailable");
+
+  /* --------------------------------------------------------
+     PROVIDER INSTRUCTIONS
+  -------------------------------------------------------- */
+
+  const providerInstructions = getValue(
     listing,
     [
-      "pickupInstructions",
-      "instructions",
       "pickup_instructions",
-      "specialInstructions",
+      "pickupInstructions",
+      "providerInstructions",
+      "instructions",
     ],
-    null,
+    "",
   );
-
-  setText("pickupInstructions", instructions || "No special instructions.");
-
-  /* ========================================================
-     WHY FOOD IS AVAILABLE
-  ======================================================== */
 
   setText(
-    "availabilityReason",
-    getValue(
-      listing,
-      ["availabilityReason", "reason", "surplusReason"],
-      "Surplus food available for recovery.",
-    ),
+    "pickupInstructions",
+    providerInstructions || "No special instructions.",
   );
 
-  /* ========================================================
+  /* --------------------------------------------------------
      DESCRIPTION
-  ======================================================== */
+  -------------------------------------------------------- */
 
   setText(
     "listingDescription",
@@ -343,6 +357,12 @@ function renderPickupInformation(listing) {
       "No description available.",
     ),
   );
+
+  /* --------------------------------------------------------
+     PICKUP DATE + TIME
+  -------------------------------------------------------- */
+
+  initializePickupDateTime();
 }
 
 /* ==========================================================
@@ -350,28 +370,21 @@ function renderPickupInformation(listing) {
 ========================================================== */
 
 function renderProviderInformation(listing) {
-  setText(
-    "providerName",
-    getValue(
-      listing,
-      ["provider_name", "providerName", "ownerName", "sellerName"],
-      "Food Provider",
-    ),
+  const providerName = getValue(
+    listing,
+    ["provider_name", "providerName", "ownerName", "sellerName"],
+    "Food Provider",
   );
 
-  setText(
-    "providerCardName",
-    getValue(
-      listing,
-      ["provider_name", "providerName", "ownerName", "sellerName"],
-      "Food Provider",
-    ),
-  );
+  setText("providerName", providerName);
 
-  setText(
-    "providerRating",
-    getValue(listing, ["providerRating", "rating"], "4.8"),
-  );
+  setText("providerCardName", providerName);
+
+  const providerRating = getValue(listing, ["providerRating", "rating"], null);
+
+  if (providerRating !== null) {
+    setText("providerRating", providerRating);
+  }
 
   const reviews = getNumericValue(
     listing,
@@ -382,30 +395,6 @@ function renderProviderInformation(listing) {
   setText("providerReviews", `(${formatNumber(reviews)} reviews)`);
 
   setText(
-    "providerDonations",
-    formatNumber(
-      getNumericValue(
-        listing,
-        ["providerDonations", "totalDonations", "donations"],
-        0,
-      ),
-    ),
-  );
-
-  const responseRate = getValue(
-    listing,
-    ["providerResponseRate", "responseRate"],
-    null,
-  );
-
-  setText(
-    "providerResponseRate",
-    responseRate !== null && responseRate !== undefined && responseRate !== ""
-      ? formatPercentage(responseRate)
-      : "—",
-  );
-
-  setText(
     "providerMessage",
     getValue(
       listing,
@@ -413,18 +402,22 @@ function renderProviderInformation(listing) {
       "We believe in sharing surplus food and making a positive impact in the community.",
     ),
   );
+
+  const providerVerified = document.getElementById("providerVerified");
+
+  if (providerVerified) {
+    const verified =
+      listing.provider_verified ?? listing.providerVerified ?? true;
+
+    providerVerified.style.display = verified ? "inline-block" : "none";
+  }
 }
 
 /* ==========================================================
-   AI VERIFIED INFORMATION
+   AI INFORMATION
 ========================================================== */
 
 function renderAIInformation(listing) {
-  /*
-   * Get AI result from the listing.
-   * Supports different possible backend structures.
-   */
-
   const aiResult =
     listing?.aiResult ||
     listing?.ai ||
@@ -432,9 +425,9 @@ function renderAIInformation(listing) {
     listing?.aiVerified ||
     listing;
 
-  /* ========================================================
-     FRESHNESS SCORE
-  ======================================================== */
+  /* --------------------------------------------------------
+     FRESHNESS
+  -------------------------------------------------------- */
 
   const freshnessScore =
     aiResult?.insights?.find(
@@ -450,9 +443,9 @@ function renderAIInformation(listing) {
     freshnessScore !== null ? `${Number(freshnessScore)}%` : "—",
   );
 
-  /* ========================================================
-     RECOVERY PROBABILITY
-  ======================================================== */
+  /* --------------------------------------------------------
+     RECOVERY
+  -------------------------------------------------------- */
 
   const recoveryProbability =
     aiResult?.confidence?.recovery ??
@@ -466,9 +459,9 @@ function renderAIInformation(listing) {
     recoveryProbability !== null ? `${Number(recoveryProbability)}%` : "—",
   );
 
-  /* ========================================================
-     CARBON SAVED
-  ======================================================== */
+  /* --------------------------------------------------------
+     CARBON
+  -------------------------------------------------------- */
 
   const carbonSaved =
     aiResult?.metrics?.carbon ??
@@ -482,10 +475,9 @@ function renderAIInformation(listing) {
     carbonSaved !== null ? `${Number(carbonSaved)} kg` : "—",
   );
 
-  /* ========================================================
-     USER VIEW
-     Do NOT show owner recommendations here.
-  ======================================================== */
+  /* --------------------------------------------------------
+     AI VERIFICATION
+  -------------------------------------------------------- */
 
   const verificationElement = document.getElementById("aiRecommendation");
 
@@ -507,27 +499,24 @@ function renderReservationInformation(listing) {
 
   const price = getNumericValue(
     listing,
-    ["price", "discountedPrice", "discounted_price", "sellingPrice"],
+    ["discounted_price", "discountedPrice", "price", "sellingPrice"],
     0,
   );
 
   const originalPrice = getNumericValue(
     listing,
-    ["originalPrice", "original_price", "mrp", "regularPrice"],
+    ["original_price", "originalPrice", "mrp", "regularPrice"],
     price,
   );
+
+  const unit = getValue(listing, ["unit", "quantityUnit"], "Units");
 
   availableQuantity = quantity;
   currentUnitPrice = price;
 
-  setText(
-    "availableQuantity",
-    `${formatNumber(quantity)} ${getValue(
-      listing,
-      ["unit", "quantityUnit"],
-      "Units",
-    )}`,
-  );
+  setText("availableQuantity", formatNumber(quantity));
+
+  setText("reserveUnitLabel", unit);
 
   setText("currentPrice", formatCurrency(price));
 
@@ -540,16 +529,28 @@ function renderReservationInformation(listing) {
 
   setText("discountBadge", `${discount}% OFF`);
 
-  const originalPriceContainer = document.getElementById(
-    "originalPriceContainer",
-  );
-
-  if (originalPriceContainer) {
-    originalPriceContainer.style.display =
-      originalPrice > price ? "block" : "none";
-  }
+  updatePriceVisibility(originalPrice, price);
 
   updateReservationTotal();
+  updateQuantityButtonState();
+}
+
+/* ==========================================================
+   ORIGINAL PRICE VISIBILITY
+========================================================== */
+
+function updatePriceVisibility(originalPrice, currentPrice) {
+  const originalPriceElement = document.getElementById("originalPrice");
+
+  if (!originalPriceElement) {
+    return;
+  }
+
+  if (originalPrice > currentPrice && originalPrice > 0) {
+    originalPriceElement.style.display = "inline";
+  } else {
+    originalPriceElement.style.display = "none";
+  }
 }
 
 /* ==========================================================
@@ -628,7 +629,9 @@ function updateQuantityButtonState() {
 
   const quantityInput = document.getElementById("reserveQuantity");
 
-  if (!quantityInput) return;
+  if (!quantityInput) {
+    return;
+  }
 
   const quantity = parseInt(quantityInput.value) || 1;
 
@@ -643,23 +646,33 @@ function updateQuantityButtonState() {
 }
 
 /* ==========================================================
-   UPDATE TOTAL
+   UPDATE RESERVATION TOTAL
 ========================================================== */
 
 function updateReservationTotal() {
   const quantityInput = document.getElementById("reserveQuantity");
 
-  const totalElement = document.getElementById("reservationTotal");
-
-  if (!quantityInput || !totalElement) {
+  if (!quantityInput) {
     return;
   }
 
   const quantity = parseInt(quantityInput.value) || 1;
 
-  const total = quantity * currentUnitPrice;
+  const subtotal = quantity * currentUnitPrice;
 
-  totalElement.textContent = formatCurrency(total);
+  const platformFee = Math.min(subtotal * PLATFORM_FEE_RATE, MAX_PLATFORM_FEE);
+
+  const total = subtotal + platformFee + communitySupport;
+
+  setText("summaryQuantity", quantity);
+
+  setText("subtotalAmount", formatCurrency(subtotal));
+
+  setText("platformFee", formatCurrency(platformFee));
+
+  setText("communitySupport", formatCurrency(communitySupport));
+
+  setText("totalAmount", formatCurrency(total));
 }
 
 /* ==========================================================
@@ -669,7 +682,9 @@ function updateReservationTotal() {
 function setupReservationButton() {
   const button = document.getElementById("reserveNowBtn");
 
-  if (!button) return;
+  if (!button) {
+    return;
+  }
 
   button.addEventListener("click", reserveListing);
 }
@@ -678,31 +693,76 @@ function setupReservationButton() {
    RESERVE LISTING
 ========================================================== */
 
-function reserveListing() {
+async function reserveListing() {
   if (!currentListing) {
     showToast("Listing information is not available.", "error");
-
     return;
   }
 
-  const quantityInput = document.getElementById("reserveQuantity");
-
   const button = document.getElementById("reserveNowBtn");
 
-  if (!quantityInput || !button) {
+  const quantityInput = document.getElementById("reserveQuantity");
+
+  const instructions = document.getElementById("instructions");
+
+  if (!button || !quantityInput) {
     return;
   }
 
   const quantity = parseInt(quantityInput.value) || 1;
 
+  /* --------------------------------------------------------
+     QUANTITY VALIDATION
+  -------------------------------------------------------- */
+
   if (quantity < 1) {
     showToast("Please select a valid quantity.", "error");
-
     return;
   }
 
   if (availableQuantity > 0 && quantity > availableQuantity) {
-    showToast("Selected quantity is not available.", "error");
+    showToast(`Only ${availableQuantity} units are available.`, "error");
+    return;
+  }
+
+  /* --------------------------------------------------------
+     DATE VALIDATION
+  -------------------------------------------------------- */
+
+  if (!selectedPickupDate) {
+    showToast("Please select a pickup date.", "error");
+
+    const dateSelect = document.getElementById("pickupDate");
+
+    if (dateSelect) {
+      dateSelect.focus();
+
+      dateSelect.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+
+    return;
+  }
+
+  /* --------------------------------------------------------
+     TIME VALIDATION
+  -------------------------------------------------------- */
+
+  if (!selectedSlot) {
+    showToast("Please select a pickup time.", "error");
+
+    const timeSelect = document.getElementById("pickupTime");
+
+    if (timeSelect) {
+      timeSelect.focus();
+
+      timeSelect.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
 
     return;
   }
@@ -714,7 +774,674 @@ function reserveListing() {
     return;
   }
 
-  window.location.href = `/place-order/${encodeURIComponent(listingId)}?quantity=${encodeURIComponent(quantity)}`;
+  /* --------------------------------------------------------
+     DISABLE BUTTON
+  -------------------------------------------------------- */
+
+  button.disabled = true;
+
+  const originalButtonHTML = button.innerHTML;
+
+  button.innerHTML = `
+    <span>Reserving...</span>
+    <i class="ri-loader-4-line ri-spin"></i>
+  `;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/orders/place`, {
+      method: "POST",
+      credentials: "same-origin",
+
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+
+      body: JSON.stringify({
+        listing_id: listingId,
+        quantity: quantity,
+        pickup_date: selectedPickupDate,
+        pickup_time: selectedSlot,
+        instructions: instructions?.value.trim() || "",
+        community_support: communitySupport,
+      }),
+    });
+
+    let result = {};
+
+    try {
+      result = await response.json();
+    } catch {
+      throw new Error("Invalid response from server.");
+    }
+
+    console.log("Reservation Response:", result);
+
+    if (!response.ok) {
+      throw new Error(result.message || "Unable to reserve food.");
+    }
+
+    if (result.success === false) {
+      throw new Error(result.message || "Reservation failed.");
+    }
+
+    showToast(
+      result.message || "Reservation request sent successfully.",
+      "success",
+    );
+
+    /* ------------------------------------------------------
+       REDIRECT AFTER SUCCESS
+    ------------------------------------------------------ */
+
+    setTimeout(() => {
+      window.location.href = "/my-reservations";
+    }, 1500);
+  } catch (error) {
+    console.error("Reservation error:", error);
+
+    showToast(error.message || "Unable to place reservation.", "error");
+
+    button.disabled = false;
+
+    button.innerHTML = originalButtonHTML;
+  }
+}
+
+/* ==========================================================
+   PICKUP DATE + TIME
+========================================================== */
+
+function initializePickupDateTime() {
+  const dateSelect = document.getElementById("pickupDate");
+
+  const timeSelect = document.getElementById("pickupTime");
+
+  if (!dateSelect || !timeSelect || !currentListing) {
+    return;
+  }
+
+  const pickupStart = parseDate(currentListing.pickup_start);
+
+  const pickupEnd = parseDate(currentListing.pickup_end);
+
+  if (!pickupStart || !pickupEnd || pickupEnd <= pickupStart) {
+    dateSelect.innerHTML = `
+      <option value="">
+        Pickup date unavailable
+      </option>
+    `;
+
+    timeSelect.innerHTML = `
+      <option value="">
+        Pickup time unavailable
+      </option>
+    `;
+
+    selectedPickupDate = null;
+    selectedSlot = null;
+
+    return;
+  }
+
+  populatePickupDates(pickupStart, pickupEnd, dateSelect, timeSelect);
+
+  dateSelect.onchange = () => {
+    selectedPickupDate = dateSelect.value || null;
+
+    selectedSlot = null;
+
+    populatePickupTimesForDate(
+      selectedPickupDate,
+      pickupStart,
+      pickupEnd,
+      timeSelect,
+    );
+
+    updatePickupWindowDisplay();
+  };
+}
+
+/* ==========================================================
+   GENERATE PICKUP DATES
+========================================================== */
+
+function populatePickupDates(pickupStart, pickupEnd, dateSelect, timeSelect) {
+  dateSelect.innerHTML = "";
+
+  const defaultOption = document.createElement("option");
+
+  defaultOption.value = "";
+
+  defaultOption.textContent = "Select a pickup date";
+
+  dateSelect.appendChild(defaultOption);
+
+  const currentDate = new Date(pickupStart);
+
+  currentDate.setHours(0, 0, 0, 0);
+
+  const lastDate = new Date(pickupEnd);
+
+  lastDate.setHours(0, 0, 0, 0);
+
+  while (currentDate <= lastDate) {
+    const dayStart = new Date(currentDate);
+
+    dayStart.setHours(0, 0, 0, 0);
+
+    const dayEnd = new Date(currentDate);
+
+    dayEnd.setHours(23, 59, 59, 999);
+
+    const hasAvailability = pickupStart <= dayEnd && pickupEnd >= dayStart;
+
+    if (hasAvailability) {
+      const option = document.createElement("option");
+
+      const dateKey = formatDateKey(currentDate);
+
+      option.value = dateKey;
+
+      option.textContent = formatDisplayDate(currentDate);
+
+      dateSelect.appendChild(option);
+    }
+
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  timeSelect.innerHTML = `
+    <option value="">
+      Select a pickup date first
+    </option>
+  `;
+
+  selectedPickupDate = null;
+  selectedSlot = null;
+
+  updatePickupWindowDisplay();
+}
+
+/* ==========================================================
+   GENERATE TIME SLOTS
+========================================================== */
+
+function populatePickupTimesForDate(
+  selectedDate,
+  pickupStart,
+  pickupEnd,
+  timeSelect,
+) {
+  timeSelect.innerHTML = "";
+
+  const defaultOption = document.createElement("option");
+
+  defaultOption.value = "";
+
+  defaultOption.textContent = "Select a pickup time";
+
+  defaultOption.selected = true;
+
+  timeSelect.appendChild(defaultOption);
+
+  selectedSlot = null;
+
+  if (!selectedDate) {
+    defaultOption.textContent = "Select a pickup date first";
+
+    return;
+  }
+
+  const selectedDayStart = new Date(`${selectedDate}T00:00:00`);
+
+  const selectedDayEnd = new Date(`${selectedDate}T23:59:59`);
+
+  let slotStart =
+    pickupStart > selectedDayStart
+      ? new Date(pickupStart)
+      : new Date(selectedDayStart);
+
+  let slotEnd =
+    pickupEnd < selectedDayEnd ? new Date(pickupEnd) : new Date(selectedDayEnd);
+
+  if (slotStart >= slotEnd) {
+    defaultOption.textContent = "No pickup time available";
+
+    return;
+  }
+
+  /*
+   * Generate 1-hour slots.
+   */
+
+  while (slotStart < slotEnd) {
+    let nextSlot = new Date(slotStart);
+
+    nextSlot.setHours(nextSlot.getHours() + 1);
+
+    if (nextSlot > slotEnd) {
+      nextSlot = new Date(slotEnd);
+    }
+
+    const startLabel = formatTime(slotStart);
+
+    const endLabel = formatTime(nextSlot);
+
+    if (startLabel && endLabel) {
+      const option = document.createElement("option");
+
+      const slotValue = `${startLabel} - ${endLabel}`;
+
+      option.value = slotValue;
+
+      option.textContent = slotValue;
+
+      timeSelect.appendChild(option);
+    }
+
+    slotStart = new Date(nextSlot);
+
+    if (slotStart >= slotEnd) {
+      break;
+    }
+  }
+
+  timeSelect.onchange = () => {
+    selectedSlot = timeSelect.value || null;
+
+    updatePickupWindowDisplay();
+
+    console.log("Selected pickup date:", selectedPickupDate);
+
+    console.log("Selected pickup time:", selectedSlot);
+  };
+}
+
+/* ==========================================================
+   UPDATE PICKUP WINDOW TEXT
+========================================================== */
+
+function updatePickupWindowDisplay() {
+  const element = document.getElementById("listingPickupTime");
+
+  if (!element) {
+    return;
+  }
+
+  if (selectedPickupDate && selectedSlot) {
+    const dateText = formatDisplayDateFromKey(selectedPickupDate);
+
+    element.textContent = `${dateText} • ${selectedSlot}`;
+  } else {
+    element.textContent = "Select date & time below";
+  }
+}
+
+/* ==========================================================
+   GET ORIGINAL PICKUP WINDOW
+========================================================== */
+
+function getPickupWindowText(listing) {
+  const start = getValue(
+    listing,
+    ["pickup_start", "pickupStart", "pickupStartTime"],
+    null,
+  );
+
+  const end = getValue(
+    listing,
+    ["pickup_end", "pickupEnd", "pickupEndTime"],
+    null,
+  );
+
+  if (!start || !end) {
+    return "Select date & time below";
+  }
+
+  const startDate = parseDate(start);
+
+  const endDate = parseDate(end);
+
+  if (!startDate || !endDate) {
+    return "Select date & time below";
+  }
+
+  if (formatDateKey(startDate) === formatDateKey(endDate)) {
+    return `${formatTime(startDate)} - ${formatTime(endDate)}`;
+  }
+
+  return `${formatDisplayDate(startDate)} - ${formatDisplayDate(endDate)}`;
+}
+
+/* ==========================================================
+   DATE KEY
+========================================================== */
+
+function formatDateKey(date) {
+  const year = date.getFullYear();
+
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+/* ==========================================================
+   DISPLAY DATE
+========================================================== */
+
+function formatDisplayDate(date) {
+  return date.toLocaleDateString("en-IN", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+/* ==========================================================
+   DISPLAY DATE FROM KEY
+========================================================== */
+
+function formatDisplayDateFromKey(dateKey) {
+  if (!dateKey) {
+    return "";
+  }
+
+  const date = new Date(`${dateKey}T00:00:00`);
+
+  if (Number.isNaN(date.getTime())) {
+    return dateKey;
+  }
+
+  return formatDisplayDate(date);
+}
+
+/* ==========================================================
+   DATE PARSER
+========================================================== */
+
+function parseDate(value) {
+  if (!value) {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date;
+}
+
+/* ==========================================================
+   TIME FORMATTER
+========================================================== */
+
+function formatTime(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date = value instanceof Date ? value : parseDate(value);
+
+  if (!date) {
+    return "";
+  }
+
+  return date.toLocaleTimeString("en-IN", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+/* ==========================================================
+   DATE FORMATTER
+========================================================== */
+
+function formatDate(value) {
+  if (!value) {
+    return "Not specified";
+  }
+
+  const date = parseDate(value);
+
+  if (!date) {
+    return value;
+  }
+
+  return date.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+/* ==========================================================
+   DATE + TIME FORMATTER
+========================================================== */
+
+function formatDateTime(value, fallback = "Not specified") {
+  if (!value) {
+    return fallback;
+  }
+
+  const date = parseDate(value);
+
+  if (!date) {
+    return value;
+  }
+
+  return date.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
+/* ==========================================================
+   MAP
+========================================================== */
+
+function initializeMapButton() {
+  const button = document.getElementById("viewMapBtn");
+
+  if (!button) {
+    return;
+  }
+
+  button.onclick = () => {
+    if (!currentListing) {
+      return;
+    }
+
+    const address = [
+      currentListing.address,
+      currentListing.area,
+      currentListing.city,
+      currentListing.state,
+      currentListing.pincode,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+    if (!address) {
+      showToast("Pickup location is unavailable.", "error");
+      return;
+    }
+
+    const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+
+    window.open(mapUrl, "_blank", "noopener,noreferrer");
+  };
+}
+
+/* ==========================================================
+   INSTRUCTIONS
+========================================================== */
+
+function setupInstructions() {
+  const textarea = document.getElementById("instructions");
+
+  const counter = document.getElementById("characterCount");
+
+  if (!textarea || !counter) {
+    return;
+  }
+
+  const updateCounter = () => {
+    counter.textContent = `${textarea.value.length}/200`;
+  };
+
+  textarea.addEventListener("input", updateCounter);
+
+  updateCounter();
+}
+
+/* ==========================================================
+   COMMUNITY SUPPORT
+========================================================== */
+
+function setupCommunitySupport() {
+  const options = document.querySelectorAll(".support-option");
+
+  const customButton = document.getElementById("customSupportBtn");
+
+  const customInputBox = document.getElementById("customSupportInput");
+
+  const customInput = document.getElementById("customSupportAmount");
+
+  const applyCustomButton = document.getElementById("applyCustomSupport");
+
+  /* --------------------------------------------------------
+     PRESET OPTIONS
+  -------------------------------------------------------- */
+
+  options.forEach((option) => {
+    option.addEventListener("click", () => {
+      const amount = Number(option.dataset.support) || 0;
+
+      const alreadySelected = option.classList.contains("active");
+
+      options.forEach((item) => {
+        item.classList.remove("active");
+      });
+
+      customButton?.classList.remove("active");
+
+      customInputBox?.classList.add("hidden");
+
+      if (customInput) {
+        customInput.value = "";
+      }
+
+      if (alreadySelected) {
+        communitySupport = 0;
+      } else {
+        option.classList.add("active");
+
+        communitySupport = amount;
+      }
+
+      updateReservationTotal();
+    });
+  });
+
+  /* --------------------------------------------------------
+     CUSTOM BUTTON
+  -------------------------------------------------------- */
+
+  if (customButton) {
+    customButton.addEventListener("click", () => {
+      const alreadyActive = customButton.classList.contains("active");
+
+      options.forEach((item) => {
+        item.classList.remove("active");
+      });
+
+      if (alreadyActive) {
+        customButton.classList.remove("active");
+
+        customInputBox?.classList.add("hidden");
+
+        if (customInput) {
+          customInput.value = "";
+        }
+
+        communitySupport = 0;
+
+        updateReservationTotal();
+
+        return;
+      }
+
+      customButton.classList.add("active");
+
+      customInputBox?.classList.remove("hidden");
+
+      setTimeout(() => {
+        customInput?.focus();
+      }, 50);
+    });
+  }
+
+  /* --------------------------------------------------------
+     APPLY CUSTOM
+  -------------------------------------------------------- */
+
+  if (applyCustomButton) {
+    applyCustomButton.addEventListener("click", () => {
+      const amount = Number(customInput?.value);
+
+      if (!Number.isFinite(amount)) {
+        showToast("Please enter a contribution amount.", "error");
+
+        customInput?.focus();
+
+        return;
+      }
+
+      if (amount < 5) {
+        showToast("Minimum custom contribution is ₹5.", "error");
+
+        customInput?.focus();
+
+        return;
+      }
+
+      if (amount > 500) {
+        showToast("Maximum custom contribution is ₹500.", "error");
+
+        customInput?.focus();
+
+        return;
+      }
+
+      communitySupport = Math.floor(amount);
+
+      customButton?.classList.add("active");
+
+      updateReservationTotal();
+    });
+  }
+
+  /* --------------------------------------------------------
+     ENTER KEY
+  -------------------------------------------------------- */
+
+  customInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+
+      applyCustomButton?.click();
+    }
+  });
 }
 
 /* ==========================================================
@@ -724,7 +1451,9 @@ function reserveListing() {
 function setupReportButton() {
   const button = document.getElementById("reportListingBtn");
 
-  if (!button) return;
+  if (!button) {
+    return;
+  }
 
   button.addEventListener("click", reportListing);
 }
@@ -751,6 +1480,8 @@ async function reportListing() {
       headers: {
         "Content-Type": "application/json",
       },
+
+      credentials: "same-origin",
 
       body: JSON.stringify({
         listingId: listingId,
@@ -815,10 +1546,6 @@ function setupProfileDropdown() {
 
 async function loadProfile() {
   try {
-    /*
-     * First try localStorage.
-     */
-
     const storedUser = localStorage.getItem("user");
 
     if (storedUser) {
@@ -826,14 +1553,10 @@ async function loadProfile() {
         const user = JSON.parse(storedUser);
 
         applyProfile(user);
-      } catch (error) {
+      } catch {
         console.warn("Invalid stored user data.");
       }
     }
-
-    /*
-     * Then try backend profile.
-     */
 
     const response = await fetch(`${API_BASE_URL}/user/profile`, {
       method: "GET",
@@ -846,7 +1569,7 @@ async function loadProfile() {
 
     const result = await response.json();
 
-    const user = result.user || result;
+    const user = result.user || result.profile || result;
 
     if (user) {
       applyProfile(user);
@@ -886,7 +1609,9 @@ function applyProfile(user) {
 function setupLogout() {
   const logoutButton = document.getElementById("logoutBtn");
 
-  if (!logoutButton) return;
+  if (!logoutButton) {
+    return;
+  }
 
   logoutButton.addEventListener("click", async () => {
     try {
@@ -902,7 +1627,7 @@ function setupLogout() {
 
     localStorage.removeItem("token");
 
-    window.location.href = "/";
+    window.location.href = "/login";
   });
 }
 
@@ -913,7 +1638,9 @@ function setupLogout() {
 function setupNotifications() {
   const button = document.getElementById("notificationBtn");
 
-  if (!button) return;
+  if (!button) {
+    return;
+  }
 
   button.addEventListener("click", () => {
     window.location.href = "/notifications";
@@ -937,7 +1664,7 @@ async function loadNotificationCount() {
     const count = result.count || result.unreadCount || 0;
 
     updateBadge("notificationCount", count);
-  } catch (error) {
+  } catch {
     console.warn("Notification count unavailable.");
   }
 }
@@ -949,7 +1676,9 @@ async function loadNotificationCount() {
 function setupMessages() {
   const button = document.getElementById("messageBtn");
 
-  if (!button) return;
+  if (!button) {
+    return;
+  }
 
   button.addEventListener("click", () => {
     window.location.href = "/messages";
@@ -973,19 +1702,21 @@ async function loadMessageCount() {
     const count = result.count || result.unreadCount || 0;
 
     updateBadge("messageCount", count);
-  } catch (error) {
+  } catch {
     console.warn("Message count unavailable.");
   }
 }
 
 /* ==========================================================
-   UPDATE BADGE
+   BADGE
 ========================================================== */
 
 function updateBadge(elementId, count) {
   const badge = document.getElementById(elementId);
 
-  if (!badge) return;
+  if (!badge) {
+    return;
+  }
 
   const numericCount = Number(count) || 0;
 
@@ -1007,23 +1738,33 @@ function updateBadge(elementId, count) {
 function setupBackButton() {
   const button = document.getElementById("backToExplore");
 
-  if (!button) return;
+  if (!button) {
+    return;
+  }
 
-  button.addEventListener("click", (event) => {
-    /*
-     * Keep normal Flask route navigation.
-     */
-  });
+  button.href = "/explore-food";
 }
 
 /* ==========================================================
-   SHOW ERROR
+   ERROR
 ========================================================== */
 
 function showListingError(message) {
   console.error(message);
 
   hideListingLoading();
+
+  const error = document.getElementById("listingError");
+
+  const messageElement = document.getElementById("listingErrorMessage");
+
+  if (messageElement) {
+    messageElement.textContent = message;
+  }
+
+  if (error) {
+    error.classList.remove("hidden");
+  }
 
   showToast(message, "error");
 }
@@ -1077,19 +1818,21 @@ function showToast(message, type = "success") {
 }
 
 /* ==========================================================
-   HELPER - SET TEXT
+   SET TEXT
 ========================================================== */
 
 function setText(elementId, value) {
   const element = document.getElementById(elementId);
 
-  if (!element) return;
+  if (!element) {
+    return;
+  }
 
   element.textContent = value ?? "";
 }
 
 /* ==========================================================
-   HELPER - GET VALUE
+   GET VALUE
 ========================================================== */
 
 function getValue(object, keys, fallback = "") {
@@ -1111,7 +1854,7 @@ function getValue(object, keys, fallback = "") {
 }
 
 /* ==========================================================
-   HELPER - NUMERIC VALUE
+   NUMERIC VALUE
 ========================================================== */
 
 function getNumericValue(object, keys, fallback = 0) {
@@ -1123,7 +1866,7 @@ function getNumericValue(object, keys, fallback = 0) {
 }
 
 /* ==========================================================
-   HELPER - FORMAT NUMBER
+   FORMAT NUMBER
 ========================================================== */
 
 function formatNumber(number) {
@@ -1137,7 +1880,7 @@ function formatNumber(number) {
 }
 
 /* ==========================================================
-   HELPER - CURRENCY
+   CURRENCY
 ========================================================== */
 
 function formatCurrency(amount) {
@@ -1151,157 +1894,13 @@ function formatCurrency(amount) {
 }
 
 /* ==========================================================
-   HELPER - PERCENTAGE
-========================================================== */
-
-function formatPercentage(value) {
-  const number = Number(value);
-
-  if (!Number.isFinite(number)) {
-    return value;
-  }
-
-  return `${number}%`;
-}
-
-/* ==========================================================
-   HELPER - DATE
-========================================================== */
-
-function formatDate(value) {
-  if (!value) {
-    return "Not specified";
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return date.toLocaleDateString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-/* ==========================================================
-   HELPER - DATE + TIME
-========================================================== */
-
-function formatDateTime(value, fallback = "Not specified") {
-  if (!value) {
-    return fallback;
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return date.toLocaleString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-/* ==========================================================
-   HELPER - PICKUP TIME
-========================================================== */
-
-function formatPickupTime(listing) {
-  const pickupTime = getValue(
-    listing,
-    ["pickupTime", "pickupSlot", "pickup_time"],
-    null,
-  );
-
-  if (pickupTime) {
-    return pickupTime;
-  }
-
-  const start = getValue(
-    listing,
-    ["pickupStartTime", "pickup_start", "startTime", "pickup_start_time"],
-    null,
-  );
-
-  const end = getValue(
-    listing,
-    ["pickupEndTime", "pickup_end", "endTime", "pickup_end_time"],
-    null,
-  );
-
-  if (start && end) {
-    return `${formatTime(start)} - ${formatTime(end)}`;
-  }
-
-  if (start) {
-    return formatTime(start);
-  }
-
-  return "Not specified";
-}
-
-/* ==========================================================
-   HELPER - TIME
-========================================================== */
-
-function formatTime(value) {
-  if (!value) {
-    return "";
-  }
-
-  /*
-   * Handles values such as:
-   * 11:25
-   * 11:25 AM
-   * ISO date/time
-   */
-
-  if (typeof value === "string" && /^\d{1,2}:\d{2}$/.test(value)) {
-    const [hoursString, minutesString] = value.split(":");
-
-    let hours = Number(hoursString);
-
-    const minutes = minutesString;
-
-    const period = hours >= 12 ? "pm" : "am";
-
-    hours = hours % 12 || 12;
-
-    return `${hours}:${minutes} ${period}`;
-  }
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return value;
-  }
-
-  return date.toLocaleTimeString("en-IN", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
-/* ==========================================================
-   HELPER - IMAGE URL
+   IMAGE URL
 ========================================================== */
 
 function normalizeImageUrl(url) {
   if (!url) {
     return "";
   }
-
-  /*
-   * Keep absolute URLs unchanged.
-   */
 
   if (
     url.startsWith("http://") ||
@@ -1311,10 +1910,6 @@ function normalizeImageUrl(url) {
     return url;
   }
 
-  /*
-   * Flask static paths.
-   */
-
   if (url.startsWith("/")) {
     return url;
   }
@@ -1323,7 +1918,7 @@ function normalizeImageUrl(url) {
 }
 
 /* ==========================================================
-   HELPER - CAPITALIZE
+   CAPITALIZE
 ========================================================== */
 
 function capitalize(value) {
