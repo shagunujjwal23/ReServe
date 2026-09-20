@@ -38,12 +38,31 @@
    PAGE
 ========================================================== */
 
-body {
+body.provider-donations-page {
   background: var(--page-bg);
 }
 
-.content-wrapper {
-  padding-bottom: 55px;
+body.provider-donations-page .dashboard {
+  width: 100%;
+  min-height: 100vh;
+  display: block;
+}
+
+body.provider-donations-page .sidebar {
+  display: none !important;
+}
+
+body.provider-donations-page .main-content {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body.provider-donations-page .content-wrapper {
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 14px 38px 55px;
 }
 
 /* ==========================================================

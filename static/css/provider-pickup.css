@@ -1,0 +1,1844 @@
+/* =========================================================
+   PROVIDER PICKUP PAGE
+   ReServe - Provider Pickup
+   Updated to match compact My Pickups styling
+========================================================= */
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-green: #007f68;
+  --dark-green: #006b59;
+  --light-green: #e9f8f2;
+  --soft-green: #f2fbf7;
+
+  --blue: #1428a0;
+  --dark-blue: #102080;
+  --light-blue: #eef1ff;
+
+  --text-dark: #111b4b;
+  --text-main: #18245b;
+  --text-muted: #6170a3;
+
+  --white: #ffffff;
+  --border: #e0e8ef;
+
+  --shadow: 0 5px 18px rgba(24, 64, 91, 0.07);
+  --shadow-hover: 0 9px 25px rgba(24, 64, 91, 0.11);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 15px;
+  --radius-xl: 18px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 10% 15%,
+      rgba(218, 247, 235, 0.5),
+      transparent 28%
+    ),
+    linear-gradient(180deg, #f7fcfa 0%, #f4faf8 100%);
+
+  color: var(--text-main);
+
+  min-height: 100vh;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* =========================================================
+   PAGE WRAPPER
+========================================================= */
+
+.pickup-page {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* =========================================================
+   NAVBAR — Styles inherited from dashboard.css
+========================================================= */
+
+/* =========================================================
+   MAIN CONTENT
+========================================================= */
+
+.pickup-main {
+  width: 100%;
+  max-width: 1450px;
+
+  margin: 0 auto;
+
+  padding: 18px 3.5% 35px;
+}
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+
+.pickup-header {
+  min-height: 135px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+
+  position: relative;
+
+  margin-bottom: 10px;
+}
+
+.pickup-header-content {
+  flex: 1;
+
+  min-width: 0;
+}
+
+.page-title-row h1 {
+  color: #111b4b;
+
+  font-size: 42px;
+  line-height: 1;
+
+  font-weight: 800;
+
+  letter-spacing: -1.6px;
+}
+
+.page-title-row p {
+  margin-top: 8px;
+
+  color: #40599c;
+
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   INFORMATION BANNER
+========================================================= */
+
+.pickup-info-banner {
+  width: min(715px, 100%);
+
+  min-height: 59px;
+
+  margin-top: 12px;
+
+  padding: 9px 17px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(220, 246, 235, 0.9),
+    rgba(229, 249, 242, 0.68)
+  );
+
+  border-radius: 12px;
+}
+
+.info-banner-icon {
+  width: 34px;
+  height: 34px;
+
+  flex: 0 0 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--primary-green);
+
+  color: white;
+}
+
+.info-banner-icon i {
+  font-size: 21px;
+}
+
+.info-banner-content h3 {
+  color: #087460;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.info-banner-content p {
+  margin-top: 3px;
+
+  color: #087460;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   HEADER ART
+========================================================= */
+
+.pickup-header-art {
+  width: 48%;
+
+  min-width: 500px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+
+  position: relative;
+
+  overflow: hidden;
+
+  padding-top: 4px;
+}
+
+.art-message {
+  position: absolute;
+
+  left: 4%;
+  top: 20px;
+
+  display: flex;
+  flex-direction: column;
+
+  color: #08745e;
+
+  font-family: cursive;
+
+  font-size: 23px;
+  font-weight: 700;
+
+  line-height: 1.05;
+
+  transform: rotate(-7deg);
+}
+
+.art-message i {
+  position: absolute;
+
+  right: -20px;
+  bottom: -7px;
+
+  font-size: 22px;
+}
+
+.art-leaves {
+  position: absolute;
+
+  left: 27%;
+  bottom: -32px;
+
+  width: 250px;
+  height: 130px;
+
+  opacity: 0.38;
+}
+
+.art-leaves i {
+  position: absolute;
+
+  color: #5bc27d;
+
+  font-size: 100px;
+}
+
+.art-leaves .leaf-one {
+  left: 10px;
+  top: 10px;
+
+  transform: rotate(-22deg);
+}
+
+.art-leaves .leaf-two {
+  left: 80px;
+  top: -20px;
+
+  transform: rotate(14deg);
+}
+
+.art-leaves .leaf-three {
+  left: 145px;
+  top: 12px;
+
+  transform: rotate(38deg);
+}
+
+/* =========================================================
+   HEADER ART CARD
+========================================================= */
+
+.art-message-card {
+  width: 330px;
+  min-height: 95px;
+
+  padding: 14px 18px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 15px;
+
+  position: relative;
+  z-index: 2;
+
+  background: linear-gradient(
+    135deg,
+    rgba(232, 249, 242, 0.95),
+    rgba(223, 247, 237, 0.78)
+  );
+
+  border-radius: 12px;
+}
+
+.art-card-icon {
+  width: 53px;
+  height: 53px;
+
+  flex: 0 0 53px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: rgba(210, 244, 229, 0.85);
+
+  color: #15986f;
+}
+
+.art-card-icon i {
+  font-size: 31px;
+}
+
+.art-message-card h3 {
+  color: #08705d;
+
+  font-size: 16px;
+  line-height: 1.1;
+
+  font-weight: 700;
+}
+
+.art-message-card p {
+  margin-top: 7px;
+
+  color: #4d6b98;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.pickup-toolbar {
+  margin-top: 2px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+}
+
+/* =========================================================
+   STATUS TABS
+========================================================= */
+
+.pickup-tabs {
+  display: flex;
+  align-items: center;
+
+  gap: 6px;
+}
+
+.pickup-tab {
+  min-height: 41px;
+
+  padding: 0 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  background: transparent;
+
+  color: #334d91;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.pickup-tab:hover {
+  background: #e8f7f1;
+
+  color: var(--primary-green);
+}
+
+.pickup-tab.active {
+  background: var(--primary-green);
+
+  color: white;
+
+  box-shadow: 0 4px 10px rgba(0, 127, 104, 0.16);
+}
+
+.tab-count {
+  margin-left: 4px;
+
+  opacity: 0.85;
+}
+
+/* =========================================================
+   TOOLBAR CONTROLS
+========================================================= */
+
+.pickup-controls {
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  margin-left: auto;
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.pickup-search {
+  width: 320px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  position: relative;
+
+  padding: 0 11px;
+
+  background: white;
+
+  border: 1px solid #dce6e8;
+
+  border-radius: 8px;
+
+  box-shadow: 0 2px 8px rgba(27, 75, 88, 0.04);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pickup-search:focus-within {
+  border-color: #7fc8b7;
+
+  box-shadow: 0 0 0 3px rgba(0, 127, 104, 0.07);
+}
+
+.pickup-search > i {
+  flex-shrink: 0;
+
+  color: #087a69;
+
+  font-size: 19px;
+}
+
+.pickup-search input {
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+
+  padding: 0 8px;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #1d2b63;
+
+  font-size: 11px;
+}
+
+.pickup-search input::placeholder {
+  color: #7382b0;
+}
+
+/* =========================================================
+   CLEAR SEARCH
+========================================================= */
+
+.clear-search {
+  width: 25px;
+  height: 25px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: #edf7f3;
+
+  color: var(--primary-green);
+}
+
+.clear-search:hover {
+  background: #dff2eb;
+}
+
+.clear-search i {
+  font-size: 14px;
+}
+
+/* =========================================================
+   SORT
+========================================================= */
+
+.pickup-sort {
+  width: 255px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+
+  position: relative;
+
+  padding: 0 11px;
+
+  gap: 7px;
+
+  background: white;
+
+  border: 1px solid #dce6e8;
+
+  border-radius: 8px;
+
+  color: #172b85;
+
+  box-shadow: 0 2px 8px rgba(27, 75, 88, 0.04);
+}
+
+.pickup-sort > i:first-child {
+  margin-right: 1px;
+
+  color: #117a6c;
+
+  font-size: 19px;
+}
+
+.pickup-sort label {
+  color: #57718d;
+
+  font-size: 10px;
+
+  white-space: nowrap;
+}
+
+.pickup-sort select {
+  flex: 1;
+
+  min-width: 0;
+
+  padding-right: 20px;
+
+  border: none;
+  outline: none;
+
+  appearance: none;
+
+  background: transparent;
+
+  color: #172b85;
+
+  font-size: 10px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.pickup-sort .sort-arrow {
+  position: absolute;
+
+  right: 9px;
+
+  pointer-events: none;
+
+  font-size: 17px;
+}
+
+/* =========================================================
+   PICKUP LIST
+========================================================= */
+
+.pickup-list {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 9px;
+
+  margin-top: 10px;
+}
+
+/* =========================================================
+   PICKUP CARD
+========================================================= */
+
+.pickup-card {
+  width: 100%;
+
+  min-height: 166px;
+  height: 166px;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(350px, 1.45fr)
+    minmax(220px, 0.9fr)
+    minmax(250px, 1fr)
+    255px;
+
+  align-items: stretch;
+
+  background: rgba(255, 255, 255, 0.98);
+
+  border: 1px solid #edf1f1;
+
+  border-radius: 11px;
+
+  overflow: hidden;
+
+  box-shadow: var(--shadow);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.pickup-card:hover {
+  transform: translateY(-1px);
+
+  box-shadow: var(--shadow-hover);
+}
+
+/* =========================================================
+   CARD SECTIONS
+========================================================= */
+
+.pickup-food-section,
+.pickup-customer-section,
+.pickup-location-section,
+.pickup-status-section {
+  min-width: 0;
+
+  padding: 13px 14px;
+}
+
+.pickup-customer-section,
+.pickup-location-section,
+.pickup-status-section {
+  border-left: 1px solid #e1e8ec;
+}
+
+/* =========================================================
+   FOOD SECTION
+========================================================= */
+
+.pickup-food-section {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+}
+
+.pickup-food-image-wrapper {
+  width: 155px;
+  height: 116px;
+
+  flex: 0 0 155px;
+
+  overflow: hidden;
+
+  border-radius: 9px;
+
+  background: #edf5f1;
+}
+
+.pickup-food-image {
+  width: 100%;
+  height: 100%;
+
+  display: block;
+
+  object-fit: cover;
+}
+
+.pickup-food-details {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+}
+
+.pickup-food-name {
+  color: #12249c;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  line-height: 1.2;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pickup-quantity {
+  margin-top: 4px;
+
+  color: #12249c;
+
+  font-size: 14px;
+}
+
+.food-quantity {
+  font-weight: 500;
+}
+
+/* =========================================================
+   FOOD TAGS
+========================================================= */
+
+.pickup-tags {
+  display: flex;
+  align-items: center;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-top: 9px;
+}
+
+.food-category,
+.food-type {
+  min-height: 27px;
+
+  padding: 0 11px;
+
+  display: inline-flex;
+  align-items: center;
+
+  border-radius: 9px;
+
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.food-category {
+  background: #fff0e8;
+
+  color: #e65032;
+}
+
+.food-type {
+  background: #ddf6e9;
+
+  color: #18865c;
+}
+
+/* =========================================================
+   PRICE
+========================================================= */
+
+.pickup-price-row {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 7px;
+
+  flex-wrap: wrap;
+}
+
+.pickup-price {
+  color: #111b4b;
+
+  font-size: 17px;
+  font-weight: 800;
+}
+
+.pickup-original-price {
+  color: #8490ad;
+
+  font-size: 12px;
+
+  text-decoration: line-through;
+}
+
+.pickup-discount {
+  padding: 5px 8px;
+
+  border-radius: 8px;
+
+  background: #ddf5e9;
+
+  color: #1a8b60;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   CUSTOMER SECTION
+========================================================= */
+
+.pickup-customer-section {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 8px;
+}
+
+.pickup-detail-row {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 10px;
+
+  min-width: 0;
+
+  color: #1126a0;
+
+  font-size: 12px;
+
+  line-height: 1.35;
+}
+
+.pickup-detail-row > i {
+  flex: 0 0 19px;
+
+  color: #1126a0;
+
+  font-size: 17px;
+
+  line-height: 1.1;
+}
+
+.pickup-detail-row > span,
+.pickup-detail-row > div {
+  min-width: 0;
+}
+
+.customer-name {
+  color: #102398;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  word-break: break-word;
+}
+
+.customer-phone {
+  word-break: break-word;
+}
+
+/* =========================================================
+   LOCATION SECTION
+========================================================= */
+
+.pickup-location-section {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 15px;
+}
+
+.location-row,
+.instruction-row {
+  align-items: flex-start;
+}
+
+.pickup-location {
+  color: #1126a0;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+
+  word-break: break-word;
+}
+
+.pickup-instructions {
+  color: #1126a0;
+
+  font-size: 11px;
+
+  line-height: 1.45;
+
+  word-break: break-word;
+}
+
+/* =========================================================
+   STATUS SECTION
+========================================================= */
+
+.pickup-status-section {
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+
+  min-width: 0;
+}
+
+/* =========================================================
+   STATUS BADGE
+========================================================= */
+
+.pickup-status-badge {
+  width: fit-content;
+
+  min-height: 32px;
+
+  padding: 0 11px;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  border-radius: 9px;
+
+  background: #dff6ea;
+
+  color: #07805f;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pickup-status-badge i {
+  width: 21px;
+  height: 21px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #008468;
+
+  color: white;
+
+  font-size: 12px;
+}
+
+/* =========================================================
+   ACCEPTED
+========================================================= */
+
+.pickup-card.status-accepted .pickup-status-badge {
+  background: #dff6ea;
+
+  color: #087b5e;
+}
+
+.pickup-card.status-accepted .pickup-status-badge i {
+  background: #008468;
+}
+
+/* =========================================================
+   READY FOR PICKUP
+========================================================= */
+
+.pickup-card.status-ready .pickup-status-badge {
+  background: #e8f4ff;
+
+  color: #1e5fae;
+}
+
+.pickup-card.status-ready .pickup-status-badge i {
+  background: #2674c9;
+}
+
+/* =========================================================
+   COMPLETED
+========================================================= */
+
+.pickup-card.status-completed .pickup-status-badge {
+  background: #edf0f5;
+
+  color: #536078;
+}
+
+.pickup-card.status-completed .pickup-status-badge i {
+  background: #64748b;
+}
+
+/* =========================================================
+   REQUESTED TIME
+========================================================= */
+
+.pickup-requested-time {
+  margin-top: 7px;
+
+  color: #62709e;
+
+  font-size: 10px;
+}
+
+.requested-time-value {
+  color: #62709e;
+}
+
+/* =========================================================
+   REMINDER
+========================================================= */
+
+.pickup-reminder {
+  width: 100%;
+
+  margin-top: 9px;
+
+  padding: 8px 9px;
+
+  display: flex;
+  align-items: flex-start;
+
+  gap: 7px;
+
+  border-radius: 8px;
+
+  background: #eef9f4;
+}
+
+.pickup-reminder > i {
+  flex: 0 0 auto;
+
+  color: #137d64;
+
+  font-size: 17px;
+}
+
+.pickup-reminder-text {
+  color: #176b5b;
+
+  font-size: 9.5px;
+
+  line-height: 1.4;
+}
+
+/* =========================================================
+   NO ACTION BUTTONS
+   Provider Pickup is display-only
+========================================================= */
+
+.pickup-actions,
+.confirm-pickup-btn,
+.map-btn,
+.view-details-btn,
+.complete-pickup-btn,
+.mark-ready-btn {
+  display: none !important;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.pickup-loading {
+  min-height: 190px;
+
+  margin-top: 10px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 10px;
+
+  color: #60709f;
+
+  background: rgba(255, 255, 255, 0.55);
+
+  border-radius: 12px;
+}
+
+.loading-spinner {
+  width: 30px;
+  height: 30px;
+
+  border: 3px solid #d9eee7;
+
+  border-top-color: var(--primary-green);
+
+  border-radius: 50%;
+
+  animation: pickupSpin 0.8s linear infinite;
+}
+
+@keyframes pickupSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pickup-loading p {
+  font-size: 11px;
+}
+
+/* =========================================================
+   EMPTY / NO RESULTS
+========================================================= */
+
+.pickup-empty,
+.pickup-no-results {
+  min-height: 210px;
+
+  margin-top: 10px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+
+  background: white;
+
+  border: 1px solid #e5eceb;
+
+  border-radius: 12px;
+
+  box-shadow: var(--shadow);
+}
+
+.empty-icon {
+  width: 52px;
+  height: 52px;
+
+  margin-bottom: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e6f6f0;
+
+  color: var(--primary-green);
+}
+
+.empty-icon i {
+  font-size: 24px;
+}
+
+.pickup-empty h2,
+.pickup-no-results h2 {
+  color: #15245f;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.pickup-empty p,
+.pickup-no-results p {
+  margin-top: 5px;
+
+  color: #7180a8;
+
+  font-size: 11px;
+}
+
+.reset-search-btn {
+  margin-top: 12px;
+
+  padding: 8px 14px;
+
+  border: none;
+
+  border-radius: 7px;
+
+  background: var(--primary-green);
+
+  color: white;
+
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.reset-search-btn:hover {
+  background: var(--dark-green);
+}
+
+/* =========================================================
+   FOOTER BANNER
+========================================================= */
+
+.pickup-footer-banner {
+  min-height: 65px;
+
+  margin-top: 14px;
+
+  padding: 8px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  position: relative;
+
+  overflow: hidden;
+
+  border-radius: 11px;
+
+  background: linear-gradient(90deg, #e4f8ef 0%, #e9faf3 50%, #dff5eb 100%);
+}
+
+.footer-banner-content {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  position: relative;
+  z-index: 2;
+}
+
+.footer-leaf-icon {
+  width: 38px;
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #087b65;
+}
+
+.footer-leaf-icon i {
+  font-size: 38px;
+
+  transform: rotate(-25deg);
+}
+
+.footer-banner-content h3 {
+  color: #087361;
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.footer-banner-content p {
+  margin-top: 2px;
+
+  color: #3f7167;
+
+  font-size: 10px;
+}
+
+/* =========================================================
+   FOOTER CITY ART
+========================================================= */
+
+.footer-city-art {
+  height: 85px;
+
+  position: absolute;
+
+  right: 220px;
+  bottom: -13px;
+
+  display: flex;
+  align-items: flex-end;
+
+  gap: 14px;
+
+  color: rgba(73, 181, 113, 0.48);
+}
+
+.footer-city-art i {
+  font-size: 48px;
+}
+
+.footer-city-art i:nth-child(2) {
+  font-size: 54px;
+}
+
+.footer-city-art i:nth-child(3) {
+  font-size: 42px;
+}
+
+.footer-city-art i:nth-child(4) {
+  font-size: 40px;
+}
+
+/* =========================================================
+   FOOTER MESSAGE
+========================================================= */
+
+.footer-message {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  color: #087361;
+
+  font-family: cursive;
+
+  font-size: 17px;
+  font-weight: 700;
+
+  line-height: 1.05;
+
+  transform: rotate(-3deg);
+}
+
+.footer-message i {
+  position: absolute;
+
+  right: -19px;
+  bottom: -8px;
+
+  font-size: 18px;
+}
+
+/* =========================================================
+   RESPONSIVE - LARGE LAPTOP
+========================================================= */
+
+@media (max-width: 1400px) {
+  .provider-navbar {
+    padding: 0 2%;
+  }
+
+  .navbar-brand {
+    min-width: 190px;
+  }
+
+  .nav-item {
+    padding: 0 10px;
+  }
+
+  .navbar-actions {
+    min-width: 275px;
+  }
+
+  .location-selector span {
+    display: none;
+  }
+
+  .pickup-main {
+    padding-left: 3%;
+    padding-right: 3%;
+  }
+
+  .pickup-header-art {
+    min-width: 440px;
+  }
+
+  .pickup-card {
+    grid-template-columns:
+      minmax(300px, 1.3fr)
+      minmax(205px, 0.9fr)
+      minmax(220px, 0.95fr)
+      230px;
+  }
+
+  .pickup-food-image-wrapper {
+    width: 135px;
+    height: 105px;
+
+    flex-basis: 135px;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE - SMALL LAPTOP
+========================================================= */
+
+@media (max-width: 1150px) {
+  .provider-navbar {
+    height: auto;
+
+    min-height: 68px;
+
+    padding: 8px 2%;
+
+    flex-wrap: wrap;
+  }
+
+  .navbar-brand {
+    min-width: 190px;
+  }
+
+  .navbar-nav {
+    width: 100%;
+    height: 48px;
+
+    order: 3;
+
+    justify-content: flex-start;
+
+    overflow-x: auto;
+
+    border-top: 1px solid #edf1f1;
+
+    margin-top: 6px;
+  }
+
+  .nav-item {
+    height: 48px;
+
+    flex-shrink: 0;
+  }
+
+  .navbar-actions {
+    margin-left: auto;
+  }
+
+  .pickup-header {
+    min-height: auto;
+  }
+
+  .pickup-header-art {
+    display: none;
+  }
+
+  .pickup-toolbar {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .pickup-tabs {
+    width: 100%;
+
+    overflow-x: auto;
+
+    padding-bottom: 3px;
+  }
+
+  .pickup-tab {
+    flex-shrink: 0;
+  }
+
+  .pickup-controls {
+    width: 100%;
+
+    margin-left: 0;
+  }
+
+  .pickup-search {
+    flex: 1;
+
+    width: auto;
+  }
+
+  .pickup-sort {
+    width: 280px;
+  }
+
+  .pickup-card {
+    grid-template-columns: 1fr 1fr;
+
+    height: auto;
+
+    min-height: 166px;
+  }
+
+  .pickup-food-section,
+  .pickup-customer-section {
+    min-height: 145px;
+  }
+
+  .pickup-location-section {
+    border-left: none;
+
+    border-top: 1px solid #e1e8ec;
+
+    min-height: 120px;
+  }
+
+  .pickup-status-section {
+    border-top: 1px solid #e1e8ec;
+
+    min-height: 120px;
+  }
+
+  .footer-city-art {
+    right: 160px;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE - TABLET
+========================================================= */
+
+@media (max-width: 800px) {
+  .pickup-main {
+    padding: 18px 18px 30px;
+  }
+
+  .navbar-actions {
+    min-width: auto;
+  }
+
+  .location-selector {
+    display: none;
+  }
+
+  .profile-info {
+    display: none;
+  }
+
+  .profile {
+    min-width: auto;
+  }
+
+  .page-title-row h1 {
+    font-size: 35px;
+  }
+
+  .page-title-row p {
+    font-size: 14px;
+  }
+
+  .pickup-info-banner {
+    width: 100%;
+  }
+
+  .pickup-controls {
+    flex-direction: column;
+  }
+
+  .pickup-search,
+  .pickup-sort {
+    width: 100%;
+  }
+
+  .pickup-card {
+    grid-template-columns: 1fr;
+
+    height: auto;
+  }
+
+  .pickup-customer-section,
+  .pickup-location-section,
+  .pickup-status-section {
+    border-left: none;
+
+    border-top: 1px solid #e1e8ec;
+  }
+
+  .pickup-food-section {
+    min-height: 140px;
+  }
+
+  .pickup-food-image-wrapper {
+    width: 145px;
+    height: 110px;
+
+    flex-basis: 145px;
+  }
+
+  .pickup-footer-banner {
+    min-height: 90px;
+  }
+
+  .footer-city-art {
+    display: none;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE - MOBILE
+========================================================= */
+
+@media (max-width: 560px) {
+  .provider-navbar {
+    padding: 8px 12px;
+  }
+
+  .brand-content p {
+    display: none;
+  }
+
+  .navbar-brand {
+    min-width: auto;
+  }
+
+  .navbar-nav {
+    gap: 0;
+  }
+
+  .nav-item {
+    padding: 0 11px;
+
+    font-size: 11px;
+  }
+
+  .nav-item span {
+    display: none;
+  }
+
+  .nav-item i {
+    font-size: 21px;
+  }
+
+  .nav-item.active::after {
+    left: 7px;
+    right: 7px;
+  }
+
+  .notification-btn {
+    display: none;
+  }
+
+  .pickup-main {
+    padding: 15px 12px 25px;
+  }
+
+  .page-title-row h1 {
+    font-size: 31px;
+  }
+
+  .page-title-row p {
+    font-size: 13px;
+  }
+
+  .pickup-info-banner {
+    align-items: flex-start;
+
+    padding: 11px;
+  }
+
+  .info-banner-content h3 {
+    font-size: 12px;
+  }
+
+  .info-banner-content p {
+    font-size: 10px;
+  }
+
+  .pickup-tabs {
+    gap: 4px;
+  }
+
+  .pickup-tab {
+    min-width: 105px;
+
+    padding: 0 12px;
+
+    font-size: 11px;
+  }
+
+  .pickup-count-label {
+    font-size: 12px;
+  }
+
+  .pickup-food-section {
+    align-items: flex-start;
+
+    padding: 11px;
+  }
+
+  .pickup-food-image-wrapper {
+    width: 105px;
+    height: 95px;
+
+    flex-basis: 105px;
+  }
+
+  .pickup-food-name {
+    font-size: 14px;
+  }
+
+  .pickup-quantity {
+    font-size: 12px;
+  }
+
+  .pickup-price {
+    font-size: 15px;
+  }
+
+  .pickup-original-price {
+    font-size: 11px;
+  }
+
+  .pickup-discount {
+    font-size: 9px;
+
+    padding: 5px 7px;
+  }
+
+  .pickup-customer-section,
+  .pickup-location-section,
+  .pickup-status-section {
+    padding: 12px;
+  }
+
+  .pickup-detail-row {
+    font-size: 12px;
+  }
+
+  .customer-name {
+    font-size: 13px;
+  }
+
+  .pickup-location {
+    font-size: 11px;
+  }
+
+  .pickup-instructions {
+    font-size: 10px;
+  }
+
+  .pickup-status-badge {
+    font-size: 10px;
+  }
+
+  .pickup-requested-time {
+    font-size: 9px;
+  }
+
+  .pickup-reminder-text {
+    font-size: 9px;
+  }
+
+  .pickup-footer-banner {
+    padding: 10px 13px;
+  }
+
+  .footer-banner-content h3 {
+    font-size: 13px;
+  }
+
+  .footer-banner-content p {
+    font-size: 10px;
+  }
+
+  .footer-message {
+    display: none;
+  }
+}
+
+/* =========================================================
+   VERY SMALL MOBILE
+========================================================= */
+
+@media (max-width: 380px) {
+  .pickup-food-section {
+    gap: 10px;
+  }
+
+  .pickup-food-image-wrapper {
+    width: 90px;
+    height: 85px;
+
+    flex-basis: 90px;
+  }
+
+  .pickup-food-name {
+    font-size: 13px;
+  }
+
+  .pickup-quantity {
+    font-size: 11px;
+  }
+
+  .food-category,
+  .food-type {
+    min-height: 24px;
+
+    padding: 0 8px;
+
+    font-size: 9px;
+  }
+
+  .pickup-price {
+    font-size: 14px;
+  }
+
+  .pickup-tab {
+    min-width: 95px;
+
+    padding: 0 9px;
+
+    font-size: 10px;
+  }
+}

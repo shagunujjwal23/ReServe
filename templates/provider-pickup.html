@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Pickups | ReServe</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Shared Dashboard CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+    />
+
+    <!-- Provider Pickup CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/provider-pickup.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="pickup-page">
+      <!-- =========================================================
+           PROVIDER NAVBAR
+      ========================================================== -->
+
+      <header class="provider-navbar">
+        <a href="/dashboard" class="provider-brand">
+          <div class="brand-logo">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe Logo"
+            />
+          </div>
+
+          <div class="brand-text">
+            <h2>ReServe</h2>
+            <span>Food Rescue Platform</span>
+          </div>
+        </a>
+
+        <nav class="provider-nav-links">
+          <a href="/dashboard">
+            <i class="ri-home-5-line"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <a href="/add-listings">
+            <i class="ri-restaurant-line"></i>
+            <span>Add Listings</span>
+          </a>
+
+          <a href="/my-listings">
+            <i class="ri-store-2-line"></i>
+            <span>My Listings</span>
+          </a>
+
+          <a href="/provider-donations">
+            <i class="ri-hand-heart-line"></i>
+            <span>Donations</span>
+          </a>
+
+          <a href="/requests">
+            <i class="ri-file-list-3-line"></i>
+            <span>Requests</span>
+          </a>
+
+          <a href="/provider-pickup" class="active">
+            <i class="ri-truck-line"></i>
+            <span>Pickups</span>
+          </a>
+        </nav>
+
+        <div class="provider-navbar-actions">
+          <button
+            type="button"
+            class="navbar-icon-btn notification-btn"
+            id="notificationBtn"
+            aria-label="Notifications"
+          >
+            <i class="ri-notification-3-line"></i>
+            <span class="notification-count" id="notificationCount">3</span>
+          </button>
+
+          <div class="profile-wrapper">
+            <button type="button" class="profile-menu" id="profileMenuBtn">
+              <div class="profile-avatar">
+                <img
+                  id="headerProfileImage"
+                  src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
+                  alt="Profile"
+                />
+              </div>
+
+              <div class="profile-info">
+                <strong id="profileName">{{ user.business_name or user.name }}</strong>
+                <span id="profileRole">{{ user.role | replace('_', ' ') | title }}</span>
+              </div>
+
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <a href="/donor-profile">
+                <i class="ri-user-line"></i>
+                <span>My Profile</span>
+              </a>
+
+              <a href="/donor-profile">
+                <i class="ri-settings-3-line"></i>
+                <span>Settings</span>
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <a href="{{ url_for('auth.logout') }}">
+                <i class="ri-logout-box-r-line"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =========================================================
+           MAIN CONTENT
+      ========================================================== -->
+
+      <main class="pickup-main">
+        <!-- =====================================================
+             PAGE HEADER
+        ====================================================== -->
+
+        <section class="pickup-header">
+          <!-- Header Left -->
+          <div class="pickup-header-content">
+            <div class="page-title-row">
+              <div>
+                <h1>Pickups</h1>
+
+                <p>
+                  Accepted customer requests for pickup. Track and prepare the
+                  food for collection.
+                </p>
+              </div>
+            </div>
+
+            <!-- Information Banner -->
+            <div class="pickup-info-banner">
+              <div class="info-banner-icon">
+                <i class="ri-check-line"></i>
+              </div>
+
+              <div class="info-banner-content">
+                <h3>These are the reservations you have accepted.</h3>
+
+                <p>
+                  Prepare the food as per the scheduled time for a smooth pickup
+                  experience.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Header Illustration -->
+          <div class="pickup-header-art">
+            <div class="art-message">
+              <span>Good Food</span>
+              <span>Brighter Communities</span>
+              <i class="ri-heart-3-line"></i>
+            </div>
+
+            <div class="art-leaves">
+              <i class="ri-leaf-line leaf-one"></i>
+              <i class="ri-leaf-line leaf-two"></i>
+              <i class="ri-leaf-line leaf-three"></i>
+            </div>
+
+            <div class="art-message-card">
+              <div class="art-card-icon">
+                <i class="ri-leaf-line"></i>
+              </div>
+
+              <div>
+                <h3>Thank you for</h3>
+                <h3>fighting food waste!</h3>
+
+                <p>
+                  Your food saves resources<br />
+                  and supports local communities.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             TOOLBAR
+        ====================================================== -->
+
+        <section class="pickup-toolbar">
+          <!-- Status Tabs -->
+          <div class="pickup-tabs" id="pickupTabs">
+            <button type="button" class="pickup-tab active" data-status="all">
+              All
+              <span class="tab-count" id="allCount">0</span>
+            </button>
+
+            <button type="button" class="pickup-tab" data-status="accepted">
+              Accepted
+              <span class="tab-count" id="acceptedCount">0</span>
+            </button>
+
+            <button
+              type="button"
+              class="pickup-tab"
+              data-status="ready_for_pickup"
+            >
+              To Be Picked Up
+              <span class="tab-count" id="readyCount">0</span>
+            </button>
+
+            <button type="button" class="pickup-tab" data-status="completed">
+              Completed
+              <span class="tab-count" id="completedCount">0</span>
+            </button>
+          </div>
+
+          <!-- Search + Sort -->
+          <div class="pickup-controls">
+            <!-- Search -->
+            <div class="pickup-search">
+              <i class="ri-search-line"></i>
+
+              <input
+                type="text"
+                id="pickupSearch"
+                placeholder="Search by customer name or food item..."
+                autocomplete="off"
+              />
+
+              <button
+                type="button"
+                class="clear-search hidden"
+                id="clearSearch"
+                title="Clear search"
+              >
+                <i class="ri-close-line"></i>
+              </button>
+            </div>
+
+            <!-- Sort -->
+            <div class="pickup-sort">
+              <i class="ri-swap-vertical-line"></i>
+
+              <label for="pickupSort"> Sort by: </label>
+
+              <select id="pickupSort">
+                <option value="date_desc">Pickup Date (Latest)</option>
+
+                <option value="date_asc">Pickup Date (Nearest)</option>
+
+                <option value="created_desc">Recently Accepted</option>
+
+                <option value="created_asc">Oldest Accepted</option>
+              </select>
+
+              <i class="ri-arrow-down-s-line sort-arrow"></i>
+            </div>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             PICKUP LIST
+        ====================================================== -->
+
+        <section class="pickup-list" id="pickupList">
+          <!--
+            Pickup cards will be generated dynamically
+            by provider-pickup.js.
+          -->
+        </section>
+
+        <!-- =====================================================
+             LOADING STATE
+        ====================================================== -->
+
+        <div class="pickup-loading" id="pickupLoading">
+          <div class="loading-spinner"></div>
+
+          <p>Loading your pickups...</p>
+        </div>
+
+        <!-- =====================================================
+             EMPTY STATE
+        ====================================================== -->
+
+        <div class="pickup-empty hidden" id="pickupEmpty">
+          <div class="empty-icon">
+            <i class="ri-shopping-bag-3-line"></i>
+          </div>
+
+          <h2>No pickups found</h2>
+
+          <p>Accepted customer reservations will appear here.</p>
+        </div>
+
+        <!-- =====================================================
+             NO SEARCH RESULTS
+        ====================================================== -->
+
+        <div class="pickup-no-results hidden" id="pickupNoResults">
+          <div class="empty-icon">
+            <i class="ri-search-line"></i>
+          </div>
+
+          <h2>No matching pickups</h2>
+
+          <p>Try searching with a different customer name or food item.</p>
+
+          <button type="button" class="reset-search-btn" id="resetSearchBtn">
+            Clear Search
+          </button>
+        </div>
+
+        <!-- =====================================================
+             FOOTER BANNER
+        ====================================================== -->
+
+        <section class="pickup-footer-banner">
+          <div class="footer-banner-content">
+            <div class="footer-leaf-icon">
+              <i class="ri-leaf-line"></i>
+            </div>
+
+            <div>
+              <h3>Together for a Greener Tomorrow</h3>
+
+              <p>Your food. A brighter, cleaner, and kinder community.</p>
+            </div>
+          </div>
+
+          <div class="footer-city-art">
+            <i class="ri-leaf-line"></i>
+            <i class="ri-building-2-line"></i>
+            <i class="ri-tree-line"></i>
+            <i class="ri-home-smile-line"></i>
+            <i class="ri-leaf-line"></i>
+          </div>
+
+          <div class="footer-message">
+            <span>Good Food</span>
+            <span>Happier Communities</span>
+            <i class="ri-heart-3-line"></i>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- =========================================================
+         PICKUP CARD TEMPLATE
+         JS will clone this template for every reservation.
+    ========================================================== -->
+
+    <template id="pickupCardTemplate">
+      <article class="pickup-card" data-request-id="">
+        <!-- ===================================================
+             FOOD INFORMATION
+        ==================================================== -->
+
+        <div class="pickup-food-section">
+          <div class="pickup-food-image-wrapper">
+            <img class="pickup-food-image" src="" alt="Food" />
+          </div>
+
+          <div class="pickup-food-details">
+            <h2 class="pickup-food-name">Food Name</h2>
+
+            <p class="pickup-quantity">
+              Qty: <span class="food-quantity"></span>
+            </p>
+
+            <div class="pickup-tags">
+              <span class="food-category"> Main Course </span>
+
+              <span class="food-type"> Vegetarian </span>
+            </div>
+
+            <div class="pickup-price-row">
+              <strong class="pickup-price"> ₹0 </strong>
+
+              <span class="pickup-original-price"> ₹0 </span>
+
+              <span class="pickup-discount"> 0% OFF </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===================================================
+             CUSTOMER INFORMATION
+        ==================================================== -->
+
+        <div class="pickup-customer-section">
+          <div class="pickup-detail-row">
+            <i class="ri-user-3-line"></i>
+
+            <div>
+              <strong class="customer-name"> Customer Name </strong>
+            </div>
+          </div>
+
+          <div class="pickup-detail-row">
+            <i class="ri-phone-line"></i>
+
+            <span class="customer-phone"> — </span>
+          </div>
+
+          <div class="pickup-detail-row">
+            <i class="ri-calendar-line"></i>
+
+            <span class="pickup-date"> — </span>
+          </div>
+
+          <div class="pickup-detail-row">
+            <i class="ri-time-line"></i>
+
+            <span class="pickup-time"> — </span>
+          </div>
+        </div>
+
+        <!-- ===================================================
+             LOCATION + INSTRUCTIONS
+        ==================================================== -->
+
+        <div class="pickup-location-section">
+          <div class="pickup-detail-row location-row">
+            <i class="ri-map-pin-line"></i>
+
+            <span class="pickup-location"> — </span>
+          </div>
+
+          <div class="pickup-detail-row instruction-row">
+            <i class="ri-chat-3-line"></i>
+
+            <span class="pickup-instructions"> No special instructions </span>
+          </div>
+        </div>
+
+        <!-- ===================================================
+             STATUS
+        ==================================================== -->
+
+        <div class="pickup-status-section">
+          <div class="pickup-status-badge">
+            <i class="ri-check-line"></i>
+
+            <span class="status-text"> Accepted </span>
+          </div>
+
+          <p class="pickup-requested-time">
+            Requested <span class="requested-time-value">—</span>
+          </p>
+
+          <div class="pickup-reminder">
+            <i class="ri-hand-heart-line"></i>
+
+            <p class="pickup-reminder-text">
+              Customer will pick up during the scheduled time.
+            </p>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script src="{{ url_for('static', filename='js/provider-pickup.js') }}"></script>
+  </body>
+</html>

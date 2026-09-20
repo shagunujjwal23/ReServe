@@ -32,80 +32,76 @@
       ========================================================== -->
 
       <header class="provider-navbar">
-        <!-- Brand -->
-        <a href="/dashboard" class="navbar-brand">
-          <div class="logo-wrapper">
+        <a href="/dashboard" class="provider-brand">
+          <div class="brand-logo">
             <img
               src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
               alt="ReServe Logo"
             />
           </div>
 
-          <div class="brand-content">
+          <div class="brand-text">
             <h2>ReServe</h2>
-            <p>Food Rescue Platform</p>
+            <span>Food Rescue Platform</span>
           </div>
         </a>
 
-        <!-- Main Navigation -->
-        <nav class="navbar-nav">
-          <a href="/dashboard" class="nav-item active">
+        <nav class="provider-nav-links">
+          <a href="/dashboard" class="active">
             <i class="ri-home-5-line"></i>
-            <span>Home</span>
+            <span>Dashboard</span>
           </a>
 
-          <a href="/add-listings" class="nav-item">
-            <i class="ri-add-circle-line"></i>
-            <span>Add Listing</span>
+          <a href="/add-listings">
+            <i class="ri-restaurant-line"></i>
+            <span>Add Listings</span>
           </a>
 
-          <a href="/my-listings" class="nav-item">
+          <a href="/my-listings">
             <i class="ri-store-2-line"></i>
             <span>My Listings</span>
           </a>
 
-          <a href="/requests" class="nav-item">
+          <a href="/provider-donations">
+            <i class="ri-hand-heart-line"></i>
+            <span>Donations</span>
+          </a>
+
+          <a href="/requests">
             <i class="ri-file-list-3-line"></i>
             <span>Requests</span>
           </a>
 
-          <a href="#" class="nav-item">
+          <a href="/provider-pickup">
             <i class="ri-truck-line"></i>
             <span>Pickups</span>
           </a>
-
-          <a href="#" class="nav-item">
-            <i class="ri-bar-chart-box-line"></i>
-            <span>Impact</span>
-          </a>
-
-          <a href="#" class="nav-item">
-            <i class="ri-message-3-line"></i>
-            <span>Messages</span>
-          </a>
         </nav>
 
-        <!-- Navbar Right -->
-        <div class="navbar-actions">
-          <!-- Notifications -->
-          <button class="navbar-icon-btn" type="button" title="Notifications">
+        <div class="provider-navbar-actions">
+          <button
+            type="button"
+            class="navbar-icon-btn notification-btn"
+            id="notificationBtn"
+            aria-label="Notifications"
+          >
             <i class="ri-notification-3-line"></i>
-            <span class="badge">3</span>
+            <span class="notification-count" id="notificationCount">3</span>
           </button>
 
-          <!-- Profile -->
           <div class="profile-wrapper">
-            <button class="profile" type="button" id="profileMenuBtn">
-              <img
-                src="{{ url_for('static', filename='images/avatars/default.png') }}"
-                alt="Profile"
-                id="headerProfileImage"
-              />
+            <button type="button" class="profile-menu" id="profileMenuBtn">
+              <div class="profile-avatar">
+                <img
+                  id="headerProfileImage"
+                  src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
+                  alt="Profile"
+                />
+              </div>
 
               <div class="profile-info">
-                <h4>{{ user.business_name or user.name }}</h4>
-
-                <p>{{ user.role | replace('_', ' ') | title }}</p>
+                <strong id="profileName">{{ user.business_name or user.name }}</strong>
+                <span id="profileRole">{{ user.role | replace('_', ' ') | title }}</span>
               </div>
 
               <i class="ri-arrow-down-s-line"></i>
@@ -118,7 +114,7 @@
                 <span>My Profile</span>
               </a>
 
-              <a href="/settings">
+              <a href="/donor-profile">
                 <i class="ri-settings-3-line"></i>
                 <span>Settings</span>
               </a>

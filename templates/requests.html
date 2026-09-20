@@ -38,114 +38,99 @@
       ====================================================== -->
 
       <header class="provider-navbar">
-        <!-- BRAND -->
         <a href="/dashboard" class="provider-brand">
           <div class="brand-logo">
             <img
               src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
-              alt="ReServe"
+              alt="ReServe Logo"
             />
           </div>
 
           <div class="brand-text">
             <h2>ReServe</h2>
-            <span>From Surplus to Solution.</span>
+            <span>Food Rescue Platform</span>
           </div>
         </a>
 
-        <!-- NAVIGATION -->
         <nav class="provider-nav-links">
           <a href="/dashboard">
             <i class="ri-home-5-line"></i>
-            <span>Home</span>
+            <span>Dashboard</span>
           </a>
 
-          <a href="/explore-food">
-            <i class="ri-search-line"></i>
-            <span>Explore Food</span>
+          <a href="/add-listings">
+            <i class="ri-restaurant-line"></i>
+            <span>Add Listings</span>
           </a>
 
           <a href="/my-listings">
-            <i class="ri-calendar-line"></i>
+            <i class="ri-store-2-line"></i>
             <span>My Listings</span>
           </a>
 
+          <a href="/provider-donations">
+            <i class="ri-hand-heart-line"></i>
+            <span>Donations</span>
+          </a>
+
           <a href="/requests" class="active">
-            <i class="ri-folder-line"></i>
+            <i class="ri-file-list-3-line"></i>
             <span>Requests</span>
           </a>
 
-          <a href="/analytics">
-            <i class="ri-bar-chart-box-line"></i>
-            <span>Analytics</span>
-          </a>
-
-          <a href="/messages">
-            <i class="ri-message-3-line"></i>
-            <span>Messages</span>
+          <a href="/provider-pickup">
+            <i class="ri-truck-line"></i>
+            <span>Pickups</span>
           </a>
         </nav>
 
-        <!-- NAVBAR ACTIONS -->
         <div class="provider-navbar-actions">
-          <!-- Notifications -->
           <button
             type="button"
-            class="navbar-icon-btn"
+            class="navbar-icon-btn notification-btn"
             id="notificationBtn"
-            title="Notifications"
+            aria-label="Notifications"
           >
             <i class="ri-notification-3-line"></i>
-
-            <span class="notification-badge hidden" id="notificationCount">
-              0
-            </span>
+            <span class="notification-count" id="notificationCount">3</span>
           </button>
 
-          <!-- PROFILE -->
-          <div class="provider-profile-wrapper">
-            <button
-              type="button"
-              class="provider-profile-btn"
-              id="profileMenuBtn"
-            >
+          <div class="profile-wrapper">
+            <button type="button" class="profile-menu" id="profileMenuBtn">
               <div class="profile-avatar">
                 <img
-                  id="profileImage"
-                  src="{{ url_for('static', filename='images/avatars/default.png') }}"
+                  id="headerProfileImage"
+                  src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
                   alt="Profile"
                 />
               </div>
 
               <div class="profile-info">
-                <strong id="profileName">
-                  {{ user.business_name or user.name or "Provider" }}
-                </strong>
-
-                <span id="profileRole"> Provider </span>
+                <strong id="profileName">{{ user.business_name or user.name }}</strong>
+                <span id="profileRole">{{ user.role | replace('_', ' ') | title }}</span>
               </div>
 
               <i class="ri-arrow-down-s-line"></i>
             </button>
 
-            <!-- PROFILE DROPDOWN -->
+            <!-- Profile Dropdown -->
             <div class="profile-dropdown hidden" id="profileDropdown">
-              <a href="/provider-profile">
+              <a href="/donor-profile">
                 <i class="ri-user-line"></i>
                 <span>My Profile</span>
               </a>
 
-              <a href="/edit-provider-profile">
+              <a href="/donor-profile">
                 <i class="ri-settings-3-line"></i>
                 <span>Settings</span>
               </a>
 
               <div class="dropdown-divider"></div>
 
-              <button type="button" id="logoutBtn">
+              <a href="{{ url_for('auth.logout') }}">
                 <i class="ri-logout-box-r-line"></i>
                 <span>Logout</span>
-              </button>
+              </a>
             </div>
           </div>
         </div>

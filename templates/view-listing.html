@@ -20,6 +20,12 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     />
 
+    <!-- Shared Dashboard CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/dashboard.css') }}"
+    />
+
     <!-- View Listing CSS -->
     <link
       rel="stylesheet"
@@ -32,26 +38,22 @@
      NAVBAR
 =========================================================== -->
 
-    <header class="main-navbar">
-      <!-- BRAND -->
-
-      <a href="/dashboard" class="navbar-brand">
-        <div class="navbar-logo">
+    <header class="provider-navbar">
+      <a href="/dashboard" class="provider-brand">
+        <div class="brand-logo">
           <img
             src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
             alt="ReServe Logo"
           />
         </div>
 
-        <div class="navbar-brand-text">
+        <div class="brand-text">
           <h2>ReServe</h2>
-          <p>Food Rescue Platform</p>
+          <span>Food Rescue Platform</span>
         </div>
       </a>
 
-      <!-- NAVIGATION -->
-
-      <nav class="navbar-nav">
+      <nav class="provider-nav-links">
         <a href="/dashboard">
           <i class="ri-home-5-line"></i>
           <span>Dashboard</span>
@@ -59,7 +61,7 @@
 
         <a href="/add-listings">
           <i class="ri-restaurant-line"></i>
-          <span>Add Listing</span>
+          <span>Add Listings</span>
         </a>
 
         <a href="/my-listings" class="active">
@@ -67,65 +69,71 @@
           <span>My Listings</span>
         </a>
 
-        <a href="#">
+        <a href="/provider-donations">
           <i class="ri-hand-heart-line"></i>
           <span>Donations</span>
         </a>
 
-        <a href="#">
+        <a href="/requests">
           <i class="ri-file-list-3-line"></i>
           <span>Requests</span>
         </a>
 
-        <a href="#">
+        <a href="/provider-pickup">
           <i class="ri-truck-line"></i>
           <span>Pickups</span>
         </a>
-
-        <a href="#">
-          <i class="ri-bar-chart-box-line"></i>
-          <span>Impact</span>
-        </a>
-
-        <a href="#">
-          <i class="ri-message-3-line"></i>
-          <span>Messages</span>
-        </a>
       </nav>
 
-      <!-- RIGHT SIDE -->
-
-      <div class="navbar-right">
-        <!-- Notification -->
-
+      <div class="provider-navbar-actions">
         <button
-          class="navbar-notification"
-          id="notificationBtn"
           type="button"
+          class="navbar-icon-btn notification-btn"
+          id="notificationBtn"
           aria-label="Notifications"
         >
           <i class="ri-notification-3-line"></i>
-
-          <span id="notificationCount" class="notification-badge"> 3 </span>
+          <span class="notification-count" id="notificationCount">3</span>
         </button>
 
-        <!-- Profile -->
+        <div class="profile-wrapper">
+          <button type="button" class="profile-menu" id="profileMenuBtn">
+            <div class="profile-avatar">
+              <img
+                id="headerProfileImage"
+                src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
+                alt="Profile"
+              />
+            </div>
 
-        <button class="navbar-profile" type="button">
-          <img
-            id="headerProfileImage"
-            src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
-            alt="Profile"
-          />
+            <div class="profile-info">
+              <strong id="profileName">{{ user.business_name or user.name }}</strong>
+              <span id="profileRole">{{ user.role | replace('_', ' ') | title }}</span>
+            </div>
 
-          <div class="navbar-profile-info">
-            <h4>{{ user.name if user.name else 'Restaurant Owner' }}</h4>
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
 
-            <p>{{ user.role if user.role else 'Provider' }}</p>
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown hidden" id="profileDropdown">
+            <a href="/donor-profile">
+              <i class="ri-user-line"></i>
+              <span>My Profile</span>
+            </a>
+
+            <a href="/donor-profile">
+              <i class="ri-settings-3-line"></i>
+              <span>Settings</span>
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <a href="{{ url_for('auth.logout') }}">
+              <i class="ri-logout-box-r-line"></i>
+              <span>Logout</span>
+            </a>
           </div>
-
-          <i class="ri-arrow-down-s-line"></i>
-        </button>
+        </div>
       </div>
     </header>
 

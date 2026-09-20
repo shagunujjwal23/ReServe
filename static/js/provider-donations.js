@@ -61,6 +61,7 @@ async function apiRequest(url, options = {}) {
 ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
+  setupProfileDropdown();
   initializeTabs();
   initializeSurplusDialog();
   initializeToast();
@@ -1261,3 +1262,50 @@ window.openSurplusDialog = openSurplusDialog;
 window.viewDonation = viewDonation;
 
 window.loadProviderDonationData = loadProviderDonationData;
+
+/* ==========================================================
+   PROFILE DROPDOWN
+========================================================== */
+
+function setupProfileDropdown() {
+  const profileMenuBtn = document.getElementById("profileMenuBtn");
+  const profileDropdown = document.getElementById("profileDropdown");
+  const profileWrapper = document.querySelector(".profile-wrapper");
+
+  if (!profileMenuBtn || !profileDropdown) {
+    return;
+  }
+
+  profileMenuBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const isHidden = profileDropdown.classList.contains("hidden");
+    if (isHidden) {
+      profileDropdown.classList.remove("hidden");
+      profileWrapper?.classList.add("active");
+    } else {
+      profileDropdown.classList.add("hidden");
+      profileWrapper?.classList.remove("active");
+    }
+  });
+
+  profileDropdown.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+
+  document.addEventListener("click", (event) => {
+    if (
+      !profileDropdown.contains(event.target) &&
+      !profileMenuBtn.contains(event.target)
+    ) {
+      profileDropdown.classList.add("hidden");
+      profileWrapper?.classList.remove("active");
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      profileDropdown.classList.add("hidden");
+      profileWrapper?.classList.remove("active");
+    }
+  });
+}

@@ -195,6 +195,31 @@ def provider_profile():
         user=user,
     )
 
+def _extract_profile_image(user_record):
+    if not user_record:
+        return ""
+    images = user_record.get("profile_images", [])
+    if isinstance(images, str) and images.strip():
+        return images.strip()
+    if isinstance(images, list):
+        for img in images:
+            if isinstance(img, str) and img.strip():
+                return img.strip()
+    img = user_record.get("profile_image")
+    if isinstance(img, str) and img.strip():
+        return img.strip()
+    return ""
+
+def _build_provider_user_dict(user_record):
+    if not user_record:
+        return {}
+    return {
+        "name": user_record.get("full_name", ""),
+        "role": user_record.get("role", "provider"),
+        "business_name": user_record.get("business_name", ""),
+        "profile_image": _extract_profile_image(user_record),
+    }
+
 # -----------------------------
 # DASHBOARD
 # -----------------------------
@@ -225,10 +250,7 @@ def dashboard():
         session.clear()
         return redirect(url_for("login"))
 
-    user = {
-        "name": user_record["full_name"],
-        "role": user_record["role"]
-    }
+    user = _build_provider_user_dict(user_record)
 
     return render_template(
         "dashboard.html",
@@ -238,7 +260,27 @@ def dashboard():
 @app.route("/add-listings")
 @login_required
 def addlistings():
-    return render_template("add-listings.html")
+    session_user_id = session.get("user_id")
+    try:
+        user_id = ObjectId(session_user_id)
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({"_id": user_id})
+    except PyMongoError:
+        abort(503)
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    user = _build_provider_user_dict(user_record)
+    return render_template("add-listings.html", user=user)
 
 # -----------------------------
 # MY LISTINGS
@@ -270,10 +312,7 @@ def mylistings():
         session.clear()
         return redirect(url_for("login"))
 
-    user = {
-        "name": user_record["full_name"],
-        "role": user_record["role"],
-    }
+    user = _build_provider_user_dict(user_record)
 
     return render_template(
         "my-listings.html",
@@ -314,10 +353,7 @@ def viewlisting():
         session.clear()
         return redirect(url_for("login"))
 
-    user = {
-        "name": user_record["full_name"],
-        "role": user_record["role"],
-    }
+    user = _build_provider_user_dict(user_record)
 
     return render_template(
         "view-listing.html",
@@ -726,13 +762,7 @@ def requests_page():
         session.clear()
         return redirect(url_for("login"))
 
-    user = {
-        "name": user_record.get("full_name", ""),
-        "role": user_record.get("role", ""),
-        "business_name": user_record.get(
-            "business_name", ""
-        )
-    }
+    user = _build_provider_user_dict(user_record)
 
     return render_template(
         "requests.html",
@@ -954,13 +984,8 @@ def provider_donations_page():
     }:
         return redirect(url_for("home"))
 
-    user = {
-        "id": str(user_record["_id"]),
-        "name": user_record.get("full_name", ""),
-        "role": role,
-        "business_name": user_record.get("business_name", ""),
-        "profile_image": user_record.get("profile_image", ""),
-    }
+    user = _build_provider_user_dict(user_record)
+    user["id"] = str(user_record["_id"])
 
     return render_template(
         "provider-donations.html",
@@ -1413,6 +1438,123 @@ def my_pickups():
 
     return render_template(
         "my-pickups.html",
+        user=user
+    )
+
+# ==========================================================
+# PROVIDER PICKUPS
+# ==========================================================
+
+@app.route("/provider-pickup")
+@login_required
+def provider_pickup():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    # ------------------------------------------------------
+    # CHECK PROVIDER ROLE
+    # ------------------------------------------------------
+
+    role = str(
+        user_record.get("role", "")
+    ).strip().lower()
+
+    if role not in {
+        "provider",
+        "food_provider",
+        "food provider",
+        "donor",
+        "restaurant",
+    }:
+        return redirect(url_for("home"))
+
+    # ------------------------------------------------------
+    # USER DATA
+    # ------------------------------------------------------
+
+    user = {
+        "id": str(
+            user_record["_id"]
+        ),
+
+        "name": user_record.get(
+            "full_name",
+            ""
+        ),
+
+        "email": user_record.get(
+            "email",
+            ""
+        ),
+
+        "phone": user_record.get(
+            "phone",
+            ""
+        ),
+
+        "role": role,
+
+        "business_name": user_record.get(
+            "business_name",
+            ""
+        ),
+
+        "provider_type": user_record.get(
+            "provider_type",
+            ""
+        ),
+
+        "profile_image": _extract_profile_image(
+            user_record
+        ),
+
+        "address": user_record.get(
+            "address",
+            ""
+        ),
+
+        "city": user_record.get(
+            "city",
+            ""
+        ),
+
+        "state": user_record.get(
+            "state",
+            ""
+        ),
+
+        "pincode": user_record.get(
+            "pincode",
+            ""
+        ),
+    }
+
+    return render_template(
+        "provider-pickup.html",
         user=user
     )
 

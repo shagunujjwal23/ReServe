@@ -98,22 +98,44 @@
             <span class="notification-count" id="notificationCount">3</span>
           </button>
 
-          <button type="button" class="profile-menu" id="profileMenu">
-            <div class="profile-avatar">
-              <img
-                id="profileImage"
-                src="/static/images/profile-placeholder.jpg"
-                alt="Profile"
-              />
-            </div>
+          <div class="profile-wrapper">
+            <button type="button" class="profile-menu" id="profileMenuBtn">
+              <div class="profile-avatar">
+                <img
+                  id="headerProfileImage"
+                  src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
+                  alt="Profile"
+                />
+              </div>
 
-            <div class="profile-info">
-              <strong id="profileName">Loading...</strong>
-              <span id="profileRole">Donor</span>
-            </div>
+              <div class="profile-info">
+                <strong id="profileName">{{ user.business_name or user.name }}</strong>
+                <span id="profileRole">{{ user.role | replace('_', ' ') | title }}</span>
+              </div>
 
-            <i class="ri-arrow-down-s-line"></i>
-          </button>
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <a href="/donor-profile">
+                <i class="ri-user-line"></i>
+                <span>My Profile</span>
+              </a>
+
+              <a href="/donor-profile">
+                <i class="ri-settings-3-line"></i>
+                <span>Settings</span>
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <a href="{{ url_for('auth.logout') }}">
+                <i class="ri-logout-box-r-line"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </div>
         </div>
       </header>
 
