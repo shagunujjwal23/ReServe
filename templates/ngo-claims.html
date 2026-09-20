@@ -21,6 +21,12 @@
       rel="stylesheet"
     />
 
+    <!-- NGO Navbar CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/ngo-navbar.css') }}"
+    />
+
     <!-- Page CSS -->
     <link
       rel="stylesheet"
@@ -73,7 +79,7 @@
           <span>Impact</span>
         </a>
 
-        <a href="#" class="ngo-nav-item">
+        <a href="/messages" class="ngo-nav-item">
           <i class="ri-message-3-line"></i>
           <span>Messages</span>
         </a>
@@ -102,16 +108,12 @@
           <button type="button" class="ngo-profile-btn" id="ngoProfileBtn">
             <div class="ngo-profile-avatar">
               {% if user and user.profile_image %}
-
               <img src="{{ user.profile_image }}" alt="Profile" />
-
               {% else %}
-
               <img
                 src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
                 alt="Profile"
               />
-
               {% endif %}
             </div>
 
@@ -131,22 +133,19 @@
           <div class="ngo-profile-dropdown hidden" id="ngoProfileDropdown">
             <a href="/ngo-profile">
               <i class="ri-user-line"></i>
-
-              <span>Profile</span>
+              Profile
             </a>
 
             <a href="/ngo-settings">
               <i class="ri-settings-3-line"></i>
-
-              <span>Settings</span>
+              Settings
             </a>
 
             <div class="dropdown-divider"></div>
 
             <a href="{{ url_for('auth.logout') }}">
               <i class="ri-logout-box-r-line"></i>
-
-              <span>Logout</span>
+              Logout
             </a>
           </div>
         </div>

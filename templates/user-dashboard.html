@@ -59,7 +59,7 @@
             <span>Browse Food</span>
           </a>
 
-          <a href="/my-requests">
+          <a href="/my-reservations">
             <i class="ri-file-list-3-line"></i>
             <span>My Requests</span>
           </a>
@@ -94,14 +94,14 @@
               <div class="profile-avatar">
                 <img
                   id="profileImage"
-                  src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                  src="{{ user.profile_image if user and user.profile_image else url_for('static', filename='images/profile-placeholder.jpg') }}"
                   alt="Profile"
                 />
               </div>
 
               <div class="profile-info">
-                <strong id="profileName">Loading...</strong>
-                <span id="profileRole">User</span>
+                <strong id="profileName">{{ user.name if user and user.name else 'Loading...' }}</strong>
+                <span id="profileRole">{{ (user.role | replace('_', ' ') | title) if user and user.role else 'User' }}</span>
               </div>
 
               <i class="ri-arrow-down-s-line"></i>

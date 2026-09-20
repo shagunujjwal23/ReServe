@@ -1440,8 +1440,60 @@ function setupProfileDropdown() {
   });
 }
 
+/* ==========================================================
+   HEADER PROFILE IMAGE
+========================================================== */
+
+async function loadHeaderProfileImage() {
+  const profileImage = document.getElementById("headerProfileImage");
+  const profileName = document.getElementById("profileName");
+  const profileRole = document.getElementById("profileRole");
+
+  if (!profileImage && !profileName && !profileRole) return;
+
+  try {
+    const response = await fetch("/api/provider/profile", {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    const data = await response.json().catch(() => ({}));
+    const profile = data.profile;
+
+    if (!response.ok || data.success === false || !profile) return;
+
+    if (profileName) {
+      const displayName = profile.business_name || profile.name || profile.full_name;
+      if (displayName) profileName.textContent = displayName;
+    }
+
+    if (profileRole && profile.role) {
+      profileRole.textContent = profile.role
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    const images = Array.isArray(profile.profile_images)
+      ? profile.profile_images
+      : profile.profile_image
+        ? [profile.profile_image]
+        : [];
+    const imageUrl = images.find(
+      (image) => typeof image === "string" && image.trim(),
+    );
+
+    if (imageUrl && profileImage) profileImage.src = imageUrl;
+  } catch (error) {
+    console.error("View listing profile image error:", error);
+  }
+}
+
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", setupProfileDropdown);
+  document.addEventListener("DOMContentLoaded", () => {
+    setupProfileDropdown();
+    loadHeaderProfileImage();
+  });
 } else {
   setupProfileDropdown();
+  loadHeaderProfileImage();
 }
+

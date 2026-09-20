@@ -18,6 +18,12 @@
       rel="stylesheet"
     />
 
+    <!-- Shared User Dashboard CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/user-dashboard.css') }}"
+    />
+
     <!-- Place Order CSS -->
     <link
       rel="stylesheet"
@@ -32,8 +38,7 @@
       ====================================================== -->
 
       <header class="user-navbar">
-        <!-- BRAND -->
-
+        <!-- Logo -->
         <a href="/user-dashboard" class="user-brand">
           <div class="brand-logo">
             <img
@@ -44,26 +49,30 @@
 
           <div class="brand-text">
             <h2>ReServe</h2>
-            <span>From Surplus to Solution.</span>
+            <span>Food Rescue Platform</span>
           </div>
         </a>
 
-        <!-- NAVIGATION -->
-
+        <!-- Navigation -->
         <nav class="user-nav-links">
           <a href="/user-dashboard">
             <i class="ri-home-5-line"></i>
             <span>Home</span>
           </a>
 
-          <a href="/explore-food">
+          <a href="/marketplace" class="active">
             <i class="ri-search-line"></i>
-            <span>Explore Food</span>
+            <span>Browse Food</span>
           </a>
 
           <a href="/my-reservations">
-            <i class="ri-calendar-check-line"></i>
-            <span>My Reservations</span>
+            <i class="ri-file-list-3-line"></i>
+            <span>My Requests</span>
+          </a>
+
+          <a href="/my-pickups">
+            <i class="ri-truck-line"></i>
+            <span>My Pickups</span>
           </a>
 
           <a href="/messages">
@@ -72,11 +81,9 @@
           </a>
         </nav>
 
-        <!-- NAVBAR ACTIONS -->
-
+        <!-- Right Actions -->
         <div class="user-navbar-actions">
-          <!-- NOTIFICATIONS -->
-
+          <!-- Notifications -->
           <button
             type="button"
             class="navbar-icon-btn"
@@ -84,35 +91,31 @@
             title="Notifications"
           >
             <i class="ri-notification-3-line"></i>
-
-            <span class="notification-badge" id="notificationCount"> 0 </span>
+            <span class="notification-badge" id="notificationCount">0</span>
           </button>
 
-          <!-- PROFILE -->
-
+          <!-- Profile -->
           <div class="user-profile-wrapper">
             <button type="button" class="user-profile-btn" id="profileMenuBtn">
               <div class="profile-avatar">
                 <img
                   id="profileImage"
-                  src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                  src="{{ user.profile_image if user and user.profile_image else url_for('static', filename='images/profile-placeholder.jpg') }}"
                   alt="Profile"
                 />
               </div>
 
               <div class="profile-info">
-                <strong id="profileName"> Loading... </strong>
-
-                <span id="profileRole"> User </span>
+                <strong id="profileName">{{ user.name if user and user.name else 'Loading...' }}</strong>
+                <span id="profileRole">{{ (user.role | replace('_', ' ') | title) if user and user.role else 'User' }}</span>
               </div>
 
               <i class="ri-arrow-down-s-line"></i>
             </button>
 
-            <!-- PROFILE DROPDOWN -->
-
+            <!-- Profile Dropdown -->
             <div class="profile-dropdown hidden" id="profileDropdown">
-              <a href="/user-profile">
+              <a href="/user-view-profile">
                 <i class="ri-user-line"></i>
                 Profile
               </a>

@@ -18,6 +18,12 @@
       rel="stylesheet"
     />
 
+    <!-- NGO Navbar CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/ngo-navbar.css') }}"
+    />
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/ngo-explore-food.css') }}"
@@ -66,7 +72,7 @@
           <span>Impact</span>
         </a>
 
-        <a href="#" class="ngo-nav-item">
+        <a href="/messages" class="ngo-nav-item">
           <i class="ri-message-3-line"></i>
           <span>Messages</span>
         </a>

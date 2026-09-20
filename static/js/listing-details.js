@@ -1787,21 +1787,24 @@ function renderBasicInformation(listing) {
 ========================================================== */
 
   function applyProfile(user) {
-    const name = user.name || user.username || user.fullName || "User";
-
+    const name = user.full_name || user.name || user.username || user.fullName || "User";
     const role = user.role || "User";
 
     setText("profileName", name);
-
     setText("profileRole", capitalize(role));
 
     const profileImage = document.getElementById("profileImage");
+    const images = Array.isArray(user.profile_images)
+      ? user.profile_images
+      : user.profile_image
+        ? [user.profile_image]
+        : [];
+    const imageUrl = images.find(
+      (img) => typeof img === "string" && img.trim(),
+    ) || user.profileImage || user.profileImageUrl || user.avatar || user.photo;
 
-    const image =
-      user.profileImage || user.profileImageUrl || user.avatar || user.photo;
-
-    if (profileImage && image) {
-      profileImage.src = normalizeImageUrl(image);
+    if (profileImage && imageUrl) {
+      profileImage.src = normalizeImageUrl(imageUrl);
     }
   }
 
@@ -3633,21 +3636,24 @@ async function loadProfile() {
 ========================================================== */
 
 function applyProfile(user) {
-  const name = user.name || user.username || user.fullName || "User";
-
+  const name = user.full_name || user.name || user.username || user.fullName || "User";
   const role = user.role || "User";
 
   setText("profileName", name);
-
   setText("profileRole", capitalize(role));
 
   const profileImage = document.getElementById("profileImage");
+  const images = Array.isArray(user.profile_images)
+    ? user.profile_images
+    : user.profile_image
+      ? [user.profile_image]
+      : [];
+  const imageUrl = images.find(
+    (img) => typeof img === "string" && img.trim(),
+  ) || user.profileImage || user.profileImageUrl || user.avatar || user.photo;
 
-  const image =
-    user.profileImage || user.profileImageUrl || user.avatar || user.photo;
-
-  if (profileImage && image) {
-    profileImage.src = normalizeImageUrl(image);
+  if (profileImage && imageUrl) {
+    profileImage.src = normalizeImageUrl(imageUrl);
   }
 }
 

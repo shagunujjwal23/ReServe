@@ -118,15 +118,25 @@ async function loadUserProfile() {
     const profileImage = document.getElementById("profileImage");
 
     if (profileName) {
-      profileName.textContent = currentUser.name || "User";
+      profileName.textContent = currentUser.full_name || currentUser.name || "User";
     }
 
-    if (profileRole) {
-      profileRole.textContent = currentUser.role || "User";
+    if (profileRole && currentUser.role) {
+      profileRole.textContent = currentUser.role
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
     }
 
-    if (profileImage && currentUser.profile_image) {
-      profileImage.src = currentUser.profile_image;
+    const images = Array.isArray(currentUser.profile_images)
+      ? currentUser.profile_images
+      : currentUser.profile_image
+        ? [currentUser.profile_image]
+        : [];
+    const imageUrl = images.find(
+      (img) => typeof img === "string" && img.trim(),
+    );
+    if (profileImage && imageUrl) {
+      profileImage.src = imageUrl;
     }
 
     /* ------------------------------------------

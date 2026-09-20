@@ -220,6 +220,37 @@ def _build_provider_user_dict(user_record):
         "profile_image": _extract_profile_image(user_record),
     }
 
+def _build_individual_user_dict(user_record):
+    if not user_record:
+        return {}
+    return {
+        "id": str(user_record.get("_id", "")),
+        "name": user_record.get("full_name", "") or user_record.get("name", "User"),
+        "role": user_record.get("role", "user"),
+        "email": user_record.get("email", ""),
+        "phone": user_record.get("phone", ""),
+        "profile_image": _extract_profile_image(user_record),
+    }
+
+def _build_ngo_user_dict(user_record):
+    if not user_record:
+        return {}
+    role = str(user_record.get("role", "ngo")).strip().lower()
+    return {
+        "id": str(user_record.get("_id", "")),
+        "name": user_record.get("full_name", ""),
+        "email": user_record.get("email", ""),
+        "phone": user_record.get("phone", ""),
+        "role": role,
+        "organization_name": user_record.get("organization_name") or user_record.get("full_name") or "NGO",
+        "profile_image": _extract_profile_image(user_record) or user_record.get("profile_image", ""),
+        "address": user_record.get("address", ""),
+        "city": user_record.get("city", ""),
+        "state": user_record.get("state", ""),
+        "pincode": user_record.get("pincode", ""),
+        "area": user_record.get("area", ""),
+    }
+
 # -----------------------------
 # DASHBOARD
 # -----------------------------
@@ -393,10 +424,7 @@ def user_dashboard():
         session.clear()
         return redirect(url_for("login"))
 
-    user = {
-        "name": user_record["full_name"],
-        "role": user_record["role"],
-    }
+    user = _build_individual_user_dict(user_record)
 
     return render_template(
         "user-dashboard.html",
@@ -411,10 +439,23 @@ def user_dashboard():
 @login_required
 def listing_details(listing_id):
     """Render the public listing details page."""
+    user = {}
+    session_user_id = session.get("user_id")
+    if session_user_id:
+        try:
+            user_id = ObjectId(session_user_id)
+            users_collection = get_collection("users")
+            if users_collection is not None:
+                user_record = users_collection.find_one({"_id": user_id})
+                if user_record:
+                    user = _build_individual_user_dict(user_record)
+        except Exception:
+            pass
 
     return render_template(
         "listing-details.html",
-        listing_id=listing_id
+        listing_id=listing_id,
+        user=user
     )
 
 # ==========================================================
@@ -721,11 +762,7 @@ def marketplace():
         session.clear()
         return redirect(url_for("login"))
 
-    user = {
-        "name": user_record.get("full_name", ""),
-        "role": user_record.get("role", ""),
-        "profile_image": user_record.get("profile_image", "")
-    }
+    user = _build_individual_user_dict(user_record)
 
     return render_template(
         "marketplace.html",
@@ -801,12 +838,7 @@ def place_order(listing_id):
     if not user_record or not listing:
         abort(404)
 
-    user = {
-        "id": str(user_record["_id"]),
-        "name": user_record.get("full_name", ""),
-        "email": user_record.get("email", ""),
-        "phone": user_record.get("phone", "")
-    }
+    user = _build_individual_user_dict(user_record)
 
     return render_template(
         "place-order.html",
@@ -860,43 +892,7 @@ def ngo_dashboard():
     if role != "ngo":
         return redirect(url_for("home"))
 
-    # ------------------------------------------------------
-    # USER DATA
-    # ------------------------------------------------------
-
-    user = {
-        "id": str(user_record["_id"]),
-
-        "name": user_record.get(
-            "full_name",
-            ""
-        ),
-
-        "email": user_record.get(
-            "email",
-            ""
-        ),
-
-        "phone": user_record.get(
-            "phone",
-            ""
-        ),
-
-        "role": role,
-
-        "organization_name": user_record.get(
-            "organization_name",
-            user_record.get(
-                "full_name",
-                "NGO"
-            )
-        ),
-
-        "profile_image": user_record.get(
-            "profile_image",
-            ""
-        ),
-    }
+    user = _build_ngo_user_dict(user_record)
 
     return render_template(
         "ngo-dashboard.html",
@@ -933,10 +929,12 @@ def _render_ngo_workspace(view):
     if str(user.get("role", "")).strip().lower() != "ngo":
         return redirect(url_for("home"))
 
+    user_dict = _build_ngo_user_dict(user)
+
     return render_template(
         "ngo-workspace.html",
         view=view,
-        user=user
+        user=user_dict
     )
 
 # ==========================================================
@@ -1047,43 +1045,7 @@ def ngo_explore_food():
     if role != "ngo":
         return redirect(url_for("home"))
 
-    # ------------------------------------------------------
-    # USER DATA
-    # ------------------------------------------------------
-
-    user = {
-        "id": str(user_record["_id"]),
-
-        "name": user_record.get(
-            "full_name",
-            ""
-        ),
-
-        "email": user_record.get(
-            "email",
-            ""
-        ),
-
-        "phone": user_record.get(
-            "phone",
-            ""
-        ),
-
-        "role": role,
-
-        "organization_name": user_record.get(
-            "organization_name",
-            user_record.get(
-                "full_name",
-                "NGO"
-            )
-        ),
-
-        "profile_image": user_record.get(
-            "profile_image",
-            ""
-        ),
-    }
+    user = _build_ngo_user_dict(user_record)
 
     return render_template(
         "ngo-explore-food.html",
@@ -1135,67 +1097,7 @@ def ngo_claims_page():
     if role != "ngo":
         return redirect(url_for("home"))
 
-    # ------------------------------------------------------
-    # USER DATA
-    # ------------------------------------------------------
-
-    user = {
-        "id": str(user_record["_id"]),
-
-        "name": user_record.get(
-            "full_name",
-            ""
-        ),
-
-        "email": user_record.get(
-            "email",
-            ""
-        ),
-
-        "phone": user_record.get(
-            "phone",
-            ""
-        ),
-
-        "role": role,
-
-        "organization_name": user_record.get(
-            "organization_name",
-            user_record.get(
-                "full_name",
-                "NGO"
-            )
-        ),
-
-        "profile_image": user_record.get(
-            "profile_image",
-            ""
-        ),
-
-        "address": user_record.get(
-            "address",
-            ""
-        ),
-
-        "city": user_record.get(
-            "city",
-            ""
-        ),
-
-        "state": user_record.get(
-            "state",
-            ""
-        ),
-
-        "pincode": user_record.get(
-            "pincode",
-            ""
-        ),
-
-        "area": user_record.get(
-    "area", ""
-),
-    }
+    user = _build_ngo_user_dict(user_record)
 
     return render_template(
         "ngo-claims.html",
@@ -1247,63 +1149,7 @@ def ngo_impact_page():
     if role != "ngo":
         return redirect(url_for("home"))
 
-    # ------------------------------------------------------
-    # USER DATA
-    # ------------------------------------------------------
-
-    user = {
-        "id": str(user_record["_id"]),
-
-        "name": user_record.get(
-            "full_name",
-            ""
-        ),
-
-        "email": user_record.get(
-            "email",
-            ""
-        ),
-
-        "phone": user_record.get(
-            "phone",
-            ""
-        ),
-
-        "role": role,
-
-        "organization_name": user_record.get(
-            "organization_name",
-            user_record.get(
-                "full_name",
-                "NGO"
-            )
-        ),
-
-        "profile_image": user_record.get(
-            "profile_image",
-            ""
-        ),
-
-        "address": user_record.get(
-            "address",
-            ""
-        ),
-
-        "city": user_record.get(
-            "city",
-            ""
-        ),
-
-        "state": user_record.get(
-            "state",
-            ""
-        ),
-
-        "pincode": user_record.get(
-            "pincode",
-            ""
-        ),
-    }
+    user = _build_ngo_user_dict(user_record)
 
     return render_template(
         "ngo-impact.html",
@@ -1344,34 +1190,17 @@ def my_reservations():
         session.clear()
         return redirect(url_for("login"))
 
-    user = {
-        "id": str(user_record["_id"]),
-        "name": user_record.get(
-            "full_name",
-            ""
-        ),
-        "email": user_record.get(
-            "email",
-            ""
-        ),
-        "phone": user_record.get(
-            "phone",
-            ""
-        ),
-        "role": user_record.get(
-            "role",
-            ""
-        ),
-        "profile_image": user_record.get(
-            "profile_image",
-            ""
-        ),
-    }
+    user = _build_individual_user_dict(user_record)
 
     return render_template(
         "my-reservations.html",
         user=user
     )
+
+@app.route("/my-requests")
+@login_required
+def my_requests_redirect():
+    return redirect(url_for("my_reservations"))
 
 # ==========================================================
 # USER MY PICKUPS
@@ -1407,34 +1236,7 @@ def my_pickups():
         session.clear()
         return redirect(url_for("login"))
 
-    user = {
-        "id": str(user_record["_id"]),
-
-        "name": user_record.get(
-            "full_name",
-            ""
-        ),
-
-        "email": user_record.get(
-            "email",
-            ""
-        ),
-
-        "phone": user_record.get(
-            "phone",
-            ""
-        ),
-
-        "role": user_record.get(
-            "role",
-            ""
-        ),
-
-        "profile_image": user_record.get(
-            "profile_image",
-            ""
-        ),
-    }
+    user = _build_individual_user_dict(user_record)
 
     return render_template(
         "my-pickups.html",

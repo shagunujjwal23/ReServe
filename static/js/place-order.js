@@ -770,19 +770,42 @@ async function placeOrder() {
    PROFILE
 ========================================================== */
 
-function updateProfile() {
+async function updateProfile() {
   const profileName = document.getElementById("profileName");
-
   const profileRole = document.getElementById("profileRole");
+  const profileImage = document.getElementById("profileImage");
 
-  if (profileName) {
-    if (profileName.textContent.trim() === "Loading...") {
-      profileName.textContent = "User";
+  try {
+    const response = await fetch("/api/user/profile", {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    const data = await response.json().catch(() => ({}));
+    const profile = data.profile || data.user;
+    if (!response.ok || !profile) return;
+
+    if (profileName) {
+      const displayName = profile.full_name || profile.name || profile.username;
+      if (displayName) profileName.textContent = displayName;
     }
-  }
-
-  if (profileRole) {
-    profileRole.textContent = "User";
+    if (profileRole && profile.role) {
+      profileRole.textContent = profile.role
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+    const images = Array.isArray(profile.profile_images)
+      ? profile.profile_images
+      : profile.profile_image
+        ? [profile.profile_image]
+        : [];
+    const imageUrl = images.find(
+      (img) => typeof img === "string" && img.trim(),
+    );
+    if (profileImage && imageUrl) {
+      profileImage.src = imageUrl;
+    }
+  } catch (error) {
+    console.error("Profile load error in place order:", error);
   }
 }
 

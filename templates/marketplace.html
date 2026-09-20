@@ -57,7 +57,7 @@
 
         <div class="brand-text">
           <h2>ReServe</h2>
-          <span>From Surplus to Solution.</span>
+          <span>Food Rescue Platform</span>
         </div>
       </a>
 
@@ -70,17 +70,17 @@
 
         <a href="/marketplace" class="active">
           <i class="ri-search-line"></i>
-          <span>Explore Food</span>
+          <span>Browse Food</span>
         </a>
 
         <a href="/my-reservations">
-          <i class="ri-calendar-check-line"></i>
-          <span>My Reservations</span>
+          <i class="ri-file-list-3-line"></i>
+          <span>My Requests</span>
         </a>
 
-        <a href="/favorites">
-          <i class="ri-heart-3-line"></i>
-          <span>Favorites</span>
+        <a href="/my-pickups">
+          <i class="ri-truck-line"></i>
+          <span>My Pickups</span>
         </a>
 
         <a href="/messages">
@@ -99,8 +99,7 @@
           title="Notifications"
         >
           <i class="ri-notification-3-line"></i>
-
-          <span class="notification-badge" id="notificationCount"> 0 </span>
+          <span class="notification-badge" id="notificationCount">0</span>
         </button>
 
         <!-- Profile -->
@@ -109,14 +108,14 @@
             <div class="profile-avatar">
               <img
                 id="profileImage"
-                src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                src="{{ user.profile_image if user and user.profile_image else url_for('static', filename='images/profile-placeholder.jpg') }}"
                 alt="Profile"
               />
             </div>
 
             <div class="profile-info">
-              <strong id="profileName">Loading...</strong>
-              <span id="profileRole">User</span>
+              <strong id="profileName">{{ user.name if user and user.name else 'Loading...' }}</strong>
+              <span id="profileRole">{{ (user.role | replace('_', ' ') | title) if user and user.role else 'User' }}</span>
             </div>
 
             <i class="ri-arrow-down-s-line"></i>

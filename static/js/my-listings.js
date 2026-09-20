@@ -259,8 +259,10 @@ function init() {
 
 async function loadHeaderProfileImage() {
   const profileImage = document.getElementById("headerProfileImage");
+  const profileName = document.getElementById("profileName");
+  const profileRole = document.getElementById("profileRole");
 
-  if (!profileImage) return;
+  if (!profileImage && !profileName && !profileRole) return;
 
   try {
     const response = await fetch("/api/provider/profile", {
@@ -272,6 +274,17 @@ async function loadHeaderProfileImage() {
 
     if (!response.ok || data.success === false || !profile) return;
 
+    if (profileName) {
+      const displayName = profile.business_name || profile.name || profile.full_name;
+      if (displayName) profileName.textContent = displayName;
+    }
+
+    if (profileRole && profile.role) {
+      profileRole.textContent = profile.role
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
     const images = Array.isArray(profile.profile_images)
       ? profile.profile_images
       : profile.profile_image
@@ -281,7 +294,7 @@ async function loadHeaderProfileImage() {
       (image) => typeof image === "string" && image.trim(),
     );
 
-    if (imageUrl) profileImage.src = imageUrl;
+    if (imageUrl && profileImage) profileImage.src = imageUrl;
   } catch (error) {
     console.error("My Listings profile image error:", error);
   }

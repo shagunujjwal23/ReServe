@@ -113,12 +113,17 @@ async function loadProfile() {
       profile.role ? capitalizeFirstLetter(profile.role) : "User",
     );
 
-    if (profile.profile_image) {
+    const images = Array.isArray(profile.profile_images)
+      ? profile.profile_images
+      : profile.profile_image
+        ? [profile.profile_image]
+        : [];
+    const imageUrl = images.find(
+      (img) => typeof img === "string" && img.trim(),
+    );
+    if (imageUrl) {
       const image = document.getElementById("profileImage");
-
-      if (image) {
-        image.src = profile.profile_image;
-      }
+      if (image) image.src = imageUrl;
     }
   } catch (error) {
     console.error("Profile loading error:", error);
@@ -1398,7 +1403,6 @@ function setupRetry() {
 
 function setupProfileMenu() {
   const button = document.getElementById("profileMenuBtn");
-
   const dropdown = document.getElementById("profileDropdown");
 
   if (!button || !dropdown) {
@@ -1407,25 +1411,41 @@ function setupProfileMenu() {
 
   button.addEventListener("click", (event) => {
     event.stopPropagation();
+    dropdown.classList.toggle("hidden");
+  });
 
-    dropdown.classList.toggle("show");
+  dropdown.addEventListener("click", (event) => {
+    event.stopPropagation();
   });
 
   document.addEventListener("click", (event) => {
     if (!dropdown.contains(event.target) && !button.contains(event.target)) {
-      dropdown.classList.remove("show");
+      dropdown.classList.add("hidden");
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      dropdown.classList.add("hidden");
     }
   });
 
   const logoutButton = document.getElementById("logoutBtn");
 
   if (logoutButton) {
-    logoutButton.addEventListener("click", () => {
-      /*
-       * Flask logout route is GET.
-       */
-
-      window.location.href = "/logout";
+    logoutButton.addEventListener("click", async () => {
+      try {
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        });
+      } catch (error) {
+        console.error("Logout error:", error);
+      } finally {
+        localStorage.removeItem("reserveUserLocation");
+        localStorage.removeItem("user");
+        window.location.href = "/";
+      }
     });
   }
 }

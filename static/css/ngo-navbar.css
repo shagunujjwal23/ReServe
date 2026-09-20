@@ -1,0 +1,517 @@
+/* =========================================================
+   ReServe - NGO Shared Navbar
+   Matches ngo-explore-food.html exactly
+   ========================================================= */
+
+:root {
+  --ngo-primary: #2f8f5b;
+  --ngo-primary-dark: #237247;
+  --ngo-primary-light: #eaf7ef;
+
+  --ngo-bg: #f7faf8;
+  --ngo-white: #ffffff;
+
+  --ngo-text: #1f2933;
+  --ngo-muted: #6b7280;
+  --ngo-border: #e5e9e7;
+
+  --ngo-danger: #dc5c5c;
+  --ngo-warning: #e8a33a;
+
+  --ngo-shadow-sm: 0 2px 10px rgba(31, 41, 51, 0.05);
+  --ngo-shadow-md: 0 8px 25px rgba(31, 41, 51, 0.08);
+
+  --ngo-navbar-height: 76px;
+}
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.ngo-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  width: 100%;
+  min-height: 76px;
+  height: 76px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 42px;
+
+  background: #ffffff;
+
+  border-bottom: 1px solid #e5e9e7;
+
+  box-shadow: 0 2px 12px rgba(31, 41, 51, 0.035);
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.ngo-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.ngo-logo {
+  width: 39px;
+  height: 39px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.ngo-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.ngo-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.ngo-brand-text h2 {
+  color: #27342d;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 0;
+  padding: 0;
+}
+
+.ngo-brand-text span {
+  margin-top: 3px;
+  color: #84908a;
+  font-size: 8.5px;
+  font-weight: 500;
+  letter-spacing: 0.15px;
+}
+
+/* =========================================================
+   NAVIGATION LINKS
+   ========================================================= */
+
+.ngo-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 48px;
+}
+
+.ngo-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 0 15px;
+  border-radius: 8px;
+  color: #68736d;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.ngo-nav-item i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.ngo-nav-item:hover {
+  color: #2f8f5b;
+  background: #f4faf6;
+}
+
+.ngo-nav-item.active {
+  color: #2f8f5b;
+  background: #eaf7ef;
+  font-weight: 600;
+}
+
+.ngo-nav-item.active::after {
+  display: none !important;
+}
+
+/* =========================================================
+   RIGHT NAVIGATION
+   ========================================================= */
+
+.ngo-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  margin-left: auto;
+}
+
+/* =========================================================
+   NOTIFICATION BUTTON
+   ========================================================= */
+
+.ngo-icon-btn {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e9e7;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #66716b;
+  font-size: 17px;
+  cursor: pointer;
+  padding: 0;
+  transition: 0.2s ease;
+}
+
+.ngo-icon-btn:hover {
+  background: #eaf7ef;
+  border-color: #cce5d5;
+  color: #2f8f5b;
+}
+
+.ngo-badge {
+  position: absolute;
+  top: -2px;
+  right: -1px;
+  min-width: 15px;
+  height: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  border: 2px solid white;
+  border-radius: 20px;
+  background: #e35d5d;
+  color: white;
+  font-size: 7px;
+  font-weight: 700;
+  box-sizing: content-box;
+}
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+.ngo-profile-wrapper {
+  position: relative;
+}
+
+.ngo-profile-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 7px 5px 5px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: #1f2933;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.ngo-profile-btn:hover {
+  background: #f5f8f6;
+  border-color: #edf0ee;
+}
+
+.ngo-profile-avatar {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #e8f2ec;
+}
+
+.ngo-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ngo-profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  max-width: 145px;
+}
+
+.ngo-profile-info strong {
+  max-width: 145px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #29352e;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.ngo-profile-info span {
+  color: #6b7280;
+  font-size: 9.5px;
+}
+
+.ngo-profile-btn > i {
+  color: #7b8580;
+  font-size: 15px;
+}
+
+/* =========================================================
+   PROFILE DROPDOWN
+   ========================================================= */
+
+.ngo-profile-dropdown {
+  position: absolute;
+  top: calc(100% + 9px);
+  right: 0;
+  width: 190px;
+  padding: 7px;
+  border: 1px solid #e5e9e7;
+  border-radius: 11px;
+  background: white;
+  box-shadow: 0 8px 25px rgba(31, 41, 51, 0.08);
+  overflow: hidden;
+  z-index: 1200;
+  box-sizing: border-box;
+}
+
+.ngo-profile-dropdown.hidden {
+  display: none;
+}
+
+.ngo-profile-dropdown a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 11px;
+  border-radius: 7px;
+  color: #5f6964;
+  font-size: 11px;
+  text-decoration: none;
+  transition: 0.2s ease;
+  box-sizing: border-box;
+}
+
+.ngo-profile-dropdown a i {
+  width: 17px;
+  color: #7d8882;
+  font-size: 14px;
+}
+
+.ngo-profile-dropdown a:hover {
+  background: #eaf7ef;
+  color: #2f8f5b;
+}
+
+.ngo-profile-dropdown a:hover i {
+  color: #2f8f5b;
+}
+
+.dropdown-divider {
+  height: 1px;
+  margin: 5px 3px;
+  background: #edf0ee;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1200px) {
+  .ngo-navbar {
+    padding: 0 25px;
+  }
+
+  .ngo-nav-links {
+    margin-left: 25px;
+  }
+
+  .ngo-nav-item {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .ngo-brand-text span {
+    display: none;
+  }
+
+  .ngo-nav-links {
+    margin-left: 20px;
+  }
+
+  .ngo-nav-item {
+    padding: 0 9px;
+    gap: 5px;
+  }
+
+  .ngo-nav-item span {
+    font-size: 11px;
+  }
+
+  .ngo-profile-info {
+    max-width: 110px;
+  }
+
+  .ngo-profile-info strong {
+    max-width: 110px;
+  }
+}
+
+@media (max-width: 850px) {
+  .ngo-navbar {
+    min-height: 68px;
+    height: 68px;
+    padding: 0 18px;
+  }
+
+  .ngo-brand-text h2 {
+    font-size: 17px;
+  }
+
+  .ngo-nav-links {
+    gap: 2px;
+    margin-left: 15px;
+  }
+
+  .ngo-nav-item {
+    min-height: 38px;
+    padding: 0 8px;
+  }
+
+  .ngo-nav-item i {
+    font-size: 15px;
+  }
+
+  .ngo-nav-item span {
+    display: none;
+  }
+
+  .ngo-profile-info {
+    display: none;
+  }
+
+  .ngo-profile-btn > i {
+    display: none;
+  }
+
+  .ngo-nav-actions {
+    gap: 8px;
+  }
+}
+
+@media (max-width: 650px) {
+  .ngo-navbar {
+    min-height: 62px;
+    height: 62px;
+    padding: 0 13px;
+  }
+
+  .ngo-logo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .ngo-brand-text h2 {
+    font-size: 16px;
+  }
+
+  .ngo-brand-text span {
+    display: none;
+  }
+
+  .ngo-nav-links {
+    margin-left: auto;
+    margin-right: 5px;
+  }
+
+  .ngo-nav-item {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 8px;
+  }
+
+  .ngo-nav-item span {
+    display: none;
+  }
+
+  .ngo-nav-actions {
+    margin-left: 0;
+    gap: 5px;
+  }
+
+  .ngo-icon-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  .ngo-profile-avatar {
+    width: 34px;
+    height: 34px;
+  }
+
+  .ngo-profile-btn {
+    padding: 2px;
+  }
+}
+
+@media (max-width: 420px) {
+  .ngo-navbar {
+    padding: 0 9px;
+  }
+
+  .ngo-brand {
+    gap: 6px;
+  }
+
+  .ngo-logo {
+    width: 31px;
+    height: 31px;
+  }
+
+  .ngo-brand-text h2 {
+    font-size: 15px;
+  }
+
+  .ngo-nav-links {
+    gap: 1px;
+  }
+
+  .ngo-nav-item {
+    width: 33px;
+    height: 33px;
+  }
+
+  .ngo-icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .ngo-profile-avatar {
+    width: 32px;
+    height: 32px;
+  }
+}

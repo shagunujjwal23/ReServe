@@ -18,6 +18,12 @@
       rel="stylesheet"
     />
 
+    <!-- NGO Navbar CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/ngo-navbar.css') }}"
+    />
+
     <!-- NGO Dashboard CSS -->
     <link
       rel="stylesheet"
@@ -71,7 +77,7 @@
             <span>Impact</span>
           </a>
 
-          <a href="#" class="ngo-nav-item">
+          <a href="/messages" class="ngo-nav-item">
             <i class="ri-message-3-line"></i>
             <span>Messages</span>
           </a>
@@ -82,7 +88,12 @@
         <div class="ngo-nav-actions">
           <!-- Notifications -->
 
-          <button type="button" class="ngo-icon-btn" title="Notifications">
+          <button
+            type="button"
+            class="ngo-icon-btn"
+            id="notificationBtn"
+            title="Notifications"
+          >
             <i class="ri-notification-3-line"></i>
             <span class="ngo-badge">3</span>
           </button>
@@ -91,10 +102,16 @@
 
           <div class="ngo-profile-wrapper">
             <button type="button" class="ngo-profile-btn" id="ngoProfileBtn">
-              <img
-                src="{{ url_for('static', filename='images/avatars/default.png') }}"
-                alt="Profile"
-              />
+              <div class="ngo-profile-avatar">
+                {% if user and user.profile_image %}
+                <img src="{{ user.profile_image }}" alt="Profile" />
+                {% else %}
+                <img
+                  src="{{ url_for('static', filename='images/profile-placeholder.jpg') }}"
+                  alt="Profile"
+                />
+                {% endif %}
+              </div>
 
               <div class="ngo-profile-info">
                 <strong>

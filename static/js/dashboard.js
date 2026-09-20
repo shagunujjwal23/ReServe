@@ -1036,8 +1036,10 @@ function setupProfileDropdown() {
 
 async function loadHeaderProfileImage() {
   const profileImage = document.getElementById("headerProfileImage");
+  const profileName = document.getElementById("profileName");
+  const profileRole = document.getElementById("profileRole");
 
-  if (!profileImage) {
+  if (!profileImage && !profileName && !profileRole) {
     return;
   }
 
@@ -1058,6 +1060,17 @@ async function loadHeaderProfileImage() {
       return;
     }
 
+    if (profileName) {
+      const displayName = profile.business_name || profile.name || profile.full_name;
+      if (displayName) profileName.textContent = displayName;
+    }
+
+    if (profileRole && profile.role) {
+      profileRole.textContent = profile.role
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
     const images = Array.isArray(profile.profile_images)
       ? profile.profile_images
       : profile.profile_image
@@ -1068,7 +1081,7 @@ async function loadHeaderProfileImage() {
       (image) => typeof image === "string" && image.trim(),
     );
 
-    if (imageUrl) {
+    if (imageUrl && profileImage) {
       profileImage.src = imageUrl;
     }
   } catch (error) {
@@ -1609,7 +1622,7 @@ async function loadUpcomingPickups() {
   `;
 
   try {
-    const response = await fetch("/api/provider/pickups", {
+    let response = await fetch("/api/provider/pickups", {
       method: "GET",
 
       credentials: "include",
@@ -1618,6 +1631,18 @@ async function loadUpcomingPickups() {
         Accept: "application/json",
       },
     });
+
+    if (!response.ok) {
+      response = await fetch("/api/requests", {
+        method: "GET",
+
+        credentials: "include",
+
+        headers: {
+          Accept: "application/json",
+        },
+      });
+    }
 
     if (!response.ok) {
       container.innerHTML = `
@@ -1637,9 +1662,13 @@ async function loadUpcomingPickups() {
       return;
     }
 
-    const data = await response.json();
+    const data = await response.json().catch(() => ({}));
 
-    const pickups = Array.isArray(data.pickups) ? data.pickups : [];
+    const pickups = Array.isArray(data.pickups)
+      ? data.pickups
+      : Array.isArray(data.requests)
+        ? data.requests
+        : [];
 
     const upcoming = pickups
       .filter((pickup) => {
@@ -1648,10 +1677,12 @@ async function loadUpcomingPickups() {
         return (
           status === "scheduled" ||
           status === "confirmed" ||
-          status === "accepted"
+          status === "accepted" ||
+          status === "ready_for_pickup" ||
+          status === "picked_up"
         );
       })
-      .slice(0, 3);
+      .slice(0, 4);
 
     if (upcoming.length === 0) {
       container.innerHTML = `
@@ -1674,43 +1705,69 @@ async function loadUpcomingPickups() {
     container.innerHTML = "";
 
     upcoming.forEach((pickup) => {
-      const date =
-        pickup.pickup_time || pickup.scheduled_at || pickup.pickup_start;
+      let day = "--";
+      let month = "---";
+      let time = pickup.pickup_time || "Scheduled";
 
-      const dateObject = date ? new Date(date) : null;
+      const dateRaw =
+        pickup.pickup_date ||
+        pickup.scheduled_at ||
+        pickup.pickup_start ||
+        pickup.created_at;
 
-      const day =
-        dateObject && !isNaN(dateObject.getTime())
-          ? dateObject.getDate().toString()
-          : "--";
+      if (dateRaw) {
+        const dateStr = String(dateRaw).trim();
+        const dateMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
 
-      const month =
-        dateObject && !isNaN(dateObject.getTime())
-          ? dateObject.toLocaleString("en-IN", {
+        if (dateMatch) {
+          const year = Number(dateMatch[1]);
+          const m = Number(dateMatch[2]) - 1;
+          const d = Number(dateMatch[3]);
+          const dObj = new Date(year, m, d);
+
+          if (!isNaN(dObj.getTime())) {
+            day = String(dObj.getDate());
+            month = dObj.toLocaleString("en-IN", {
               month: "short",
-            })
-          : "---";
+            });
+          }
+        } else {
+          const dObj = new Date(dateStr);
 
-      const time =
-        dateObject && !isNaN(dateObject.getTime())
-          ? dateObject.toLocaleTimeString("en-IN", {
-              hour: "numeric",
-              minute: "2-digit",
-            })
-          : "Time not set";
+          if (!isNaN(dObj.getTime())) {
+            day = String(dObj.getDate());
+            month = dObj.toLocaleString("en-IN", {
+              month: "short",
+            });
+          }
+        }
+      }
 
       const food = pickup.food_title || pickup.food_name || "Food Item";
 
       const requester =
         pickup.ngo_name || pickup.requester_name || "Pickup Partner";
 
+      const isNgo =
+        String(pickup.requester_type || "").toLowerCase() === "ngo" ||
+        Boolean(pickup.is_claim);
+
       const quantity = pickup.quantity || 0;
 
       const unit = pickup.unit || "";
 
+      const rawStatus = String(pickup.status || "").toLowerCase();
+      const isReady =
+        rawStatus === "ready_for_pickup" || rawStatus === "picked_up";
+
       const item = document.createElement("div");
 
       item.className = "pickup-item";
+      item.style.cursor = "pointer";
+      item.title = "View in Pickups";
+      item.onclick = () => {
+        window.location.href = "/provider-pickup";
+      };
 
       item.innerHTML = `
           <div class="pickup-date">
@@ -1743,6 +1800,11 @@ async function loadUpcomingPickups() {
 
             <p>
               ${escapeHtml(requester)}
+              ${
+                isNgo
+                  ? '<span style="background:#f3e8ff;color:#7c3aed;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;margin-left:4px;">NGO</span>'
+                  : ""
+              }
             </p>
 
             <span>
@@ -1751,8 +1813,8 @@ async function loadUpcomingPickups() {
 
           </div>
 
-          <span class="pickup-status">
-            Scheduled
+          <span class="pickup-status ${isReady ? "ready" : ""}">
+            ${isReady ? "Ready" : "Scheduled"}
           </span>
         `;
 

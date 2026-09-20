@@ -15,6 +15,7 @@ let filteredRequests = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
   setupProfileDropdown();
+  loadHeaderProfileImage();
   initializeFilters();
   initializeSearch();
   initializeDateFilter();
@@ -84,7 +85,7 @@ function renderRequests() {
 
   if (currentFilter !== "all") {
     requests = requests.filter((request) => {
-      const status = normalizeRawStatus(request.status);
+      const status = normalizeStatus(request.status);
 
       if (currentFilter === "rejected") {
         return (
@@ -364,11 +365,12 @@ function createRequestCard(request) {
 
             <h4>
               ${escapeHTML(requesterName)}
+              ${requesterType.toLowerCase() === "ngo" ? '<span class="badge-ngo" style="background:#f3e8ff;color:#7c3aed;font-size:11px;padding:2px 8px;border-radius:12px;font-weight:600;margin-left:6px;display:inline-block;vertical-align:middle;">NGO</span>' : ''}
             </h4>
 
             <div class="customer-contact">
-              <i class="ri-user-line"></i>
-              ${escapeHTML(capitalize(requesterType))}
+              <i class="${requesterType.toLowerCase() === "ngo" ? "ri-building-line" : "ri-user-line"}"></i>
+              ${escapeHTML(requesterType.toLowerCase() === "ngo" ? "NGO Partner" : capitalize(requesterType))}
             </div>
 
             ${
@@ -815,10 +817,15 @@ function viewRequest(requestId) {
 
   const communitySupport = Number(request.community_support || 0) || 0;
 
-  const totalAmount =
-    Number(request.total_amount) || foodAmount + communitySupport;
+  const isDonationClaim = Boolean(request.is_claim || request.is_donation);
+  const reqType = String(request.requester_type || request.user_type || "individual").toLowerCase();
+  const isNgoFree = reqType === "ngo" && totalAmount === 0;
 
-  setModalText("modalAmount", formatCurrency(totalAmount));
+  if (isDonationClaim || isNgoFree) {
+    setModalText("modalAmount", "Free (Donation)");
+  } else {
+    setModalText("modalAmount", formatCurrency(totalAmount));
+  }
 
   /* =====================================================
      FOOD IMAGE
@@ -840,7 +847,7 @@ function viewRequest(requestId) {
 
   setModalText(
     "modalRequesterType",
-    capitalize(request.requester_type || request.user_type || "individual"),
+    reqType === "ngo" ? "NGO Partner" : capitalize(reqType),
   );
 
   setModalText("modalPhone", request.phone || request.requester_phone || "-");
@@ -971,7 +978,7 @@ function updateCounters() {
   ).length;
 
   const rejected = allRequests.filter((request) => {
-    const status = normalizeRawStatus(request.status);
+    const status = normalizeStatus(request.status);
 
     return (
       status === "rejected" || status === "cancelled" || status === "canceled"
@@ -1152,6 +1159,14 @@ function normalizeStatus(status) {
     return "rejected";
   }
 
+  if (value === "confirmed") {
+    return "accepted";
+  }
+
+  if (value === "ready_for_pickup" || value === "picked_up") {
+    return "accepted";
+  }
+
   return value;
 }
 
@@ -1164,6 +1179,14 @@ function getStatusLabel(status) {
 
   if (value === "rejected") {
     return "Rejected";
+  }
+
+  if (value === "confirmed" || value === "accepted") {
+    return "Accepted";
+  }
+
+  if (value === "ready_for_pickup" || value === "picked_up") {
+    return "Ready For Pickup";
   }
 
   return capitalize(value);
@@ -1458,3 +1481,63 @@ function setupProfileDropdown() {
     }
   });
 }
+
+/* =========================================================
+   HEADER PROFILE IMAGE
+   ========================================================= */
+
+async function loadHeaderProfileImage() {
+  const profileImage = document.getElementById("headerProfileImage");
+  const profileName = document.getElementById("profileName");
+  const profileRole = document.getElementById("profileRole");
+
+  if (!profileImage && !profileName && !profileRole) {
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/provider/profile", {
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const data = await response.json().catch(() => ({}));
+    const profile = data.profile;
+
+    if (!response.ok || data.success === false || !profile) {
+      return;
+    }
+
+    if (profileName) {
+      const displayName = profile.business_name || profile.name || profile.full_name;
+      if (displayName) {
+        profileName.textContent = displayName;
+      }
+    }
+
+    if (profileRole && profile.role) {
+      profileRole.textContent = profile.role
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    const images = Array.isArray(profile.profile_images)
+      ? profile.profile_images
+      : profile.profile_image
+        ? [profile.profile_image]
+        : [];
+
+    const imageUrl = images.find(
+      (image) => typeof image === "string" && image.trim(),
+    );
+
+    if (imageUrl && profileImage) {
+      profileImage.src = imageUrl;
+    }
+  } catch (error) {
+    console.error("Requests profile image error:", error);
+  }
+}
+

@@ -79,23 +79,45 @@ const pickupCardTemplate = document.getElementById("pickupCardTemplate");
    PROFILE DROPDOWN
 ========================================================= */
 
-const profileMenuBtn = document.getElementById("profileMenuBtn");
+function setupProfileDropdown() {
+  const profileMenuBtn = document.getElementById("profileMenuBtn");
+  const profileDropdown = document.getElementById("profileDropdown");
+  const profileWrapper = document.querySelector(".profile-wrapper");
 
-const profileDropdown = document.getElementById("profileDropdown");
+  if (!profileMenuBtn || !profileDropdown) {
+    return;
+  }
 
-if (profileMenuBtn && profileDropdown) {
-  profileMenuBtn.addEventListener("click", function (event) {
+  profileMenuBtn.addEventListener("click", (event) => {
     event.stopPropagation();
-
-    profileDropdown.classList.toggle("hidden");
+    const isHidden = profileDropdown.classList.contains("hidden");
+    if (isHidden) {
+      profileDropdown.classList.remove("hidden");
+      profileWrapper?.classList.add("active");
+    } else {
+      profileDropdown.classList.add("hidden");
+      profileWrapper?.classList.remove("active");
+    }
   });
 
-  document.addEventListener("click", function (event) {
+  profileDropdown.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+
+  document.addEventListener("click", (event) => {
     if (
       !profileDropdown.contains(event.target) &&
       !profileMenuBtn.contains(event.target)
     ) {
       profileDropdown.classList.add("hidden");
+      profileWrapper?.classList.remove("active");
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      profileDropdown.classList.add("hidden");
+      profileWrapper?.classList.remove("active");
     }
   });
 }
@@ -105,6 +127,9 @@ if (profileMenuBtn && profileDropdown) {
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", function () {
+  setupProfileDropdown();
+  loadHeaderProfileImage();
+
   setupPickupTabs();
 
   setupSearch();
@@ -203,21 +228,17 @@ function normalizeStatus(status) {
     .toLowerCase();
 
   /*
-    Existing backend status:
-
-    accepted
-    ready_for_pickup
-    completed
-
-    We intentionally do NOT convert statuses such as
-    "pending" into pickup statuses.
+    Support both orders and NGO claims:
+    - accepted / confirmed -> accepted
+    - ready_for_pickup / picked_up -> ready_for_pickup
+    - completed -> completed
   */
 
-  if (normalized === "accepted") {
+  if (normalized === "accepted" || normalized === "confirmed") {
     return "accepted";
   }
 
-  if (normalized === "ready_for_pickup") {
+  if (normalized === "ready_for_pickup" || normalized === "picked_up") {
     return "ready_for_pickup";
   }
 
@@ -640,7 +661,16 @@ function createPickupCard(pickup) {
   */
 
   if (priceElement) {
-    priceElement.textContent = formatCurrency(amount || totalAmount || price);
+    const isDonationClaim = Boolean(pickup.is_claim || pickup.is_donation);
+    const isNgoFree = String(pickup.requester_type || "").toLowerCase() === "ngo" && (amount === 0 && totalAmount === 0);
+
+    if (isDonationClaim || isNgoFree) {
+      priceElement.textContent = "Free (Donation)";
+      priceElement.style.color = "#10b981";
+    } else {
+      priceElement.textContent = formatCurrency(amount || totalAmount || price);
+      priceElement.style.color = "";
+    }
   }
 
   /*
@@ -698,7 +728,20 @@ function createPickupCard(pickup) {
      CUSTOMER
   ------------------------------------------------------- */
 
-  setText(card, ".customer-name", pickup.requester_name || "Customer");
+  const requesterType = String(pickup.requester_type || "").toLowerCase();
+  const customerNameEl = card.querySelector(".customer-name");
+
+  if (customerNameEl) {
+    if (requesterType === "ngo") {
+      customerNameEl.innerHTML = `${escapeHtml(pickup.requester_name || "NGO Partner")} <span class="badge-ngo" style="background:#f3e8ff;color:#7c3aed;font-size:11px;padding:2px 8px;border-radius:12px;font-weight:600;margin-left:6px;display:inline-block;vertical-align:middle;">NGO</span>`;
+      const userIcon = card.querySelector(".pickup-customer-section .ri-user-3-line");
+      if (userIcon) {
+        userIcon.className = "ri-building-line";
+      }
+    } else {
+      customerNameEl.textContent = pickup.requester_name || "Customer";
+    }
+  }
 
   setText(card, ".customer-phone", pickup.phone || "Phone not available");
 
@@ -771,14 +814,24 @@ function createPickupCard(pickup) {
   const reminder = card.querySelector(".pickup-reminder-text");
 
   if (reminder) {
-    if (status === "accepted") {
-      reminder.textContent = "Customer will pick up during the scheduled time.";
-    } else if (status === "ready_for_pickup") {
-      reminder.textContent =
-        "Pickup date has arrived. Keep the food ready for collection.";
-    } else if (status === "completed") {
-      reminder.textContent =
-        "This reservation has been completed by the customer.";
+    if (requesterType === "ngo") {
+      if (status === "accepted") {
+        reminder.textContent = "NGO partner will collect during scheduled pickup window.";
+      } else if (status === "ready_for_pickup") {
+        reminder.textContent = "Pickup window is active. Food is ready for NGO collection.";
+      } else if (status === "completed") {
+        reminder.textContent = "This donation pickup has been completed by the NGO.";
+      }
+    } else {
+      if (status === "accepted") {
+        reminder.textContent = "Customer will pick up during the scheduled time.";
+      } else if (status === "ready_for_pickup") {
+        reminder.textContent =
+          "Pickup date has arrived. Keep the food ready for collection.";
+      } else if (status === "completed") {
+        reminder.textContent =
+          "This reservation has been completed by the customer.";
+      }
     }
   }
 
@@ -1279,3 +1332,51 @@ function stopAutoRefresh() {
 window.addEventListener("beforeunload", function () {
   stopAutoRefresh();
 });
+
+/* =========================================================
+   HEADER PROFILE IMAGE
+========================================================= */
+
+async function loadHeaderProfileImage() {
+  const profileImage = document.getElementById("headerProfileImage");
+  const profileName = document.getElementById("profileName");
+  const profileRole = document.getElementById("profileRole");
+
+  if (!profileImage && !profileName && !profileRole) return;
+
+  try {
+    const response = await fetch("/api/provider/profile", {
+      credentials: "include",
+      headers: { Accept: "application/json" },
+    });
+    const data = await response.json().catch(() => ({}));
+    const profile = data.profile;
+
+    if (!response.ok || data.success === false || !profile) return;
+
+    if (profileName) {
+      const displayName = profile.business_name || profile.name || profile.full_name;
+      if (displayName) profileName.textContent = displayName;
+    }
+
+    if (profileRole && profile.role) {
+      profileRole.textContent = profile.role
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    const images = Array.isArray(profile.profile_images)
+      ? profile.profile_images
+      : profile.profile_image
+        ? [profile.profile_image]
+        : [];
+    const imageUrl = images.find(
+      (image) => typeof image === "string" && image.trim(),
+    );
+
+    if (imageUrl && profileImage) profileImage.src = imageUrl;
+  } catch (error) {
+    console.error("Provider pickup profile image error:", error);
+  }
+}
+

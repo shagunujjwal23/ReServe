@@ -99,7 +99,7 @@
               <div class="profile-avatar">
                 <img
                   id="headerProfileImage"
-                  src="{{ url_for('static', filename='images/avatars/default.png') }}"
+                  src="{{ user.profile_image if user.profile_image else url_for('static', filename='images/avatars/default.png') }}"
                   alt="Profile"
                 />
               </div>

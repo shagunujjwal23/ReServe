@@ -6,6 +6,24 @@
 
     <title>My Pickups | ReServe</title>
 
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- User Dashboard CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/user-dashboard.css') }}"
+    />
+
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/my-pickups.css') }}"
@@ -27,110 +45,100 @@
      NAVBAR
 ========================================================= -->
 
-    <header class="main-navbar">
-      <div class="navbar-container">
-        <!-- LOGO -->
+    <header class="user-navbar">
+      <!-- Logo -->
+      <a href="/user-dashboard" class="user-brand">
+        <div class="brand-logo">
+          <img
+            src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+            alt="ReServe Logo"
+          />
+        </div>
 
-        <a href="/user-dashboard" class="brand-logo">
-          <div class="brand-icon">
-            <i class="fa-solid fa-leaf"></i>
-          </div>
+        <div class="brand-text">
+          <h2>ReServe</h2>
+          <span>Food Rescue Platform</span>
+        </div>
+      </a>
 
-          <div class="brand-text">
-            <span class="brand-name">ReServe</span>
-            <span class="brand-tagline">Save Food. Serve Better.</span>
-          </div>
+      <!-- Navigation -->
+      <nav class="user-nav-links">
+        <a href="/user-dashboard">
+          <i class="ri-home-5-line"></i>
+          <span>Home</span>
         </a>
 
-        <!-- NAVIGATION -->
+        <a href="/marketplace">
+          <i class="ri-search-line"></i>
+          <span>Browse Food</span>
+        </a>
 
-        <nav class="navbar-links">
-          <a href="/user-dashboard" class="nav-link">
-            <i class="fa-solid fa-house"></i>
-            <span>Home</span>
-          </a>
+        <a href="/my-reservations">
+          <i class="ri-file-list-3-line"></i>
+          <span>My Requests</span>
+        </a>
 
-          <a href="/explore-food" class="nav-link">
-            <i class="fa-solid fa-utensils"></i>
-            <span>Explore Food</span>
-          </a>
+        <a href="/my-pickups" class="active">
+          <i class="ri-truck-line"></i>
+          <span>My Pickups</span>
+        </a>
 
-          <a href="/my-reservations" class="nav-link">
-            <i class="fa-solid fa-calendar-check"></i>
-            <span>My Reservations</span>
-          </a>
+        <a href="/messages">
+          <i class="ri-message-3-line"></i>
+          <span>Messages</span>
+        </a>
+      </nav>
 
-          <a href="/my-pickups" class="nav-link active">
-            <i class="fa-solid fa-bag-shopping"></i>
-            <span>My Pickups</span>
-          </a>
+      <!-- Right Actions -->
+      <div class="user-navbar-actions">
+        <!-- Notifications -->
+        <button
+          type="button"
+          class="navbar-icon-btn"
+          id="notificationBtn"
+          title="Notifications"
+        >
+          <i class="ri-notification-3-line"></i>
+          <span class="notification-badge" id="notificationCount">0</span>
+        </button>
 
-          <a href="/favorites" class="nav-link">
-            <i class="fa-regular fa-heart"></i>
-            <span>Favorites</span>
-          </a>
+        <!-- Profile -->
+        <div class="user-profile-wrapper">
+          <button type="button" class="user-profile-btn" id="profileMenuBtn">
+            <div class="profile-avatar">
+              <img
+                id="profileImage"
+                src="{{ user.profile_image if user and user.profile_image else url_for('static', filename='images/profile-placeholder.jpg') }}"
+                alt="Profile"
+              />
+            </div>
 
-          <a href="/messages" class="nav-link">
-            <i class="fa-regular fa-comment"></i>
-            <span>Messages</span>
-          </a>
-        </nav>
+            <div class="profile-info">
+              <strong id="profileName">{{ user.name if user and user.name else 'Loading...' }}</strong>
+              <span id="profileRole">{{ (user.role | replace('_', ' ') | title) if user and user.role else 'User' }}</span>
+            </div>
 
-        <!-- NAVBAR ACTIONS -->
-
-        <div class="navbar-actions">
-          <!-- Notifications -->
-
-          <button
-            type="button"
-            class="notification-btn"
-            id="notificationBtn"
-            aria-label="Notifications"
-          >
-            <i class="fa-regular fa-bell"></i>
-            <span class="notification-count" id="notificationCount"> 0 </span>
+            <i class="ri-arrow-down-s-line"></i>
           </button>
 
-          <!-- Profile -->
+          <!-- Profile Dropdown -->
+          <div class="profile-dropdown hidden" id="profileDropdown">
+            <a href="/user-view-profile">
+              <i class="ri-user-line"></i>
+              Profile
+            </a>
 
-          <div class="profile-menu">
-            <button type="button" class="profile-menu-btn" id="profileMenuBtn">
-              <img
-                src="{{ url_for('static', filename='images/default-avatar.png') }}"
-                alt="Profile"
-                class="profile-image"
-                id="profileImage"
-              />
+            <a href="/settings">
+              <i class="ri-settings-3-line"></i>
+              Settings
+            </a>
 
-              <div class="profile-info">
-                <span class="profile-name" id="profileName"> User </span>
+            <div class="dropdown-divider"></div>
 
-                <span class="profile-role" id="profileRole"> User </span>
-              </div>
-
-              <i class="fa-solid fa-chevron-down profile-arrow"></i>
+            <button type="button" id="logoutBtn">
+              <i class="ri-logout-box-r-line"></i>
+              Logout
             </button>
-
-            <!-- Dropdown -->
-
-            <div class="profile-dropdown" id="profileDropdown">
-              <a href="/profile">
-                <i class="fa-regular fa-user"></i>
-                My Profile
-              </a>
-
-              <a href="/settings">
-                <i class="fa-solid fa-gear"></i>
-                Settings
-              </a>
-
-              <div class="dropdown-divider"></div>
-
-              <button type="button" id="logoutBtn">
-                <i class="fa-solid fa-right-from-bracket"></i>
-                Logout
-              </button>
-            </div>
           </div>
         </div>
       </div>

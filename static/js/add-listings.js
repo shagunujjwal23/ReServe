@@ -3290,10 +3290,118 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* ==========================================================
+     PROFILE DROPDOWN
+  ========================================================== */
+
+  function setupProfileDropdown() {
+    const profileMenuBtn = document.getElementById("profileMenuBtn");
+    const profileDropdown = document.getElementById("profileDropdown");
+    const profileWrapper = document.querySelector(".profile-wrapper");
+
+    if (!profileMenuBtn || !profileDropdown) {
+      return;
+    }
+
+    profileMenuBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const isHidden = profileDropdown.classList.contains("hidden");
+      if (isHidden) {
+        profileDropdown.classList.remove("hidden");
+        profileWrapper?.classList.add("active");
+      } else {
+        profileDropdown.classList.add("hidden");
+        profileWrapper?.classList.remove("active");
+      }
+    });
+
+    profileDropdown.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (
+        !profileDropdown.contains(event.target) &&
+        !profileMenuBtn.contains(event.target)
+      ) {
+        profileDropdown.classList.add("hidden");
+        profileWrapper?.classList.remove("active");
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        profileDropdown.classList.add("hidden");
+        profileWrapper?.classList.remove("active");
+      }
+    });
+  }
+
+  /* ==========================================================
+     HEADER PROFILE IMAGE
+  ========================================================== */
+
+  async function loadHeaderProfileImage() {
+    const profileImage = document.getElementById("headerProfileImage");
+    const profileName = document.getElementById("profileName");
+    const profileRole = document.getElementById("profileRole");
+
+    if (!profileImage && !profileName && !profileRole) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/provider/profile", {
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json().catch(() => ({}));
+      const profile = data.profile;
+
+      if (!response.ok || data.success === false || !profile) {
+        return;
+      }
+
+      if (profileName) {
+        const displayName = profile.business_name || profile.name || profile.full_name;
+        if (displayName) {
+          profileName.textContent = displayName;
+        }
+      }
+
+      if (profileRole && profile.role) {
+        profileRole.textContent = profile.role
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+
+      const images = Array.isArray(profile.profile_images)
+        ? profile.profile_images
+        : profile.profile_image
+          ? [profile.profile_image]
+          : [];
+
+      const imageUrl = images.find(
+        (image) => typeof image === "string" && image.trim(),
+      );
+
+      if (imageUrl && profileImage) {
+        profileImage.src = imageUrl;
+      }
+    } catch (error) {
+      console.error("Add listings header profile image error:", error);
+    }
+  }
+
+  /* ==========================================================
      INITIALIZE PAGE
   ========================================================== */
 
   async function initializePage() {
+    setupProfileDropdown();
+    loadHeaderProfileImage();
     await loadProviderPickupProfile();
 
     if (editMode && editListingId) {

@@ -1274,9 +1274,24 @@ def get_user_profile():
             "message": "User not found."
         }), 404
 
+    images = user.get("profile_images", [])
+    if isinstance(images, str) and images.strip():
+        profile_images = [images.strip()]
+    elif isinstance(images, list):
+        profile_images = [img.strip() for img in images if isinstance(img, str) and img.strip()]
+    else:
+        profile_images = []
+    if not profile_images and user.get("profile_image"):
+        profile_images = [user.get("profile_image").strip()]
+
+    profile_image_url = profile_images[0] if profile_images else ""
+
     profile = {
         "id": f"RSV-{str(user['_id'])[-6:].upper()}",
+        "name": user.get("business_name") or user.get("full_name", "") or user.get("name", "User"),
         "full_name": user.get("full_name", ""),
+        "business_name": user.get("business_name", ""),
+        "role": user.get("role", "user"),
         "email": user.get("email", ""),
         "phone": user.get("phone", ""),
         "address": user.get("address", ""),
@@ -1284,7 +1299,8 @@ def get_user_profile():
         "state": user.get("state", ""),
         "pincode": user.get("pincode", ""),
         "pickup_area": user.get("pickup_area", ""),
-        "profile_image": user.get("profile_image", ""),
+        "profile_image": profile_image_url,
+        "profile_images": profile_images,
         "created_at": (
             user.get("created_at").isoformat()
             if user.get("created_at")
@@ -1294,7 +1310,8 @@ def get_user_profile():
 
     return jsonify({
         "success": True,
-        "profile": profile
+        "profile": profile,
+        "user": profile
     }), 200
 
 # ==========================================================

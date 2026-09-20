@@ -35,6 +35,7 @@ async function initializePage() {
   try {
     setupNavbar();
     setupProfileMenu();
+    loadUserNavbarProfile();
 
     setupTabs();
     setupSearch();
@@ -1565,6 +1566,69 @@ function setupProfileMenu() {
   document.addEventListener("click", () => {
     dropdown.classList.add("hidden");
   });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      dropdown.classList.add("hidden");
+    }
+  });
+}
+
+/* =========================================================
+   LOAD USER NAVBAR PROFILE
+   ========================================================= */
+
+async function loadUserNavbarProfile() {
+  const profileName = document.getElementById("profileName");
+  const profileRole = document.getElementById("profileRole");
+  const profileImage = document.getElementById("profileImage");
+
+  if (!profileName && !profileRole && !profileImage) {
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/user/profile", {
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const data = await response.json().catch(() => ({}));
+    const profile = data.profile;
+
+    if (!response.ok || data.success === false || !profile) {
+      return;
+    }
+
+    if (profileName) {
+      const displayName = profile.full_name || profile.name || profile.username;
+      if (displayName) profileName.textContent = displayName;
+    }
+
+    if (profileRole && profile.role) {
+      profileRole.textContent = profile.role
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+    }
+
+    const images = Array.isArray(profile.profile_images)
+      ? profile.profile_images
+      : profile.profile_image
+        ? [profile.profile_image]
+        : [];
+
+    const imageUrl = images.find(
+      (image) => typeof image === "string" && image.trim(),
+    );
+
+    if (imageUrl && profileImage) {
+      profileImage.src = imageUrl;
+    }
+  } catch (error) {
+    console.error("My reservations profile image error:", error);
+  }
 }
 
 /* =========================================================
