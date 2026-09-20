@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>My Reservations | ReServe</title>
+
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Remix Icons -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.6.0/fonts/remixicon.css"
+      rel="stylesheet"
+    />
+
+    <!-- Shared User CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/user-dashboard.css') }}"
+    />
+
+    <!-- Reservations CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/my-reservations.css') }}"
+    />
+  </head>
+
+  <body>
+    <div class="user-page">
+      <!-- =====================================================
+           USER NAVBAR
+      ====================================================== -->
+
+      <header class="user-navbar">
+        <!-- BRAND -->
+        <a href="/user-dashboard" class="user-brand">
+          <div class="brand-logo">
+            <img
+              src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
+              alt="ReServe"
+            />
+          </div>
+
+          <div class="brand-text">
+            <h2>ReServe</h2>
+            <span>From Surplus to Solution.</span>
+          </div>
+        </a>
+
+        <!-- NAVIGATION -->
+        <nav class="user-nav-links">
+          <a href="/user-dashboard">
+            <i class="ri-home-5-line"></i>
+            <span>Home</span>
+          </a>
+
+          <a href="/explore-food">
+            <i class="ri-search-line"></i>
+            <span>Explore Food</span>
+          </a>
+
+          <a href="/my-reservations" class="active">
+            <i class="ri-calendar-line"></i>
+            <span>My Reservations</span>
+          </a>
+
+          <a href="/favorites">
+            <i class="ri-heart-line"></i>
+            <span>Favorites</span>
+          </a>
+
+          <a href="/messages" class="nav-message-link">
+            <i class="ri-message-3-line"></i>
+            <span>Messages</span>
+            <b class="nav-badge" id="messageCount">0</b>
+          </a>
+        </nav>
+
+        <!-- NAVBAR ACTIONS -->
+        <div class="user-navbar-actions">
+          <!-- NOTIFICATIONS -->
+          <button
+            type="button"
+            class="navbar-icon-btn"
+            id="notificationBtn"
+            aria-label="Notifications"
+          >
+            <i class="ri-notification-3-line"></i>
+
+            <span class="notification-badge hidden" id="notificationCount">
+              0
+            </span>
+          </button>
+
+          <!-- PROFILE -->
+          <div class="user-profile-wrapper">
+            <button type="button" class="user-profile-btn" id="profileMenuBtn">
+              <div class="profile-avatar">
+                <img
+                  id="profileImage"
+                  src="{{ url_for('static', filename='images/default-avatar.png') }}"
+                  alt="Profile"
+                />
+              </div>
+
+              <div class="profile-info">
+                <strong id="profileName"> User </strong>
+
+                <span id="profileRole"> User </span>
+              </div>
+
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+
+            <!-- PROFILE DROPDOWN -->
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <a href="/profile">
+                <i class="ri-user-line"></i>
+                <span>My Profile</span>
+              </a>
+
+              <a href="/my-reservations">
+                <i class="ri-calendar-check-line"></i>
+                <span>My Reservations</span>
+              </a>
+
+              <a href="/favorites">
+                <i class="ri-heart-line"></i>
+                <span>Favorites</span>
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <button type="button" id="logoutBtn">
+                <i class="ri-logout-box-r-line"></i>
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- =====================================================
+           MAIN CONTENT
+      ====================================================== -->
+
+      <main class="reservations-page">
+        <!-- ===================================================
+             PAGE HEADER
+        ==================================================== -->
+
+        <section class="reservations-header">
+          <div class="header-content">
+            <h1>My <span>Reservations</span></h1>
+
+            <p>Good food reserved. A better tomorrow.</p>
+          </div>
+
+          <!-- HEADER DECORATION -->
+          <div class="reservation-decoration">
+            <div class="decoration-leaves">
+              <i class="ri-leaf-line"></i>
+              <i class="ri-leaf-fill"></i>
+            </div>
+
+            <div class="decoration-message">
+              <strong>
+                Small
+                <br />
+                Choices
+                <br />
+                Big Impact
+              </strong>
+
+              <i class="ri-heart-line"></i>
+            </div>
+
+            <div class="impact-card">
+              <div class="impact-icon">
+                <i class="ri-plant-line"></i>
+              </div>
+
+              <div>
+                <strong>
+                  Thank you for being
+                  <br />
+                  a part of the change!
+                </strong>
+
+                <p>
+                  Every reservation helps reduce
+                  <br />
+                  food waste and supports local businesses.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================
+             FILTER BAR
+        ==================================================== -->
+
+        <section class="reservation-toolbar">
+          <!-- STATUS TABS -->
+          <div class="reservation-status-tabs">
+            <button
+              type="button"
+              class="reservation-tab active"
+              data-status="all"
+            >
+              All Reservations
+              <span id="allReservationCount">0</span>
+            </button>
+
+            <button
+              type="button"
+              class="reservation-tab"
+              data-status="upcoming"
+            >
+              Upcoming
+              <span id="upcomingReservationCount">0</span>
+            </button>
+
+            <button
+              type="button"
+              class="reservation-tab"
+              data-status="completed"
+            >
+              Completed
+              <span id="completedReservationCount">0</span>
+            </button>
+
+            <button
+              type="button"
+              class="reservation-tab"
+              data-status="cancelled"
+            >
+              Cancelled
+              <span id="cancelledReservationCount">0</span>
+            </button>
+          </div>
+
+          <!-- FILTER CONTROLS -->
+          <div class="reservation-controls">
+            <!-- SEARCH -->
+            <div class="reservation-search">
+              <i class="ri-search-line"></i>
+
+              <input
+                type="text"
+                id="reservationSearch"
+                placeholder="Search by food name or restaurant..."
+                autocomplete="off"
+              />
+
+              <button
+                type="button"
+                id="clearSearchBtn"
+                class="clear-search hidden"
+                aria-label="Clear search"
+              >
+                <i class="ri-close-line"></i>
+              </button>
+            </div>
+
+            <!-- SORT -->
+            <select id="reservationSort" class="reservation-select sort-select">
+              <option value="latest">Latest First</option>
+
+              <option value="oldest">Oldest First</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- ===================================================
+             RESERVATIONS LIST
+        ==================================================== -->
+
+        <section class="reservations-section">
+          <!-- LOADING -->
+          <div class="reservations-loading" id="reservationsLoading">
+            <i class="ri-loader-4-line"></i>
+
+            <span> Loading your reservations... </span>
+          </div>
+
+          <!-- ERROR -->
+          <div class="reservations-error hidden" id="reservationsError">
+            <i class="ri-error-warning-line"></i>
+
+            <h3>Unable to load reservations</h3>
+
+            <p id="reservationsErrorMessage">
+              Something went wrong while loading your reservations.
+            </p>
+
+            <button type="button" id="retryReservationsBtn">
+              <i class="ri-refresh-line"></i>
+              Try Again
+            </button>
+          </div>
+
+          <!-- CARDS -->
+          <div class="reservations-container" id="reservationsContainer"></div>
+
+          <!-- EMPTY -->
+          <div class="reservation-empty hidden" id="reservationEmpty">
+            <div class="empty-icon">
+              <i class="ri-calendar-check-line"></i>
+            </div>
+
+            <h3 id="emptyTitle">No reservations found</h3>
+
+            <p id="emptyMessage">You haven't made any food reservations yet.</p>
+
+            <a href="/explore-food">
+              Explore Food
+              <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+        </section>
+
+        <!-- ===================================================
+             FOOTER
+        ==================================================== -->
+
+        <div class="reservations-footer">
+          <p id="reservationResultText">Showing 0 reservations</p>
+
+          <div class="reservation-pagination">
+            <button type="button" id="previousPageBtn" disabled>
+              <i class="ri-arrow-left-s-line"></i>
+            </button>
+
+            <span id="currentPage"> 1 </span>
+
+            <button type="button" id="nextPageBtn" disabled>
+              <i class="ri-arrow-right-s-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- ===================================================
+             IMPACT FOOTER
+        ==================================================== -->
+
+        <section class="reservation-impact-footer">
+          <div class="impact-footer-icon">
+            <i class="ri-leaf-fill"></i>
+          </div>
+
+          <div>
+            <strong> Together for a Greener Tomorrow </strong>
+
+            <p>
+              Your small choices make a big impact. Keep reserving, keep
+              supporting, keep saving food!
+            </p>
+          </div>
+
+          <div class="impact-footer-decoration">
+            <i class="ri-leaf-line"></i>
+            <i class="ri-leaf-fill"></i>
+            <i class="ri-leaf-line"></i>
+          </div>
+
+          <div class="impact-footer-message">
+            Reduce Waste
+            <br />
+            Share Goodness
+            <br />
+            Build Brighter Communities
+            <i class="ri-heart-line"></i>
+          </div>
+        </section>
+      </main>
+
+      <!-- =====================================================
+           RESERVATION DETAILS MODAL
+      ====================================================== -->
+
+      <div class="reservation-modal hidden" id="reservationModal">
+        <div class="modal-overlay" id="reservationModalOverlay"></div>
+
+        <div class="reservation-modal-content">
+          <div class="modal-header">
+            <div>
+              <span class="modal-eyebrow"> RESERVATION DETAILS </span>
+
+              <h2 id="modalFoodName">Reservation</h2>
+            </div>
+
+            <button
+              type="button"
+              class="close-modal"
+              id="closeReservationModal"
+            >
+              <i class="ri-close-line"></i>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <!-- FOOD -->
+            <section class="modal-section">
+              <div class="modal-food">
+                <div class="modal-food-image">
+                  <img id="modalFoodImage" src="" alt="Food" />
+                </div>
+
+                <div>
+                  <h3 id="modalProviderName">Provider</h3>
+
+                  <p id="modalFoodCategory">Food</p>
+
+                  <div class="modal-status" id="modalStatus">Upcoming</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- PICKUP -->
+            <section class="modal-section">
+              <h3>
+                <i class="ri-map-pin-time-line"></i>
+                Pickup Information
+              </h3>
+
+              <div class="modal-detail-grid">
+                <div>
+                  <span>Pickup Date</span>
+                  <strong id="modalPickupDate">—</strong>
+                </div>
+
+                <div>
+                  <span>Pickup Time</span>
+                  <strong id="modalPickupTime">—</strong>
+                </div>
+
+                <div>
+                  <span>Pickup Area</span>
+                  <strong id="modalPickupArea">—</strong>
+                </div>
+
+                <div>
+                  <span>Pickup Address</span>
+                  <strong id="modalPickupAddress">—</strong>
+                </div>
+              </div>
+
+              <button type="button" class="modal-map-btn" id="modalMapBtn">
+                <i class="ri-map-2-line"></i>
+                View on Map
+              </button>
+            </section>
+
+            <!-- ORDER -->
+            <section class="modal-section">
+              <h3>
+                <i class="ri-shopping-basket-line"></i>
+                Reservation Summary
+              </h3>
+
+              <div class="modal-detail-grid">
+                <div>
+                  <span>Quantity</span>
+                  <strong id="modalQuantity">—</strong>
+                </div>
+
+                <div>
+                  <span>Amount</span>
+                  <strong id="modalAmount">—</strong>
+                </div>
+
+                <div>
+                  <span>Request ID</span>
+                  <strong id="modalRequestId">—</strong>
+                </div>
+
+                <div>
+                  <span>Reserved On</span>
+                  <strong id="modalCreatedAt">—</strong>
+                </div>
+              </div>
+            </section>
+
+            <!-- INSTRUCTIONS -->
+            <section class="modal-section" id="modalInstructionsSection">
+              <h3>
+                <i class="ri-file-text-line"></i>
+                Your Pickup Instructions
+              </h3>
+
+              <div class="modal-instructions" id="modalInstructions">
+                No special instructions provided.
+              </div>
+            </section>
+
+            <!-- MODAL ACTIONS -->
+            <div class="modal-actions">
+              <button
+                type="button"
+                class="modal-cancel-btn hidden"
+                id="modalCancelBtn"
+              >
+                <i class="ri-close-circle-line"></i>
+                Cancel Reservation
+              </button>
+
+              <button
+                type="button"
+                class="modal-reorder-btn hidden"
+                id="modalReorderBtn"
+              >
+                <i class="ri-repeat-line"></i>
+                Reorder
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================
+           JAVASCRIPT
+      ====================================================== -->
+
+      <script src="{{ url_for('static', filename='js/my-reservations.js') }}"></script>
+    </div>
+  </body>
+</html>

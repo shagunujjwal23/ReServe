@@ -1285,5 +1285,68 @@ def ngo_impact_page():
         user=user
     )
 
+# ==========================================================
+# USER MY RESERVATIONS
+# ==========================================================
+
+@app.route("/my-reservations")
+@login_required
+def my_reservations():
+
+    session_user_id = session.get("user_id")
+
+    try:
+        user_id = ObjectId(session_user_id)
+
+    except (InvalidId, TypeError):
+        session.clear()
+        return redirect(url_for("login"))
+
+    users_collection = get_collection("users")
+
+    if users_collection is None:
+        abort(503)
+
+    try:
+        user_record = users_collection.find_one({
+            "_id": user_id
+        })
+
+    except PyMongoError:
+        abort(503)
+
+    if user_record is None:
+        session.clear()
+        return redirect(url_for("login"))
+
+    user = {
+        "id": str(user_record["_id"]),
+        "name": user_record.get(
+            "full_name",
+            ""
+        ),
+        "email": user_record.get(
+            "email",
+            ""
+        ),
+        "phone": user_record.get(
+            "phone",
+            ""
+        ),
+        "role": user_record.get(
+            "role",
+            ""
+        ),
+        "profile_image": user_record.get(
+            "profile_image",
+            ""
+        ),
+    }
+
+    return render_template(
+        "my-reservations.html",
+        user=user
+    )
+
 if __name__ == "__main__":
     app.run(debug=True)

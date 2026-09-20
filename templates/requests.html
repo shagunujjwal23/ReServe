@@ -18,11 +18,13 @@
       rel="stylesheet"
     />
 
+    <!-- Dashboard CSS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/dashboard.css') }}"
     />
 
+    <!-- Requests CSS -->
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/requests.css') }}"
@@ -30,202 +32,350 @@
   </head>
 
   <body>
-    <div class="dashboard">
-      <!-- ========================================= -->
-      <!-- SIDEBAR -->
-      <!-- ========================================= -->
+    <div class="provider-page">
+      <!-- =====================================================
+           PROVIDER NAVBAR
+      ====================================================== -->
 
-      <aside class="sidebar">
-        <div class="sidebar-brand">
-          <div class="logo-wrapper">
+      <header class="provider-navbar">
+        <!-- BRAND -->
+        <a href="/dashboard" class="provider-brand">
+          <div class="brand-logo">
             <img
               src="{{ url_for('static', filename='images/reserve-logo.svg') }}"
               alt="ReServe"
             />
           </div>
 
-          <div class="brand-content">
+          <div class="brand-text">
             <h2>ReServe</h2>
-            <p>Food Rescue Platform</p>
+            <span>From Surplus to Solution.</span>
           </div>
-        </div>
+        </a>
 
-        <!-- Navigation -->
-        <nav class="sidebar-nav">
+        <!-- NAVIGATION -->
+        <nav class="provider-nav-links">
           <a href="/dashboard">
             <i class="ri-home-5-line"></i>
-            <span>Dashboard</span>
+            <span>Home</span>
           </a>
 
-          <a href="/add-listings">
-            <i class="ri-restaurant-line"></i>
-            <span>Add Listings</span>
+          <a href="/explore-food">
+            <i class="ri-search-line"></i>
+            <span>Explore Food</span>
           </a>
 
           <a href="/my-listings">
-            <i class="ri-store-2-line"></i>
+            <i class="ri-calendar-line"></i>
             <span>My Listings</span>
           </a>
 
-          <a href="/provider-donations">
-            <i class="ri-hand-heart-line"></i>
-            <span>Donations</span>
-          </a>
-
           <a href="/requests" class="active">
-            <i class="ri-file-list-3-line"></i>
+            <i class="ri-folder-line"></i>
             <span>Requests</span>
           </a>
 
-          <a href="#">
-            <i class="ri-box-3-line"></i>
-            <span>Pickups</span>
-          </a>
-
-          <a href="#">
-            <i class="ri-robot-2-line"></i>
-            <span>AI Insights</span>
-          </a>
-
-          <a href="#">
+          <a href="/analytics">
             <i class="ri-bar-chart-box-line"></i>
             <span>Analytics</span>
           </a>
+
+          <a href="/messages">
+            <i class="ri-message-3-line"></i>
+            <span>Messages</span>
+          </a>
         </nav>
 
-        <div class="sidebar-footer">
-          <a href="{{ url_for('auth.logout') }}">
-            <i class="ri-logout-box-r-line"></i>
-            <span>Logout</span>
-          </a>
-        </div>
-      </aside>
+        <!-- NAVBAR ACTIONS -->
+        <div class="provider-navbar-actions">
+          <!-- Notifications -->
+          <button
+            type="button"
+            class="navbar-icon-btn"
+            id="notificationBtn"
+            title="Notifications"
+          >
+            <i class="ri-notification-3-line"></i>
 
-      <!-- ========================================= -->
-      <!-- MAIN CONTENT -->
-      <!-- ========================================= -->
+            <span class="notification-badge hidden" id="notificationCount">
+              0
+            </span>
+          </button>
 
-      <div class="main-content">
-        <!-- TOPBAR -->
-
-        <header class="topbar">
-          <div class="search-container">
-            <i class="ri-search-line"></i>
-
-            <input
-              type="text"
-              placeholder="Search requests..."
-              id="searchRequests"
-            />
-          </div>
-
-          <div class="topbar-actions">
-            <button class="icon-btn">
-              <i class="ri-message-3-line"></i>
-              <span class="badge">2</span>
-            </button>
-
-            <button class="icon-btn">
-              <i class="ri-notification-3-line"></i>
-              <span class="badge">5</span>
-            </button>
-
-            <div class="profile-wrapper">
-              <button class="profile">
+          <!-- PROFILE -->
+          <div class="provider-profile-wrapper">
+            <button
+              type="button"
+              class="provider-profile-btn"
+              id="profileMenuBtn"
+            >
+              <div class="profile-avatar">
                 <img
+                  id="profileImage"
                   src="{{ url_for('static', filename='images/avatars/default.png') }}"
-                  alt=""
+                  alt="Profile"
                 />
+              </div>
 
-                <div class="profile-info">
-                  <h4>{{ user.business_name or user.name }}</h4>
-                  <p>Provider</p>
-                </div>
+              <div class="profile-info">
+                <strong id="profileName">
+                  {{ user.business_name or user.name or "Provider" }}
+                </strong>
 
-                <i class="ri-arrow-down-s-line"></i>
+                <span id="profileRole"> Provider </span>
+              </div>
+
+              <i class="ri-arrow-down-s-line"></i>
+            </button>
+
+            <!-- PROFILE DROPDOWN -->
+            <div class="profile-dropdown hidden" id="profileDropdown">
+              <a href="/provider-profile">
+                <i class="ri-user-line"></i>
+                <span>My Profile</span>
+              </a>
+
+              <a href="/edit-provider-profile">
+                <i class="ri-settings-3-line"></i>
+                <span>Settings</span>
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <button type="button" id="logoutBtn">
+                <i class="ri-logout-box-r-line"></i>
+                <span>Logout</span>
               </button>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
+      <!-- =====================================================
+           MAIN CONTENT
+      ====================================================== -->
+
+      <main class="requests-page">
         <!-- PAGE HEADER -->
-
-        <section class="page-header">
-          <div>
+        <section class="requests-page-header">
+          <div class="header-content">
             <h1>Food Requests</h1>
 
             <p>Review and manage incoming requests for your food listings.</p>
           </div>
+
+          <div class="header-decoration">
+            <div class="decoration-leaves">
+              <i class="ri-leaf-line"></i>
+              <i class="ri-leaf-line"></i>
+            </div>
+
+            <div class="decoration-text">
+              <strong>Good Food</strong>
+              <span>Brighter Communities</span>
+            </div>
+
+            <i class="ri-heart-3-line"></i>
+          </div>
         </section>
 
-        <!-- FILTERS -->
+        <!-- =====================================================
+             REQUEST FILTER BAR
+        ====================================================== -->
 
-        <section class="request-filters">
-          <button class="filter-tab active" data-filter="all">
-            All
-            <span>0</span>
-          </button>
+        <section class="request-toolbar">
+          <!-- STATUS TABS -->
+          <div class="request-status-tabs">
+            <!-- ALL -->
+            <button type="button" class="filter-tab active" data-filter="all">
+              All
+              <span id="allCount">0</span>
+            </button>
 
-          <button class="filter-tab" data-filter="pending">
-            Pending
-            <span>0</span>
-          </button>
+            <!-- PENDING -->
+            <button type="button" class="filter-tab" data-filter="pending">
+              Pending
+              <span id="pendingCount">0</span>
+            </button>
 
-          <button class="filter-tab" data-filter="accepted">
-            Accepted
-            <span>0</span>
-          </button>
+            <!-- ACCEPTED -->
+            <button type="button" class="filter-tab" data-filter="accepted">
+              Accepted
+              <span id="acceptedCount">0</span>
+            </button>
 
-          <button class="filter-tab" data-filter="rejected">
-            Rejected
-            <span>0</span>
-          </button>
+            <!-- REJECTED / CANCELLED -->
+            <button type="button" class="filter-tab" data-filter="rejected">
+              Rejected / Cancelled
+              <span id="rejectedCount">0</span>
+            </button>
 
-          <button class="filter-tab" data-filter="completed">
-            Completed
-            <span>0</span>
-          </button>
+            <!-- COMPLETED -->
+            <button type="button" class="filter-tab" data-filter="completed">
+              Completed
+              <span id="completedCount">0</span>
+            </button>
+          </div>
+          <!-- DATE FILTER -->
+          <div class="request-date-filter">
+            <i class="ri-calendar-line"></i>
+
+            <input type="date" id="requestDateFilter" />
+
+            <button
+              type="button"
+              id="clearDateFilter"
+              class="clear-date-btn hidden"
+              title="Clear date"
+            >
+              <i class="ri-close-line"></i>
+            </button>
+          </div>
         </section>
 
-        <!-- =======================================================
-     REQUESTS LIST
-======================================================= -->
+        <!-- =====================================================
+             SEARCH
+        ====================================================== -->
+
+        <section class="request-search-section">
+          <div class="request-search-box">
+            <i class="ri-search-line"></i>
+
+            <input
+              type="text"
+              id="searchRequests"
+              placeholder="Search by food or customer name..."
+              autocomplete="off"
+            />
+
+            <button
+              type="button"
+              id="clearSearchBtn"
+              class="clear-search-btn hidden"
+            >
+              <i class="ri-close-line"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- =====================================================
+             REQUESTS LIST
+        ====================================================== -->
 
         <section class="requests-container" id="requestsContainer">
-          <!-- Requests loaded dynamically from JS -->
+          <!-- Request cards are inserted by requests.js -->
         </section>
 
-        <!-- Empty State -->
+        <!-- =====================================================
+             LOADING STATE
+        ====================================================== -->
+
+        <div class="requests-loading hidden" id="requestsLoading">
+          <i class="ri-loader-4-line"></i>
+
+          <span>Loading requests...</span>
+        </div>
+
+        <!-- =====================================================
+             EMPTY STATE
+        ====================================================== -->
 
         <div class="empty-state hidden" id="emptyState">
-          <i class="ri-inbox-line"></i>
+          <div class="empty-icon">
+            <i class="ri-inbox-line"></i>
+          </div>
 
           <h3>No Requests Found</h3>
 
-          <p>No incoming requests match the selected filter.</p>
+          <p id="emptyStateMessage">There are no requests in this category.</p>
         </div>
 
-        <!-- =======================================================
-     REQUEST DETAILS MODAL
-======================================================= -->
+        <!-- =====================================================
+             REQUEST ERROR
+        ====================================================== -->
+
+        <div class="requests-error hidden" id="requestsError">
+          <i class="ri-error-warning-line"></i>
+
+          <h3>Unable to Load Requests</h3>
+
+          <p id="requestsErrorMessage">
+            Something went wrong while loading requests.
+          </p>
+
+          <button type="button" id="retryRequestsBtn">
+            <i class="ri-refresh-line"></i>
+            Try Again
+          </button>
+        </div>
+
+        <!-- =====================================================
+             REQUEST SUMMARY / PAGINATION
+        ====================================================== -->
+
+        <div class="requests-footer">
+          <p id="requestsSummary">Showing 0 requests</p>
+
+          <div class="pagination" id="requestsPagination">
+            <button
+              type="button"
+              class="pagination-btn"
+              id="previousPageBtn"
+              disabled
+            >
+              <i class="ri-arrow-left-s-line"></i>
+            </button>
+
+            <span class="pagination-current" id="currentPage"> 1 </span>
+
+            <button
+              type="button"
+              class="pagination-btn"
+              id="nextPageBtn"
+              disabled
+            >
+              <i class="ri-arrow-right-s-line"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- =====================================================
+             REQUEST DETAILS MODAL
+        ====================================================== -->
 
         <div class="request-modal hidden" id="requestModal">
-          <div class="modal-overlay"></div>
+          <div class="modal-overlay" id="modalOverlay"></div>
 
           <div class="modal-content">
-            <div class="modal-header">
-              <h2>Request Details</h2>
+            <!-- MODAL HEADER -->
 
-              <button type="button" class="close-modal" id="closeRequestModal">
+            <div class="modal-header">
+              <div>
+                <span class="modal-eyebrow"> Reservation Request </span>
+
+                <h2>Request Details</h2>
+              </div>
+
+              <button
+                type="button"
+                class="close-modal"
+                id="closeRequestModal"
+                aria-label="Close"
+              >
                 <i class="ri-close-line"></i>
               </button>
             </div>
 
+            <!-- MODAL BODY -->
+
             <div class="modal-body">
-              <!-- Request Information -->
+              <!-- REQUEST INFORMATION -->
 
               <div class="detail-section">
-                <h3>Request Information</h3>
+                <h3>
+                  <i class="ri-file-list-3-line"></i>
+                  Request Information
+                </h3>
 
                 <div class="detail-grid">
                   <div>
@@ -245,10 +395,57 @@
                 </div>
               </div>
 
-              <!-- Requester Details -->
+              <!-- FOOD INFORMATION -->
 
               <div class="detail-section">
-                <h3>Requester Details</h3>
+                <h3>
+                  <i class="ri-restaurant-line"></i>
+                  Food Information
+                </h3>
+
+                <div class="modal-food-info">
+                  <div class="modal-food-image">
+                    <img id="modalFoodImage" src="" alt="Food" />
+
+                    <div
+                      class="modal-food-placeholder hidden"
+                      id="modalFoodPlaceholder"
+                    >
+                      <i class="ri-restaurant-line"></i>
+                    </div>
+                  </div>
+
+                  <div class="detail-grid">
+                    <div>
+                      <span>Food Item</span>
+                      <strong id="modalFoodName">-</strong>
+                    </div>
+
+                    <div>
+                      <span>Category</span>
+                      <strong id="modalFoodCategory">-</strong>
+                    </div>
+
+                    <div>
+                      <span>Quantity</span>
+                      <strong id="modalQuantity">-</strong>
+                    </div>
+
+                    <div>
+                      <span>Amount</span>
+                      <strong id="modalAmount">-</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- CUSTOMER DETAILS -->
+
+              <div class="detail-section">
+                <h3>
+                  <i class="ri-user-line"></i>
+                  Customer Details
+                </h3>
 
                 <div class="detail-grid">
                   <div>
@@ -257,69 +454,71 @@
                   </div>
 
                   <div>
-                    <span>Requester Type</span>
+                    <span>Customer Type</span>
                     <strong id="modalRequesterType">-</strong>
-                  </div>
-
-                  <div>
-                    <span>Distance</span>
-                    <strong id="modalDistance">-</strong>
                   </div>
 
                   <div>
                     <span>Phone</span>
                     <strong id="modalPhone">-</strong>
                   </div>
+
+                  <div>
+                    <span>Email</span>
+                    <strong id="modalEmail">-</strong>
+                  </div>
                 </div>
               </div>
 
-              <!-- Food Request -->
+              <!-- PICKUP INFORMATION -->
 
               <div class="detail-section">
-                <h3>Food Request</h3>
+                <h3>
+                  <i class="ri-calendar-check-line"></i>
+                  Pickup Information
+                </h3>
 
                 <div class="detail-grid">
                   <div>
-                    <span>Food Item</span>
-                    <strong id="modalFoodName">-</strong>
-                  </div>
-
-                  <div>
-                    <span>Quantity</span>
-                    <strong id="modalQuantity">-</strong>
-                  </div>
-
-                  <div>
-                    <span>People Served</span>
-                    <strong id="modalPeopleServed">-</strong>
+                    <span>Pickup Date</span>
+                    <strong id="modalPickupDate">-</strong>
                   </div>
 
                   <div>
                     <span>Pickup Time</span>
                     <strong id="modalPickupTime">-</strong>
                   </div>
+
+                  <div>
+                    <span>Pickup Area</span>
+                    <strong id="modalPickupArea">-</strong>
+                  </div>
+
+                  <div>
+                    <span>Pickup Address</span>
+                    <strong id="modalPickupAddress">-</strong>
+                  </div>
                 </div>
               </div>
 
-              <!-- Purpose -->
+              <!-- CUSTOMER INSTRUCTIONS -->
 
               <div class="detail-section">
-                <h3>Purpose</h3>
+                <h3>
+                  <i class="ri-message-2-line"></i>
+                  Customer Instructions
+                </h3>
 
-                <p id="modalPurpose">-</p>
+                <div class="modal-instructions" id="modalInstructions">
+                  No special instructions provided.
+                </div>
               </div>
 
-              <!-- Instructions -->
+              <!-- =================================================
+                   MODAL ACTIONS
+              ================================================== -->
 
-              <div class="detail-section">
-                <h3>Special Instructions</h3>
-
-                <p id="modalInstructions">No special instructions provided.</p>
-              </div>
-
-              <!-- Footer Actions -->
-
-              <div class="modal-actions">
+              <div class="modal-actions" id="modalActions">
                 <button type="button" class="accept-btn" id="modalAcceptBtn">
                   <i class="ri-check-line"></i>
                   Accept Request
@@ -327,14 +526,18 @@
 
                 <button type="button" class="reject-btn" id="modalRejectBtn">
                   <i class="ri-close-line"></i>
-                  Reject Request
+                  Decline Request
                 </button>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
 
     <script src="{{ url_for('static', filename='js/requests.js') }}"></script>
   </body>
