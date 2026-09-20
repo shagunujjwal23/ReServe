@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>My Pickups | ReServe</title>
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/my-pickups.css') }}"
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <!-- =========================================================
+     NAVBAR
+========================================================= -->
+
+    <header class="main-navbar">
+      <div class="navbar-container">
+        <!-- LOGO -->
+
+        <a href="/user-dashboard" class="brand-logo">
+          <div class="brand-icon">
+            <i class="fa-solid fa-leaf"></i>
+          </div>
+
+          <div class="brand-text">
+            <span class="brand-name">ReServe</span>
+            <span class="brand-tagline">Save Food. Serve Better.</span>
+          </div>
+        </a>
+
+        <!-- NAVIGATION -->
+
+        <nav class="navbar-links">
+          <a href="/user-dashboard" class="nav-link">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+          </a>
+
+          <a href="/explore-food" class="nav-link">
+            <i class="fa-solid fa-utensils"></i>
+            <span>Explore Food</span>
+          </a>
+
+          <a href="/my-reservations" class="nav-link">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>My Reservations</span>
+          </a>
+
+          <a href="/my-pickups" class="nav-link active">
+            <i class="fa-solid fa-bag-shopping"></i>
+            <span>My Pickups</span>
+          </a>
+
+          <a href="/favorites" class="nav-link">
+            <i class="fa-regular fa-heart"></i>
+            <span>Favorites</span>
+          </a>
+
+          <a href="/messages" class="nav-link">
+            <i class="fa-regular fa-comment"></i>
+            <span>Messages</span>
+          </a>
+        </nav>
+
+        <!-- NAVBAR ACTIONS -->
+
+        <div class="navbar-actions">
+          <!-- Notifications -->
+
+          <button
+            type="button"
+            class="notification-btn"
+            id="notificationBtn"
+            aria-label="Notifications"
+          >
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-count" id="notificationCount"> 0 </span>
+          </button>
+
+          <!-- Profile -->
+
+          <div class="profile-menu">
+            <button type="button" class="profile-menu-btn" id="profileMenuBtn">
+              <img
+                src="{{ url_for('static', filename='images/default-avatar.png') }}"
+                alt="Profile"
+                class="profile-image"
+                id="profileImage"
+              />
+
+              <div class="profile-info">
+                <span class="profile-name" id="profileName"> User </span>
+
+                <span class="profile-role" id="profileRole"> User </span>
+              </div>
+
+              <i class="fa-solid fa-chevron-down profile-arrow"></i>
+            </button>
+
+            <!-- Dropdown -->
+
+            <div class="profile-dropdown" id="profileDropdown">
+              <a href="/profile">
+                <i class="fa-regular fa-user"></i>
+                My Profile
+              </a>
+
+              <a href="/settings">
+                <i class="fa-solid fa-gear"></i>
+                Settings
+              </a>
+
+              <div class="dropdown-divider"></div>
+
+              <button type="button" id="logoutBtn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- =========================================================
+     MAIN CONTENT
+========================================================= -->
+
+    <main class="pickups-page">
+      <div class="page-container">
+        <!-- =================================================
+             PAGE HEADER
+        ================================================== -->
+
+        <section class="page-header">
+          <div class="header-content">
+            <div class="header-icon">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+
+            <div>
+              <h1>My Pickups</h1>
+
+              <p>
+                Track your accepted food reservations, manage pickups and view
+                past pickups.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- =================================================
+             STATUS TABS
+        ================================================== -->
+
+        <section class="pickup-tabs-section">
+          <div class="pickup-tabs">
+            <!-- ALL -->
+
+            <button type="button" class="pickup-tab active" data-filter="all">
+              <span class="tab-icon">
+                <i class="fa-solid fa-layer-group"></i>
+              </span>
+
+              <span class="tab-label"> All Pickups </span>
+
+              <span class="tab-count" id="allPickupCount"> 0 </span>
+            </button>
+
+            <!-- ACCEPTED -->
+
+            <button type="button" class="pickup-tab" data-filter="accepted">
+              <span class="tab-icon">
+                <i class="fa-solid fa-circle-check"></i>
+              </span>
+
+              <span class="tab-label"> Accepted </span>
+
+              <span class="tab-count" id="acceptedPickupCount"> 0 </span>
+            </button>
+
+            <!-- READY -->
+
+            <button
+              type="button"
+              class="pickup-tab"
+              data-filter="ready_for_pickup"
+            >
+              <span class="tab-icon">
+                <i class="fa-solid fa-bowl-food"></i>
+              </span>
+
+              <span class="tab-label"> Ready for Pickup </span>
+
+              <span class="tab-count" id="readyPickupCount"> 0 </span>
+            </button>
+
+            <!-- COMPLETED -->
+
+            <button type="button" class="pickup-tab" data-filter="completed">
+              <span class="tab-icon">
+                <i class="fa-solid fa-check-double"></i>
+              </span>
+
+              <span class="tab-label"> Picked Up </span>
+
+              <span class="tab-count" id="pickedUpCount"> 0 </span>
+            </button>
+
+            <!-- CANCELLED -->
+
+            <button type="button" class="pickup-tab" data-filter="cancelled">
+              <span class="tab-icon">
+                <i class="fa-solid fa-ban"></i>
+              </span>
+
+              <span class="tab-label"> Cancelled </span>
+
+              <span class="tab-count" id="cancelledCount"> 0 </span>
+            </button>
+          </div>
+        </section>
+
+        <!-- =================================================
+             SEARCH + SORT
+        ================================================== -->
+
+        <section class="pickup-controls">
+          <div class="pickup-search">
+            <i class="fa-solid fa-magnifying-glass"></i>
+
+            <input
+              type="search"
+              id="pickupSearch"
+              placeholder="Search food, provider or category..."
+              autocomplete="off"
+            />
+          </div>
+
+          <div class="pickup-sort">
+            <label for="pickupSort"> Sort by </label>
+
+            <select id="pickupSort">
+              <option value="pickup_date_desc">Latest</option>
+
+              <option value="pickup_date_asc">Earliest</option>
+
+              <option value="created_desc">Recently Reserved</option>
+
+              <option value="food_asc">Food Name: A–Z</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- =================================================
+             PICKUP LIST AREA
+        ================================================== -->
+
+        <section class="pickup-content">
+          <!-- LOADING -->
+
+          <div class="pickup-loading" id="pickupLoading" style="display: none">
+            <div class="loading-spinner">
+              <i class="fa-solid fa-spinner fa-spin"></i>
+            </div>
+
+            <p>Loading your pickups...</p>
+          </div>
+
+          <!-- ERROR -->
+
+          <div class="pickup-error" id="pickupError" style="display: none">
+            <div class="error-icon">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+
+            <h3>Unable to load pickups</h3>
+
+            <p id="pickupErrorMessage">
+              Something went wrong while loading your pickups.
+            </p>
+
+            <button type="button" class="retry-btn" id="retryPickupBtn">
+              <i class="fa-solid fa-rotate-right"></i>
+              Try Again
+            </button>
+          </div>
+
+          <!-- EMPTY -->
+
+          <div class="pickup-empty" id="pickupEmpty" style="display: none">
+            <div class="empty-icon">
+              <i class="fa-solid fa-bag-shopping"></i>
+            </div>
+
+            <h3>No Pickups Yet</h3>
+
+            <p id="pickupEmptyMessage">
+              Your accepted food reservations will appear here.
+            </p>
+
+            <a href="/explore-food" class="explore-btn">
+              <i class="fa-solid fa-utensils"></i>
+              Explore Food
+            </a>
+          </div>
+
+          <!-- PICKUP LIST -->
+
+          <div class="pickup-list" id="pickupList"></div>
+        </section>
+      </div>
+    </main>
+
+    <!-- =========================================================
+     PICKUP CARD TEMPLATE
+========================================================= -->
+
+    <template id="pickupCardTemplate">
+      <article class="pickup-card">
+        <!-- IMAGE -->
+
+        <div class="pickup-card-image">
+          <img
+            src="/static/images/food-placeholder.jpg"
+            alt="Food"
+            class="pickup-image"
+          />
+
+          <div class="image-overlay"></div>
+
+          <!-- CATEGORY -->
+
+          <span class="category-badge">
+            <i class="fa-solid fa-tag"></i>
+
+            <span class="category-text"> Food </span>
+          </span>
+
+          <!-- FAVORITE -->
+
+          <button
+            type="button"
+            class="image-favorite-btn"
+            aria-label="Favorite"
+          >
+            <i class="fa-regular fa-heart"></i>
+          </button>
+        </div>
+
+        <!-- CARD BODY -->
+
+        <div class="pickup-card-body">
+          <!-- TOP -->
+
+          <div class="pickup-card-top">
+            <div class="food-main-info">
+              <h3 class="food-name">Food Item</h3>
+
+              <div class="provider-row">
+                <span class="provider-text"> Food Provider </span>
+
+                <i
+                  class="fa-solid fa-circle-check verified-icon"
+                  style="display: none"
+                  title="Verified Provider"
+                ></i>
+              </div>
+            </div>
+
+            <div class="food-tags">
+              <span class="category-tag"> Food </span>
+
+              <span class="vegetarian-tag" style="display: none">
+                Vegetarian
+              </span>
+            </div>
+          </div>
+
+          <!-- QUANTITY + PRICE -->
+
+          <div class="pickup-food-summary">
+            <div class="quantity-info">
+              <i class="fa-solid fa-box"></i>
+
+              <span> Quantity: </span>
+
+              <strong class="quantity-value"> 1 </strong>
+
+              <span class="quantity-unit"> pack </span>
+            </div>
+
+            <div class="price-info">
+              <span class="current-price"> ₹0.00 </span>
+
+              <span class="original-price" style="display: none"> ₹0.00 </span>
+
+              <span class="discount-badge" style="display: none"> 0% OFF </span>
+            </div>
+          </div>
+
+          <!-- PICKUP INFORMATION -->
+
+          <div class="pickup-information">
+            <!-- DATE -->
+
+            <div class="pickup-info-item">
+              <span class="info-label">
+                <i class="fa-regular fa-calendar"></i>
+                Pickup Date
+              </span>
+
+              <strong class="pickup-date"> Date not specified </strong>
+            </div>
+
+            <!-- TIME -->
+
+            <div class="pickup-info-item">
+              <span class="info-label">
+                <i class="fa-regular fa-clock"></i>
+                Pickup Time
+              </span>
+
+              <strong class="pickup-time"> Pickup time not specified </strong>
+            </div>
+
+            <!-- LOCATION -->
+
+            <div class="pickup-info-item pickup-location-item">
+              <span class="info-label">
+                <i class="fa-solid fa-location-dot"></i>
+                Pickup Location
+              </span>
+
+              <strong class="pickup-location">
+                Pickup location not available
+              </strong>
+            </div>
+          </div>
+
+          <!-- STATUS -->
+
+          <div class="pickup-status-section">
+            <div class="status-header">
+              <span class="status-badge">
+                <i class="fa-solid fa-circle status-icon"></i>
+
+                <span class="status-text"> Accepted </span>
+              </span>
+            </div>
+
+            <div class="status-message">
+              Your reservation has been accepted.
+            </div>
+
+            <p class="status-description">It will shortly ready for pickup.</p>
+          </div>
+
+          <!-- ACTIONS -->
+
+          <div class="pickup-actions">
+            <!-- READY ONLY -->
+
+            <button
+              type="button"
+              class="confirm-pickup-btn"
+              style="display: none"
+            >
+              <i class="fa-solid fa-check"></i>
+              Confirm Pickup
+            </button>
+
+            <!-- MAP -->
+
+            <button type="button" class="map-btn">
+              <i class="fa-solid fa-map-location-dot"></i>
+              Map
+            </button>
+
+            <!-- DETAILS -->
+
+            <button type="button" class="view-details-btn">
+              <i class="fa-regular fa-eye"></i>
+              View Details
+            </button>
+          </div>
+        </div>
+      </article>
+    </template>
+
+    <!-- =========================================================
+     CONFIRM PICKUP MODAL
+========================================================= -->
+
+    <div class="modal-overlay" id="confirmPickupModal" style="display: none">
+      <div class="modal-card confirm-modal">
+        <button
+          type="button"
+          class="modal-close"
+          id="closeConfirmPickupModal"
+          aria-label="Close"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="modal-icon success-modal-icon">
+          <i class="fa-solid fa-bag-shopping"></i>
+        </div>
+
+        <h2>Confirm Pickup</h2>
+
+        <p class="modal-description">
+          Have you collected this food from the provider?
+        </p>
+
+        <div class="confirm-pickup-summary">
+          <div class="confirm-summary-item">
+            <span> Food </span>
+
+            <strong id="confirmFoodName"> Food Item </strong>
+          </div>
+
+          <div class="confirm-summary-item">
+            <span> Provider </span>
+
+            <strong id="confirmProviderName"> Food Provider </strong>
+          </div>
+        </div>
+
+        <div class="confirm-warning">
+          <i class="fa-solid fa-circle-info"></i>
+
+          <p>
+            Confirm this only after you have collected the food from the
+            provider.
+          </p>
+        </div>
+
+        <div class="modal-actions">
+          <button
+            type="button"
+            class="modal-cancel-btn"
+            id="cancelConfirmPickup"
+          >
+            Not Yet
+          </button>
+
+          <button
+            type="button"
+            class="modal-confirm-btn"
+            id="confirmPickupAction"
+          >
+            <i class="fa-solid fa-check"></i>
+            Confirm Pickup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+     DETAILS MODAL
+========================================================= -->
+
+    <div class="modal-overlay" id="pickupDetailsModal" style="display: none">
+      <div class="modal-card pickup-details-modal">
+        <button
+          type="button"
+          class="modal-close"
+          id="closePickupDetailsModal"
+          aria-label="Close"
+        >
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div class="details-modal-header">
+          <img
+            src="/static/images/food-placeholder.jpg"
+            alt="Food"
+            id="modalFoodImage"
+            class="modal-food-image"
+          />
+
+          <div class="modal-food-heading">
+            <span class="modal-status" id="modalPickupStatus"> Accepted </span>
+
+            <h2 id="modalFoodName">Food Item</h2>
+
+            <p>
+              <i class="fa-solid fa-store"></i>
+
+              <span id="modalProviderName"> Food Provider </span>
+            </p>
+          </div>
+        </div>
+
+        <!-- PICKUP DETAILS -->
+
+        <div class="modal-section">
+          <h3>
+            <i class="fa-solid fa-location-dot"></i>
+            Pickup Information
+          </h3>
+
+          <div class="modal-info-grid">
+            <div class="modal-info-item">
+              <span> Pickup Date </span>
+
+              <strong id="modalPickupDate"> — </strong>
+            </div>
+
+            <div class="modal-info-item">
+              <span> Pickup Time </span>
+
+              <strong id="modalPickupTime"> — </strong>
+            </div>
+
+            <div class="modal-info-item modal-location">
+              <span> Pickup Location </span>
+
+              <strong id="modalPickupLocation"> — </strong>
+            </div>
+
+            <div class="modal-info-item">
+              <span> Quantity </span>
+
+              <strong id="modalPickupQuantity"> — </strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- PRICE DETAILS -->
+
+        <div class="modal-section">
+          <h3>
+            <i class="fa-solid fa-receipt"></i>
+            Price Details
+          </h3>
+
+          <div class="price-breakdown">
+            <div class="price-row">
+              <span> Food Amount </span>
+
+              <strong id="modalFoodAmount"> ₹0.00 </strong>
+            </div>
+
+            <div class="price-row">
+              <span> Platform Fee </span>
+
+              <strong id="modalPlatformFee"> ₹0.00 </strong>
+            </div>
+
+            <div class="price-row">
+              <span> Community Support </span>
+
+              <strong id="modalCommunitySupport"> ₹0.00 </strong>
+            </div>
+
+            <div class="price-divider"></div>
+
+            <div class="price-row total-row">
+              <span> Total </span>
+
+              <strong id="modalTotalAmount"> ₹0.00 </strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- INSTRUCTIONS -->
+
+        <div class="modal-section" id="modalInstructionsSection">
+          <h3>
+            <i class="fa-regular fa-note-sticky"></i>
+            Pickup Instructions
+          </h3>
+
+          <div class="modal-instructions">
+            <p id="modalPickupInstructions">No pickup instructions provided.</p>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="modal-close-btn"
+            id="closePickupDetailsModalFooter"
+            onclick="closeDetailsModal()"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================================================
+     FOOTER
+========================================================= -->
+
+    <footer class="main-footer">
+      <div class="footer-container">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <i class="fa-solid fa-leaf"></i>
+
+            <span> ReServe </span>
+          </div>
+
+          <p>
+            Saving food. Serving communities. Building a sustainable future.
+          </p>
+        </div>
+
+        <div class="footer-links">
+          <a href="/user-dashboard"> Home </a>
+
+          <a href="/explore-food"> Explore Food </a>
+
+          <a href="/my-reservations"> My Reservations </a>
+
+          <a href="/my-pickups"> My Pickups </a>
+        </div>
+
+        <div class="footer-copy">
+          <p>© 2026 ReServe. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+    <script src="{{ url_for('static', filename='js/my-pickups.js') }}"></script>
+  </body>
+</html>

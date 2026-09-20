@@ -1,4 +1,4 @@
-"""Server-side listing, donation and NGO claim lifecycle transitions."""
+"""Server-side listing, donation, NGO claim and reservation lifecycle transitions."""
 
 from datetime import datetime, timedelta, timezone
 
@@ -21,6 +21,8 @@ DONATION_ACTIVE_STATUSES = (
     "available",
     "claimed",
 )
+
+RESERVATION_READY_STATUS = "ready_for_pickup"
 
 INDIA_TIMEZONE = timezone(
     timedelta(hours=5, minutes=30),
@@ -54,6 +56,7 @@ def _as_utc(value):
     else:
 
         try:
+
             parsed = datetime.fromisoformat(
                 value.strip().replace(
                     "Z",
@@ -85,6 +88,7 @@ def normalize_datetime(value):
     parsed = _as_utc(value)
 
     if not parsed:
+
         return None
 
     return parsed.isoformat().replace(
@@ -112,6 +116,52 @@ def _quantity(value):
 
 
 # ==========================================================
+# PROVIDER OPENING TIME HELPER
+# ==========================================================
+
+def _parse_opening_time(value):
+    """
+    Convert provider opening_time into an IST time object.
+
+    Supported formats:
+
+        HH:MM
+        HH:MM AM
+        HH:MM PM
+    """
+
+    if not isinstance(value, str):
+
+        return None
+
+    value = value.strip()
+
+    if not value:
+
+        return None
+
+    formats = (
+        "%H:%M",
+        "%I:%M %p",
+    )
+
+    for time_format in formats:
+
+        try:
+
+            return datetime.strptime(
+                value,
+                time_format
+            ).time()
+
+        except ValueError:
+
+            continue
+
+    return None
+
+
+# ==========================================================
 # LISTING LIFECYCLE
 # ==========================================================
 
@@ -134,14 +184,37 @@ def _refresh_listing_lifecycle(
 
     for listing in candidates:
 
+    # --------------------------------------------------
+    # NO QUANTITY LEFT → COMPLETED
+    # --------------------------------------------------
+
+        if _quantity(listing.get("quantity")) <= 0:
+
+            listings.update_one(
+                {
+                    "_id": listing["_id"],
+                    "status": listing.get("status")
+                },
+                {
+                    "$set": {
+                        "status": "completed",
+                        "completed_at": now,
+                        "updated_at": now
+                    }
+                }
+            )
+
+            continue
+
         pickup_end = _as_utc(
-            listing.get("pickup_end")
+        listing.get("pickup_end")
         )
 
         if not pickup_end:
             continue
 
         if pickup_end > now:
+
             continue
 
         listings.update_one(
@@ -192,9 +265,11 @@ def _refresh_donation_lifecycle(
         )
 
         if not pickup_end:
+
             continue
 
         if pickup_end > now:
+
             continue
 
         updated = donations.find_one_and_update(
@@ -214,6 +289,7 @@ def _refresh_donation_lifecycle(
         )
 
         if not updated:
+
             continue
 
         # --------------------------------------------------
@@ -287,12 +363,166 @@ def _refresh_claim_lifecycle(
 
 
 # ==========================================================
+# RESERVATION / PICKUP LIFECYCLE
+# ==========================================================
+
+def _refresh_reservation_lifecycle(
+    orders,
+    users,
+    now
+):
+    """
+    Automatically move accepted reservations to
+    ready_for_pickup on the customer's selected pickup date
+    when the provider's opening time has arrived.
+
+    Example:
+
+        Pickup date:
+            2026-09-22
+
+        Provider opening time:
+            10:00 AM
+
+        Before 10:00 AM:
+            accepted
+
+        At/after 10:00 AM:
+            ready_for_pickup
+
+    The customer's selected pickup_time is NOT changed.
+    """
+
+    candidates = orders.find({
+        "status": "accepted",
+        "pickup_date": {
+            "$exists": True,
+            "$ne": ""
+        }
+    })
+
+    # ------------------------------------------------------
+    # CURRENT IST DATE/TIME
+    # ------------------------------------------------------
+
+    current_ist = now.astimezone(
+        INDIA_TIMEZONE
+    )
+
+    today = current_ist.date()
+
+    current_time = current_ist.time()
+
+    for order in candidates:
+
+        # --------------------------------------------------
+        # GET PICKUP DATE
+        # --------------------------------------------------
+
+        pickup_date_value = order.get(
+            "pickup_date"
+        )
+
+        if not pickup_date_value:
+
+            continue
+
+        try:
+
+            pickup_date = datetime.strptime(
+                str(pickup_date_value).strip(),
+                "%Y-%m-%d"
+            ).date()
+
+        except (ValueError, TypeError):
+
+            continue
+
+        # --------------------------------------------------
+        # ONLY PROCESS TODAY'S PICKUPS
+        # --------------------------------------------------
+
+        if pickup_date != today:
+
+            continue
+
+        # --------------------------------------------------
+        # GET PROVIDER ID
+        # --------------------------------------------------
+
+        provider_id = order.get(
+            "provider_id"
+        )
+
+        if not provider_id:
+
+            continue
+
+        # --------------------------------------------------
+        # GET PROVIDER
+        # --------------------------------------------------
+
+        provider = users.find_one({
+            "_id": provider_id
+        })
+
+        if provider is None:
+
+            continue
+
+        # --------------------------------------------------
+        # GET PROVIDER OPENING TIME
+        # --------------------------------------------------
+
+        opening_time = _parse_opening_time(
+            provider.get("opening_time")
+        )
+
+        # If provider has no valid opening time,
+        # leave reservation as accepted.
+        if opening_time is None:
+
+            continue
+
+        # --------------------------------------------------
+        # WAIT UNTIL PROVIDER OPENS
+        # --------------------------------------------------
+
+        if current_time < opening_time:
+
+            continue
+
+        # --------------------------------------------------
+        # ACCEPTED → READY FOR PICKUP
+        # --------------------------------------------------
+
+        orders.update_one(
+            {
+                "_id": order["_id"],
+                "status": "accepted"
+            },
+            {
+                "$set": {
+                    "status": RESERVATION_READY_STATUS,
+                    "ready_for_pickup_at": now,
+                    "updated_at": now
+                }
+            }
+        )
+
+
+# ==========================================================
 # MAIN LIFECYCLE REFRESH
 # ==========================================================
 
 def refresh_lifecycle(now=None):
     """
-    Advance elapsed listings, donations and NGO claims.
+    Advance elapsed:
+
+        - food listings
+        - donations
+        - NGO claims
+        - user reservations
 
     Safe to call repeatedly at API boundaries.
     """
@@ -300,6 +530,10 @@ def refresh_lifecycle(now=None):
     now = now or datetime.now(
         timezone.utc
     )
+
+    # ======================================================
+    # COLLECTIONS
+    # ======================================================
 
     listings = get_collection(
         "food_listings"
@@ -313,49 +547,86 @@ def refresh_lifecycle(now=None):
         "donation_claims"
     )
 
-    # ------------------------------------------------------
-    # Database availability
-    # ------------------------------------------------------
+    orders = get_collection(
+        "orders"
+    )
 
-    if listings is None:
+    users = get_collection(
+        "users"
+    )
+
+    # ======================================================
+    # DATABASE AVAILABILITY
+    # ======================================================
+
+    # Only stop completely when none of the lifecycle
+    # collections are available.
+    if (
+        listings is None
+        and donations is None
+        and claims is None
+        and orders is None
+    ):
+
         return
 
     try:
 
-        # --------------------------------------------------
+        # ==================================================
         # 1. NORMAL FOOD LISTINGS
-        # --------------------------------------------------
+        # ==================================================
 
-        _refresh_listing_lifecycle(
-            listings,
-            now
-        )
+        if listings is not None:
 
-        # --------------------------------------------------
+            _refresh_listing_lifecycle(
+                listings,
+                now
+            )
+
+        # ==================================================
         # 2. NGO DONATIONS
-        # --------------------------------------------------
+        # ==================================================
 
-        if donations is None:
-            return
+        if (
+            donations is not None
+            and listings is not None
+        ):
 
-        _refresh_donation_lifecycle(
-            donations,
-            listings,
-            now
-        )
+            _refresh_donation_lifecycle(
+                donations,
+                listings,
+                now
+            )
 
-        # --------------------------------------------------
+        # ==================================================
         # 3. NGO CLAIMS
-        # --------------------------------------------------
+        # ==================================================
 
-        if claims is None:
-            return
+        if (
+            claims is not None
+            and donations is not None
+        ):
 
-        _refresh_claim_lifecycle(
-            claims,
-            donations,
-            now
-        )
+            _refresh_claim_lifecycle(
+                claims,
+                donations,
+                now
+            )
+
+        # ==================================================
+        # 4. USER RESERVATIONS / PICKUPS
+        # ==================================================
+
+        if (
+            orders is not None
+            and users is not None
+        ):
+
+            _refresh_reservation_lifecycle(
+                orders,
+                users,
+                now
+            )
 
     except PyMongoError:
 

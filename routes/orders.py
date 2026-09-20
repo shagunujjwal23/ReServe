@@ -49,10 +49,11 @@ def place_order():
     Create a pending reservation request.
 
     IMPORTANT:
-    The food listing quantity is NOT reduced here.
+    The food listing quantity is reserved immediately when
+    the customer places the reservation.
 
-    Quantity is reduced only after the donor/provider
-    accepts the request.
+    The quantity is restored if the reservation is rejected
+    or cancelled while pending.
     """
 
     refresh_lifecycle()
@@ -482,28 +483,64 @@ def place_order():
         }), 400
 
     # ======================================================
-    # CHECK AVAILABLE QUANTITY
+    # RESERVE AVAILABLE QUANTITY AT THE TIME OF BOOKING
     #
-    # IMPORTANT:
-    # We ONLY CHECK quantity here.
-    #
-    # We DO NOT reduce it.
+    # MongoDB performs this atomically so two customers
+    # cannot reserve the same remaining quantity.
     # ======================================================
 
     try:
 
-        available_quantity = int(
-            listing.get(
-                "quantity",
-                0
-            ) or 0
+        reserved_listing = listings_collection.find_one_and_update(
+            {
+                "_id": listing_object_id,
+                "owner_id": listing_provider_id,
+                "status": "available",
+                "quantity": {
+                    "$gte": quantity
+                }
+            },
+            {
+                "$inc": {
+                    "quantity": -quantity,
+                    "reservations": quantity
+                },
+                "$set": {
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            },
+            return_document=ReturnDocument.AFTER
         )
 
-    except (TypeError, ValueError):
+    except PyMongoError as error:
 
-        available_quantity = 0
+        print(
+            "MongoDB reservation quantity update error:",
+            error
+        )
 
-    if quantity > available_quantity:
+        return jsonify({
+            "success": False,
+            "message": "Unable to reserve the selected quantity."
+        }), 500
+
+    if reserved_listing is None:
+
+        try:
+            latest_listing = listings_collection.find_one({
+                "_id": listing_object_id
+            })
+
+            available_quantity = int(
+                latest_listing.get("quantity", 0)
+                if latest_listing
+                else 0
+            )
+
+        except (TypeError, ValueError, PyMongoError):
+
+            available_quantity = 0
+
         return jsonify({
             "success": False,
             "message": (
@@ -764,6 +801,30 @@ def place_order():
             "MongoDB request creation error:",
             error
         )
+
+        # Quantity was already reserved above. Restore it if
+        # the reservation document cannot be created.
+        try:
+            listings_collection.update_one(
+                {
+                    "_id": listing_object_id,
+                    "owner_id": listing_provider_id
+                },
+                {
+                    "$inc": {
+                        "quantity": quantity,
+                        "reservations": -quantity
+                    },
+                    "$set": {
+                        "updated_at": datetime.now(timezone.utc)
+                    }
+                }
+            )
+        except PyMongoError as rollback_error:
+            print(
+                "MongoDB reservation quantity rollback error:",
+                rollback_error
+            )
 
         return jsonify({
             "success": False,
@@ -1071,7 +1132,9 @@ def accept_request(request_id):
     """
     Provider accepts a pending reservation request.
 
-    Quantity is reduced ONLY here.
+    The quantity was already reserved when the customer
+    placed the reservation, so acceptance does not change
+    the listing quantity.
     """
 
     refresh_lifecycle()
@@ -1256,73 +1319,12 @@ def accept_request(request_id):
         }), 400
 
     # ======================================================
-    # ATOMICALLY REDUCE LISTING QUANTITY
+    # QUANTITY WAS ALREADY RESERVED
+    #
+    # The customer reduced the listing quantity when placing
+    # the reservation. Accepting the request must NOT reduce
+    # the quantity again.
     # ======================================================
-
-    try:
-
-        updated_listing = (
-            listings_collection.find_one_and_update(
-
-                {
-                    "_id": listing_id,
-
-                    "owner_id": provider_id,
-
-                    "status": "available",
-
-                    "quantity": {
-                        "$gte": requested_quantity
-                    }
-                },
-
-                {
-                    "$inc": {
-                        "quantity": -requested_quantity,
-
-                        "reservations": requested_quantity
-                    },
-
-                    "$set": {
-                        "updated_at": (
-                            datetime.now(
-                                timezone.utc
-                            )
-                        )
-                    }
-                },
-
-                return_document=ReturnDocument.AFTER
-            )
-        )
-
-    except PyMongoError as error:
-
-        print(
-            "MongoDB accept quantity update error:",
-            error
-        )
-
-        return jsonify({
-            "success": False,
-            "message": (
-                "Unable to accept the request."
-            )
-        }), 500
-
-    # ======================================================
-    # QUANTITY NO LONGER AVAILABLE
-    # ======================================================
-
-    if updated_listing is None:
-
-        return jsonify({
-            "success": False,
-            "message": (
-                "This request cannot be accepted because "
-                "the requested quantity is no longer available."
-            )
-        }), 409
 
     # ======================================================
     # UPDATE REQUEST STATUS
@@ -1455,15 +1457,25 @@ def accept_request(request_id):
     # SUCCESS
     # ======================================================
 
+    try:
+        remaining_listing = listings_collection.find_one(
+            {"_id": listing_id},
+            {"quantity": 1}
+        )
+        remaining_quantity = (
+            remaining_listing.get("quantity", 0)
+            if remaining_listing
+            else 0
+        )
+    except PyMongoError:
+        remaining_quantity = 0
+
     return jsonify({
         "success": True,
         "message": "Request accepted successfully.",
         "status": "accepted",
         "request_id": str(order_id),
-        "remaining_quantity": updated_listing.get(
-            "quantity",
-            0
-        )
+        "remaining_quantity": remaining_quantity
     }), 200
 
 
@@ -1480,7 +1492,7 @@ def reject_request(request_id):
     """
     Provider rejects a pending reservation request.
 
-    Listing quantity is NOT changed.
+    The customer's reserved quantity is restored to the listing.
     """
 
     provider_id = get_logged_in_user_id()
@@ -1690,6 +1702,99 @@ def reject_request(request_id):
                 "This request has already been processed."
             )
         }), 409
+
+    # ======================================================
+    # RESTORE RESERVED QUANTITY
+    # ======================================================
+
+    try:
+
+        listing_result = listings_collection.update_one(
+            {
+                "_id": listing_id,
+                "owner_id": provider_id
+            },
+            {
+                "$inc": {
+                    "quantity": requested_quantity,
+                    "reservations": -requested_quantity
+                },
+                "$set": {
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+
+    except PyMongoError as error:
+
+        print(
+            "MongoDB reject quantity restoration error:",
+            error
+        )
+
+        # Roll the request back to pending because the food
+        # quantity could not be restored safely.
+        try:
+            orders_collection.update_one(
+                {
+                    "_id": order_id,
+                    "provider_id": provider_id,
+                    "status": "rejected"
+                },
+                {
+                    "$set": {
+                        "status": "pending",
+                        "updated_at": datetime.now(timezone.utc)
+                    },
+                    "$unset": {
+                        "rejected_at": ""
+                    }
+                }
+            )
+        except PyMongoError as rollback_error:
+            print(
+                "MongoDB reject status rollback error:",
+                rollback_error
+            )
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Unable to restore the reserved food quantity."
+            )
+        }), 500
+
+    if listing_result.modified_count == 0:
+
+        try:
+            orders_collection.update_one(
+                {
+                    "_id": order_id,
+                    "provider_id": provider_id,
+                    "status": "rejected"
+                },
+                {
+                    "$set": {
+                        "status": "pending",
+                        "updated_at": datetime.now(timezone.utc)
+                    },
+                    "$unset": {
+                        "rejected_at": ""
+                    }
+                }
+            )
+        except PyMongoError as rollback_error:
+            print(
+                "MongoDB reject status rollback error:",
+                rollback_error
+            )
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "Unable to restore the reserved food quantity."
+            )
+        }), 500
 
     # ======================================================
     # SUCCESS
@@ -2169,7 +2274,7 @@ def cancel_user_reservation(reservation_id):
     reservation.
 
     Pending:
-        No quantity change.
+        Restore the reserved quantity back to the listing.
 
     Accepted:
         Restore the reserved quantity back to the listing.
@@ -2362,8 +2467,8 @@ def cancel_user_reservation(reservation_id):
     # ======================================================
     # PENDING RESERVATION
     #
-    # Quantity was never reduced.
-    # Therefore only change the status.
+    # The quantity was already reduced when the reservation
+    # was created, so cancellation must restore it.
     # ======================================================
 
     if current_status == "pending":
@@ -2372,23 +2477,20 @@ def cancel_user_reservation(reservation_id):
             timezone.utc
         )
 
+        # First change pending -> cancelled so the same
+        # reservation cannot restore quantity twice.
         try:
 
             result = orders_collection.update_one(
                 {
                     "_id": order_id,
-
                     "requester_id": user_id,
-
                     "status": "pending"
                 },
-
                 {
                     "$set": {
                         "status": "cancelled",
-
                         "cancelled_at": now,
-
                         "updated_at": now
                     }
                 }
@@ -2417,10 +2519,101 @@ def cancel_user_reservation(reservation_id):
                 )
             }), 409
 
+        # Restore the quantity reserved by this pending request.
+        try:
+
+            listing_result = listings_collection.update_one(
+                {
+                    "_id": listing_object_id
+                },
+                {
+                    "$inc": {
+                        "quantity": requested_quantity,
+                        "reservations": -requested_quantity
+                    },
+                    "$set": {
+                        "updated_at": datetime.now(timezone.utc)
+                    }
+                }
+            )
+
+        except PyMongoError as error:
+
+            print(
+                "MongoDB pending cancellation quantity "
+                "restoration error:",
+                error
+            )
+
+            # Roll the reservation back to pending because the
+            # quantity could not be restored safely.
+            try:
+                orders_collection.update_one(
+                    {
+                        "_id": order_id,
+                        "requester_id": user_id,
+                        "status": "cancelled"
+                    },
+                    {
+                        "$set": {
+                            "status": "pending",
+                            "updated_at": datetime.now(timezone.utc)
+                        },
+                        "$unset": {
+                            "cancelled_at": ""
+                        }
+                    }
+                )
+            except PyMongoError as rollback_error:
+                print(
+                    "MongoDB pending cancellation rollback error:",
+                    rollback_error
+                )
+
+            return jsonify({
+                "success": False,
+                "message": (
+                    "Unable to restore the reserved food quantity."
+                )
+            }), 500
+
+        if listing_result.modified_count == 0:
+
+            try:
+                orders_collection.update_one(
+                    {
+                        "_id": order_id,
+                        "requester_id": user_id,
+                        "status": "cancelled"
+                    },
+                    {
+                        "$set": {
+                            "status": "pending",
+                            "updated_at": datetime.now(timezone.utc)
+                        },
+                        "$unset": {
+                            "cancelled_at": ""
+                        }
+                    }
+                )
+            except PyMongoError as rollback_error:
+                print(
+                    "MongoDB pending cancellation status rollback error:",
+                    rollback_error
+                )
+
+            return jsonify({
+                "success": False,
+                "message": (
+                    "Unable to restore the reserved food quantity."
+                )
+            }), 500
+
         return jsonify({
             "success": True,
             "message": (
-                "Reservation cancelled successfully."
+                "Reservation cancelled successfully. "
+                "The reserved quantity is available again."
             ),
             "status": "cancelled",
             "request_id": str(order_id)
@@ -2429,7 +2622,8 @@ def cancel_user_reservation(reservation_id):
     # ======================================================
     # ACCEPTED RESERVATION
     #
-    # Provider already reduced the listing quantity.
+    # The listing quantity was already reserved when the
+    # customer placed the reservation.
     #
     # Therefore:
     #
@@ -2642,3 +2836,201 @@ def cancel_user_reservation(reservation_id):
             "status": "cancelled",
             "request_id": str(order_id)
         }), 200
+
+# ==========================================================
+# CONFIRM PICKUP
+# POST /api/user/reservations/<reservation_id>/confirm-pickup
+# ==========================================================
+
+@orders.route(
+    "/api/user/reservations/<reservation_id>/confirm-pickup",
+    methods=["POST"]
+)
+def confirm_pickup(reservation_id):
+    """
+    Allow the logged-in customer to confirm that
+    they have picked up their reserved food.
+
+    Lifecycle:
+        ready_for_pickup -> completed
+
+    The listing quantity is NOT changed here because
+    the quantity was already reduced when the reservation
+    was created.
+    """
+
+    refresh_lifecycle()
+
+    # ======================================================
+    # CHECK LOGIN
+    # ======================================================
+
+    user_id = get_logged_in_user_id()
+
+    if user_id is None:
+        return jsonify({
+            "success": False,
+            "message": "Please log in first."
+        }), 401
+
+    # ======================================================
+    # CONVERT RESERVATION ID
+    # ======================================================
+
+    try:
+        order_id = ObjectId(reservation_id)
+
+    except (InvalidId, TypeError):
+        return jsonify({
+            "success": False,
+            "message": "Invalid reservation ID."
+        }), 400
+
+    # ======================================================
+    # DATABASE
+    # ======================================================
+
+    orders_collection = get_collection("orders")
+
+    if orders_collection is None:
+        return jsonify({
+            "success": False,
+            "message": "Database is currently unavailable."
+        }), 503
+
+    # ======================================================
+    # FIND CUSTOMER'S RESERVATION
+    #
+    # requester_id ensures that a user cannot confirm
+    # somebody else's reservation.
+    # ======================================================
+
+    try:
+
+        order = orders_collection.find_one({
+            "_id": order_id,
+            "requester_id": user_id
+        })
+
+    except PyMongoError as error:
+
+        print(
+            "MongoDB pickup confirmation lookup error:",
+            error
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to load reservation."
+        }), 500
+
+    if order is None:
+        return jsonify({
+            "success": False,
+            "message": "Reservation not found."
+        }), 404
+
+    # ======================================================
+    # CHECK CURRENT STATUS
+    # ======================================================
+
+    current_status = str(
+        order.get(
+            "status",
+            ""
+        )
+    ).strip().lower()
+
+    if current_status != "ready_for_pickup":
+
+        if current_status == "completed":
+            message = "This pickup has already been completed."
+
+        elif current_status == "accepted":
+            message = (
+                "The food is accepted but not ready for pickup yet."
+            )
+
+        elif current_status == "pending":
+            message = (
+                "The provider has not accepted this reservation yet."
+            )
+
+        elif current_status in (
+            "cancelled",
+            "canceled"
+        ):
+            message = "This reservation has been cancelled."
+
+        elif current_status == "rejected":
+            message = "This reservation was rejected by the provider."
+
+        else:
+            message = (
+                "This reservation is not ready for pickup."
+            )
+
+        return jsonify({
+            "success": False,
+            "message": message
+        }), 409
+
+    # ======================================================
+    # MARK PICKUP AS COMPLETED
+    # ======================================================
+
+    now = datetime.now(timezone.utc)
+
+    try:
+
+        result = orders_collection.update_one(
+            {
+                "_id": order_id,
+                "requester_id": user_id,
+                "status": "ready_for_pickup"
+            },
+            {
+                "$set": {
+                    "status": "completed",
+                    "completed_at": now,
+                    "updated_at": now
+                }
+            }
+        )
+
+    except PyMongoError as error:
+
+        print(
+            "MongoDB pickup confirmation update error:",
+            error
+        )
+
+        return jsonify({
+            "success": False,
+            "message": "Unable to confirm pickup."
+        }), 500
+
+    # ======================================================
+    # ALREADY PROCESSED / RACE CONDITION
+    # ======================================================
+
+    if result.modified_count == 0:
+
+        return jsonify({
+            "success": False,
+            "message": (
+                "This pickup has already been processed "
+                "or is no longer ready for pickup."
+            )
+        }), 409
+
+    # ======================================================
+    # SUCCESS
+    # ======================================================
+
+    return jsonify({
+        "success": True,
+        "message": "Pickup confirmed successfully.",
+        "status": "completed",
+        "request_id": str(order_id)
+    }), 200
