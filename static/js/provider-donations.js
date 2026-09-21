@@ -328,6 +328,12 @@ function createActiveDonationCard(item) {
 
   const status = formatDonationStatus(item.status);
 
+  // surplus_quantity is the original amount published. Claims reduce
+  // available_quantity, so active cards must show the live value.
+  const availableQuantity = Number(
+    item.available_quantity ?? item.surplus_quantity ?? 0,
+  );
+
   let footerMessage = "Waiting for NGO claim";
 
   if (item.status === "claimed") {
@@ -375,10 +381,10 @@ function createActiveDonationCard(item) {
             <i class="ri-box-3-line"></i>
 
             <div>
-              <span>Quantity</span>
+              <span>Remaining quantity</span>
 
               <strong>
-                ${Number(item.surplus_quantity || 0)}
+                ${Number.isFinite(availableQuantity) ? availableQuantity : 0}
                 ${escapeHtml(item.unit || "units")}
               </strong>
             </div>
@@ -401,7 +407,11 @@ function createActiveDonationCard(item) {
         <div class="donation-card-footer">
 
           <div class="donation-quantity">
-            ${escapeHtml(footerMessage)}
+            ${escapeHtml(footerMessage)} ·
+            <strong>
+              ${Number.isFinite(availableQuantity) ? availableQuantity : 0}
+              ${escapeHtml(item.unit || "units")} remaining
+            </strong>
           </div>
 
           <button
@@ -1051,11 +1061,15 @@ function viewDonation(donationId) {
 
   const pickupEnd = formatDateTime(donation.donation_pickup_end);
 
+  const availableQuantity = Number(
+    donation.available_quantity ?? donation.surplus_quantity ?? 0,
+  );
+
   showToast(
     status.label,
 
     `${donation.food_title || "Food"} · ` +
-      `${donation.surplus_quantity || 0} ` +
+      `${Number.isFinite(availableQuantity) ? availableQuantity : 0} ` +
       `${donation.unit || "units"} · ` +
       `Pickup: ${pickupStart} – ${pickupEnd}`,
 

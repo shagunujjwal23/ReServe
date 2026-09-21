@@ -1,10 +1,11 @@
 /* ==========================================
-            MARKETPLACE SECTION
+   MARKETPLACE PREVIEW - Compact ReServe Design
+   marketplacehome.css
 ========================================== */
 
 .marketplace {
-  padding: 120px 0;
-  background: #f9fcfa;
+  padding: 42px 0 38px;
+  background: #ffffff;
   position: relative;
   overflow: hidden;
 }
@@ -14,402 +15,362 @@
   position: absolute;
   width: 320px;
   height: 320px;
-  top: -120px;
-  left: -120px;
-  background: rgba(46, 204, 113, 0.08);
+  top: -80px;
+  left: -60px;
+  background: rgba(8, 122, 64, 0.05);
   border-radius: 50%;
   filter: blur(80px);
+  pointer-events: none;
 }
 
 .marketplace::after {
   content: "";
   position: absolute;
-  width: 260px;
-  height: 260px;
-  bottom: -100px;
-  right: -100px;
-  background: rgba(46, 204, 113, 0.05);
+  width: 280px;
+  height: 280px;
+  bottom: -60px;
+  right: -60px;
+  background: rgba(8, 122, 64, 0.04);
   border-radius: 50%;
-  filter: blur(70px);
+  filter: blur(80px);
+  pointer-events: none;
+}
+
+.marketplace .container {
+  position: relative;
+  z-index: 2;
+  width: min(1380px, calc(100% - 60px));
+  margin: 0 auto;
 }
 
 /* ===============================
-        Header
+   Header
 ================================ */
 
-.section-header {
-  max-width: 760px;
-  margin: auto;
+.marketplace .section-header {
+  max-width: 680px;
+  margin: 0 auto 24px;
   text-align: center;
-  margin-bottom: 70px;
 }
 
-.section-title {
-  font-size: 3rem;
-  margin: 20px 0;
-  color: var(--text-color);
-  line-height: 1.25;
+.marketplace .section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: #ddf5e6;
+  color: #087a40;
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 5px rgba(8, 122, 64, 0.06);
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-.section-title .highlight {
-  color: var(--primary-color);
+.marketplace .section-title {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.6px;
+  color: #121e17;
+  margin-bottom: 8px;
 }
 
-.section-description {
-  color: #6b7280;
-  line-height: 1.8;
-  font-size: 1.05rem;
+.marketplace .section-title .highlight {
+  color: #087a40;
+}
+
+.marketplace .section-description {
+  color: #526356;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  font-weight: 450;
 }
 
 /* ===============================
-        Grid
+   Grid
 ================================ */
 
 .market-grid {
   display: grid;
-
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-
-  gap: 40px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
 }
 
 /* ===============================
-        Card
+   Food Card
 ================================ */
 
 .food-card {
-  background: #fff;
-
-  border-radius: 22px;
-
+  background: #ffffff;
+  border-radius: 18px;
   overflow: hidden;
-
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.06);
-
-  transition: 0.35s ease;
-
-  border: 1px solid #edf2ee;
+  box-shadow: 0 4px 16px rgba(18, 45, 28, 0.03);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  border: 1px solid rgba(8, 122, 64, 0.1);
+  display: flex;
+  flex-direction: column;
 }
 
 .food-card:hover {
-  transform: translateY(-10px);
-
-  box-shadow: 0 22px 45px rgba(46, 204, 113, 0.18);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(8, 122, 64, 0.1);
+  border-color: rgba(8, 122, 64, 0.25);
 }
 
 /* ===============================
-      Image
+   Image & Badges
 ================================ */
 
 .image-wrapper {
   position: relative;
-
   overflow: hidden;
+  height: 155px;
+  background: #f1f5f2;
 }
 
 .image-wrapper img {
   width: 100%;
-
-  height: 200px;
-
+  height: 100%;
   object-fit: cover;
-
   display: block;
-
-  transition: 0.5s;
+  transition: transform 0.4s ease;
 }
 
 .food-card:hover img {
-  transform: scale(1.08);
+  transform: scale(1.05);
 }
-
-/* ===============================
-        Badge
-================================ */
 
 .food-badge {
   position: absolute;
-
-  top: 18px;
-  left: 18px;
-
-  padding: 8px 15px;
-
-  border-radius: 50px;
-
-  font-size: 0.82rem;
-
-  font-weight: 600;
-
-  color: #fff;
-
-  backdrop-filter: blur(10px);
+  top: 10px;
+  left: 10px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #ffffff;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 .food-badge.ai {
-  background: #16a34a;
+  background: rgba(8, 122, 64, 0.92);
 }
 
 .food-badge.fresh {
-  background: #22c55e;
+  background: rgba(14, 116, 144, 0.92);
 }
 
 .food-badge.success {
-  background: #0f766e;
+  background: rgba(194, 65, 12, 0.92);
 }
 
 /* ===============================
-       Content
+   Content
 ================================ */
 
 .food-content {
-  padding: 24px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .food-content h3 {
-  font-size: 1.45rem;
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: #121e17;
+  transition: color 0.2s ease;
+}
 
-  margin-bottom: 14px;
-
-  color: var(--text-color);
+.food-card:hover .food-content h3 {
+  color: #087a40;
 }
 
 /* ===============================
-     Restaurant Row
+   Restaurant Row
 ================================ */
 
 .restaurant-row {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
-  margin-bottom: 18px;
+  margin-bottom: 8px;
 }
 
 .restaurant-name {
-  color: #6b7280;
-
-  font-size: 0.95rem;
+  color: #526356;
+  font-size: 0.84rem;
+  font-weight: 500;
 }
 
 .rating {
-  display: flex;
-
+  display: inline-flex;
   align-items: center;
-
-  gap: 5px;
-
-  background: #f4fff7;
-
-  padding: 6px 12px;
-
-  border-radius: 50px;
-
-  font-weight: 600;
-
-  color: #16a34a;
+  gap: 3px;
+  background: #fef9c3;
+  color: #854d0e;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 10.5px;
 }
 
 .rating i {
-  color: #fbbf24;
+  color: #eab308;
+  font-size: 9.5px;
 }
 
 /* ===============================
-        Food Info
+   Food Info
 ================================ */
 
 .food-info {
   display: flex;
-
   justify-content: space-between;
-
   align-items: center;
-
-  margin-bottom: 22px;
-
-  padding-bottom: 18px;
-
-  border-bottom: 1px solid #edf2ee;
+  padding: 8px 0;
+  border-top: 1px solid #edf5f0;
+  border-bottom: 1px solid #edf5f0;
+  margin-bottom: 10px;
 }
 
 .food-info span {
   display: flex;
-
   align-items: center;
-
-  gap: 8px;
-
-  color: #6b7280;
-
-  font-size: 0.95rem;
+  gap: 5px;
+  color: #526356;
+  font-size: 0.8rem;
 }
 
 .food-info i {
-  color: var(--primary-color);
+  color: #087a40;
+  font-size: 10.5px;
 }
 
 /* ===============================
-        Price Row
+   Price Row
 ================================ */
 
 .price-row {
   display: flex;
-
-  align-items: center;
-
-  gap: 12px;
-
-  margin-bottom: 22px;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 12px;
 }
 
 .new-price {
-  font-size: 1.6rem;
-
-  font-weight: 700;
-
-  color: var(--primary-color);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.28rem;
+  font-weight: 800;
+  color: #087a40;
 }
 
 .old-price {
-  font-size: 1rem;
-
-  color: #9ca3af;
-
+  font-size: 0.82rem;
+  color: #94a3b8;
   text-decoration: line-through;
 }
 
 .free-price {
-  font-size: 1.5rem;
-
-  font-weight: 700;
-
-  color: #16a34a;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.22rem;
+  font-weight: 800;
+  color: #087a40;
 }
 
 /* ===============================
-        Buttons
+   Buttons
 ================================ */
 
 .reserve-btn {
   display: flex;
-
   justify-content: center;
-
   align-items: center;
-
-  gap: 10px;
-
+  gap: 6px;
   width: 100%;
-
-  padding: 14px;
-
-  border-radius: 14px;
-
-  background: linear-gradient(135deg, #2ecc71, #27ae60);
-
-  color: #fff;
-
+  padding: 9px 14px;
+  border-radius: 9999px;
+  background: #087a40;
+  color: #ffffff;
   text-decoration: none;
-
-  font-weight: 600;
-
-  transition: 0.35s;
+  font-size: 12.5px;
+  font-weight: 700;
+  box-shadow: 0 3px 10px rgba(8, 122, 64, 0.2);
+  transition: all 0.2s ease;
+  margin-top: auto;
 }
 
 .reserve-btn:hover {
-  transform: translateY(-3px);
-
-  box-shadow: 0 10px 25px rgba(46, 204, 113, 0.28);
+  background: #066937;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(8, 122, 64, 0.28);
 }
 
 .reserve-btn i {
-  transition: 0.3s;
+  font-size: 10.5px;
+  transition: transform 0.2s ease;
 }
 
 .reserve-btn:hover i {
-  transform: translateX(5px);
+  transform: translateX(3px);
 }
 
-/* Donation Button */
-
 .reserve-btn.donation {
-  background: linear-gradient(135deg, #16a34a, #15803d);
+  background: #087a40;
 }
 
 /* ===============================
-      View Marketplace Button
+   View Marketplace Button
 ================================ */
 
 .market-footer {
   text-align: center;
-
-  margin-top: 70px;
+  margin-top: 24px;
 }
 
 .view-btn {
   display: inline-flex;
-
   align-items: center;
-
-  gap: 12px;
-
-  padding: 16px 34px;
-
-  border-radius: 50px;
-
-  background: #fff;
-
-  color: var(--primary-color);
-
-  border: 2px solid var(--primary-color);
-
+  gap: 6px;
+  padding: 9px 22px;
+  border-radius: 9999px;
+  background: #ffffff;
+  color: #087a40;
+  border: 1.5px solid #087a40;
   text-decoration: none;
-
-  font-weight: 600;
-
-  transition: 0.35s;
+  font-size: 12.5px;
+  font-weight: 700;
+  transition: all 0.2s ease;
 }
 
 .view-btn:hover {
-  background: var(--primary-color);
-
-  color: #fff;
-
-  transform: translateY(-4px);
-
-  box-shadow: 0 15px 35px rgba(46, 204, 113, 0.25);
+  background: #087a40;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(8, 122, 64, 0.18);
 }
 
 .view-btn i {
-  transition: 0.3s;
+  font-size: 10.5px;
+  transition: transform 0.2s ease;
 }
 
 .view-btn:hover i {
-  transform: translateX(5px);
+  transform: translateX(3px);
 }
 
 /* ===============================
-      Card Hover Extras
-================================ */
-
-.food-card:hover .food-content h3 {
-  color: var(--primary-color);
-}
-
-.food-card:hover .rating {
-  background: #16a34a;
-
-  color: #fff;
-}
-
-.food-card:hover .rating i {
-  color: #ffd43b;
-}
-
-/* ===============================
-      Responsive
+   Responsive
 ================================ */
 
 @media (max-width: 992px) {
@@ -418,72 +379,21 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .marketplace {
-    padding: 90px 0;
+    padding: 36px 0;
   }
 
-  .section-title {
-    font-size: 2.3rem;
+  .marketplace .section-title {
+    font-size: 1.75rem;
   }
 
   .market-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
   }
 
   .food-content {
-    padding: 20px;
-  }
-
-  .food-content h3 {
-    font-size: 1.3rem;
-  }
-
-  .restaurant-row {
-    flex-direction: column;
-
-    align-items: flex-start;
-
-    gap: 10px;
-  }
-
-  .food-info {
-    flex-direction: column;
-
-    align-items: flex-start;
-
-    gap: 10px;
-  }
-
-  .price-row {
-    justify-content: flex-start;
-  }
-}
-
-@media (max-width: 480px) {
-  .section-title {
-    font-size: 2rem;
-  }
-
-  .image-wrapper img {
-    height: 220px;
-  }
-
-  .food-badge {
-    font-size: 0.75rem;
-
-    padding: 7px 12px;
-  }
-
-  .reserve-btn {
-    padding: 13px;
-
-    font-size: 0.95rem;
-  }
-
-  .view-btn {
-    width: 100%;
-
-    justify-content: center;
+    padding: 14px;
   }
 }

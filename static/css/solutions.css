@@ -1,272 +1,261 @@
-/*=========================================
-        AI SECTION
-=========================================*/
+/* =========================================
+   AI SOLUTIONS SECTION - Compact ReServe Design
+   solutions.css
+========================================= */
 
 .ai-section {
-  padding: 120px 0;
-  background: #f8fcf9;
+  padding: 42px 0 38px;
+  background: #f7faf8;
   position: relative;
   overflow: hidden;
 }
 
+/* Background Subtle Glows */
 .ai-section::before {
   content: "";
   position: absolute;
   width: 320px;
   height: 320px;
-  top: -100px;
-  left: -100px;
-  background: rgba(46, 204, 113, 0.08);
+  top: -80px;
+  left: -60px;
+  background: rgba(8, 122, 64, 0.06);
   border-radius: 50%;
-  filter: blur(100px);
+  filter: blur(80px);
+  pointer-events: none;
 }
 
 .ai-section::after {
   content: "";
   position: absolute;
-  width: 320px;
-  height: 320px;
-  bottom: -100px;
-  right: -100px;
-  background: rgba(46, 204, 113, 0.06);
+  width: 280px;
+  height: 280px;
+  bottom: -60px;
+  right: -60px;
+  background: rgba(8, 122, 64, 0.05);
   border-radius: 50%;
-  filter: blur(100px);
+  filter: blur(80px);
+  pointer-events: none;
 }
 
-/*=========================================
-        HEADER
-=========================================*/
+.ai-section .container {
+  position: relative;
+  z-index: 2;
+  width: min(1380px, calc(100% - 60px));
+  margin: 0 auto;
+}
+
+/* =========================================
+   HEADER
+========================================= */
 
 .ai-section .section-header {
-  max-width: 850px;
-  margin: 0 auto 70px;
+  max-width: 680px;
+  margin: 0 auto 22px;
   text-align: center;
 }
 
-.ai-section .section-description {
-  margin-top: 18px;
-  font-size: 1.1rem;
-  line-height: 1.8;
-  color: #64748b;
+.ai-section .section-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: #ddf5e6;
+  color: #087a40;
+  font-size: 11.5px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 5px rgba(8, 122, 64, 0.06);
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/*=========================================
-        AI CAPABILITIES DIVIDER
-=========================================*/
+.ai-section .section-title {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 2.1rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.6px;
+  color: #121e17;
+  margin-bottom: 8px;
+}
+
+.ai-section .section-title .highlight {
+  color: #087a40;
+}
+
+.ai-section .section-description {
+  color: #526356;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  font-weight: 450;
+}
+
+/* =========================================
+   AI CAPABILITIES DIVIDER
+========================================= */
 
 .capability-divider {
   display: flex;
-
   align-items: center;
-
   justify-content: center;
-
-  margin: 50px 0;
+  max-width: 460px;
+  margin: 18px auto 24px;
 }
 
 .capability-divider::before,
 .capability-divider::after {
   content: "";
-
   flex: 1;
-
   height: 1px;
-
-  background: #dbe7de;
+  background: #d8e8dc;
 }
 
 .capability-divider span {
-  margin: 0 20px;
-
-  font-size: 0.85rem;
-
-  font-weight: 600;
-
+  margin: 0 14px;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-
-  letter-spacing: 2px;
-
-  color: #6b7280;
+  letter-spacing: 1.5px;
+  color: #087a40;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
-/*=========================================
-        AI GRID
-=========================================*/
+/* =========================================
+   AI GRID
+========================================= */
 
 .ai-capabilities {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
+  gap: 16px;
 }
 
-/*=========================================
-        CARD
-=========================================*/
+/* =========================================
+   CARD
+========================================= */
 
 .capability-card {
-  background: #fff;
-  border-radius: 24px;
-  padding: 28px 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 20px 16px;
   text-align: center;
-  border: 1px solid rgba(46, 204, 113, 0.08);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-  transition: 0.35s ease;
-
+  border: 1px solid rgba(8, 122, 64, 0.1);
+  box-shadow: 0 4px 16px rgba(18, 45, 28, 0.03);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   position: relative;
-
   overflow: hidden;
 }
 
 .capability-card::before {
   content: "";
-
   position: absolute;
-
   top: 0;
-
   left: 0;
-
   width: 100%;
-
-  height: 4px;
-
-  background: linear-gradient(90deg, #2ecc71, #16a085);
-
+  height: 3px;
+  background: linear-gradient(90deg, #087a40, #22c55e);
   transform: scaleX(0);
-
-  transition: 0.35s;
+  transform-origin: left;
+  transition: transform 0.3s ease;
 }
 
 .capability-card:hover {
-  transform: translateY(-8px);
-
-  border-color: #2ecc71;
-
-  box-shadow: 0 18px 40px rgba(46, 204, 113, 0.15);
+  transform: translateY(-4px);
+  border-color: rgba(8, 122, 64, 0.25);
+  box-shadow: 0 12px 28px rgba(8, 122, 64, 0.1);
 }
 
 .capability-card:hover::before {
   transform: scaleX(1);
 }
 
-/*=========================================
-        ICON
-=========================================*/
+/* =========================================
+   ICON
+========================================= */
 
 .capability-icon {
-  width: 58px;
-  height: 58px;
-
-  margin: 0 auto 20px;
-
-  border-radius: 50%;
-
-  background: #ecfdf3;
-
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 12px;
+  border-radius: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: transform 0.25s ease;
 }
 
-/*=========================================
-      FEATURE ICON COLORS
-=========================================*/
+.capability-card:hover .capability-icon {
+  transform: scale(1.08);
+}
 
-/* Freshness */
-
+/* Icon Variants */
 .capability-icon.freshness {
-  background: #ecfdf3;
+  background: #eaf8f0;
 }
-
 .capability-icon.freshness i {
-  color: #16a34a;
+  color: #087a40;
 }
-
-/* Matching */
 
 .capability-icon.matching {
-  background: #eff6ff;
+  background: #eef4ff;
 }
-
 .capability-icon.matching i {
   color: #2563eb;
 }
 
-/* Pricing */
-
 .capability-icon.pricing {
-  background: #fff7ed;
+  background: #fff5ed;
 }
-
 .capability-icon.pricing i {
   color: #ea580c;
 }
 
-/* NGO */
-
 .capability-icon.ngo {
-  background: #f3e8ff;
+  background: #f5efff;
 }
-
 .capability-icon.ngo i {
   color: #9333ea;
 }
 
-/* Analytics */
-
 .capability-icon.analytics {
   background: #ecfeff;
 }
-
 .capability-icon.analytics i {
   color: #0891b2;
 }
 
-/* Alerts */
-
 .capability-icon.alerts {
   background: #fef2f2;
 }
-
 .capability-icon.alerts i {
   color: #dc2626;
 }
 
 .capability-icon i {
-  font-size: 1.4rem;
-
-  color: var(--primary-color);
+  font-size: 1.15rem;
 }
 
-.capability-card:hover .capability-icon {
-  transform: translateY(-4px) scale(1.08);
-
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-}
-
-/*=========================================
-        TEXT
-=========================================*/
+/* =========================================
+   TEXT
+========================================= */
 
 .capability-card h3 {
-  font-size: 1.35rem;
-
-  margin-bottom: 14px;
-
-  color: var(--text-color);
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 1.05rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  color: #121e17;
 }
 
 .capability-card p {
-  color: #64748b;
-
-  line-height: 1.7;
-
-  font-size: 0.98rem;
+  color: #526356;
+  line-height: 1.45;
+  font-size: 0.84rem;
 }
 
-/*=========================================
-        RESPONSIVE
-=========================================*/
+/* =========================================
+   RESPONSIVE
+========================================= */
 
 @media (max-width: 992px) {
   .ai-capabilities {
@@ -274,34 +263,21 @@
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .ai-section {
-    padding: 90px 0;
+    padding: 36px 0;
+  }
+
+  .ai-section .section-title {
+    font-size: 1.75rem;
   }
 
   .ai-capabilities {
     grid-template-columns: 1fr;
-
-    gap: 25px;
+    gap: 14px;
   }
 
   .capability-card {
-    padding: 30px 22px;
-  }
-}
-
-@media (max-width: 480px) {
-  .capability-icon {
-    width: 65px;
-
-    height: 65px;
-  }
-
-  .capability-icon i {
-    font-size: 1.5rem;
-  }
-
-  .capability-card h3 {
-    font-size: 1.2rem;
+    padding: 18px 14px;
   }
 }

@@ -8,7 +8,7 @@
 
     <!-- Google Font -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap"
       rel="stylesheet"
     />
 
@@ -28,23 +28,23 @@
     <!-- Individual Section CSS -->
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/hero.css') }}"
+      href="{{ url_for('static', filename='css/hero.css') }}?v=3"
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/solutions.css') }}"
+      href="{{ url_for('static', filename='css/solutions.css') }}?v=4"
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/marketplacehome.css') }}"
+      href="{{ url_for('static', filename='css/marketplacehome.css') }}?v=4"
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/testimonials.css') }}"
+      href="{{ url_for('static', filename='css/testimonials.css') }}?v=4"
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/faq.css') }}"
+      href="{{ url_for('static', filename='css/faq.css') }}?v=4"
     />
     <link
       rel="stylesheet"
@@ -52,7 +52,7 @@
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/about.css') }}"
+      href="{{ url_for('static', filename='css/about.css') }}?v=4"
     />
     <link
       rel="stylesheet"
@@ -72,7 +72,7 @@
     />
     <link
       rel="stylesheet"
-      href="{{ url_for('static', filename='css/statistics.css') }}"
+      href="{{ url_for('static', filename='css/statistics.css') }}?v=4"
     />
   </head>
 
@@ -80,13 +80,13 @@
     
     <header class="navbar">
       <div class="container nav-container">
-        <a href="#" class="logo">
+        <a href="{{ url_for('home') }}" class="logo">
           <i class="fa-solid fa-leaf"></i>
           <span>ReServe</span>
         </a>
 
         <nav class="nav-links">
-          <a href="#home">Home</a>
+          <a href="#home" class="active">Home</a>
           <a href="#about">About</a>
           <a href="#solutions">Solutions</a>
           <a href="#marketplace">Marketplace</a>
@@ -104,68 +104,223 @@
                 HERO SECTION
 ========================================= -->
 
-    <section class="hero">
-      <div class="container hero-container">
-        <div class="hero-content">
-          <span class="hero-badge">
-            <i class="fas fa-leaf"></i>
-            AI Powered Food Recovery Platform
-          </span>
+    <section class="hero" id="home">
+      <!-- Background Decorative Elements -->
+      <div class="hero-bg-decorations">
+        <!-- Botanical branch in bottom-left -->
+        <svg class="botanical-branch" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 235C45 185 85 130 135 45" stroke="#7ebf97" stroke-width="3" stroke-linecap="round"/>
+          <path d="M55 180C38 160 32 135 50 125C68 135 68 160 55 180Z" fill="#a4d8b8" fill-opacity="0.85"/>
+          <path d="M95 135C78 115 72 90 90 80C108 90 108 115 95 135Z" fill="#8ecfa6" fill-opacity="0.9"/>
+          <path d="M135 45C118 28 112 5 130 -5C148 5 148 28 135 45Z" fill="#72c490" fill-opacity="0.95"/>
+          <path d="M60 190C80 170 105 170 110 188C102 205 78 205 60 190Z" fill="#a4d8b8" fill-opacity="0.8"/>
+          <path d="M102 145C122 125 145 125 152 142C144 160 120 160 102 145Z" fill="#8ecfa6" fill-opacity="0.85"/>
+        </svg>
 
-          <h1>
-            From Surplus
-            <br />
-            to
-            <span>Solution.</span>
+        <!-- Handwritten Doodles -->
+        <div class="doodle-note doodle-bottom-left">
+          <span>Good Food</span>
+          <span>Happier Tomorrows ♡</span>
+          <svg class="doodle-underline" viewBox="0 0 160 12" fill="none">
+            <path d="M4 8C45 3 115 3 156 8" stroke="#087a40" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div class="doodle-note doodle-center-right">
+          <span>Connecting Surplus</span>
+          <span>To Smiles <i class="fa-solid fa-leaf"></i></span>
+        </div>
+
+        <div class="doodle-note doodle-bottom-right">
+          <span>Same Great Food</span>
+          <span>A Kinder Tomorrow <i class="fa-solid fa-leaf"></i></span>
+        </div>
+
+        <!-- Floating subtle leaves -->
+        <div class="floating-leaf leaf-1"><i class="fa-solid fa-leaf"></i></div>
+        <div class="floating-leaf leaf-2"><i class="fa-solid fa-leaf"></i></div>
+        <div class="floating-leaf leaf-3"><i class="fa-solid fa-leaf"></i></div>
+        <div class="floating-leaf leaf-4"><i class="fa-solid fa-leaf"></i></div>
+        <div class="floating-leaf leaf-5"><i class="fa-solid fa-leaf"></i></div>
+      </div>
+
+      <div class="container hero-container">
+        <!-- ================= LEFT COLUMN ================= -->
+        <div class="hero-content">
+          <div class="hero-badge">
+            <i class="fa-solid fa-leaf"></i>
+            <span>AI Powered Food Recovery Platform</span>
+          </div>
+
+          <h1 class="hero-title">
+            From Surplus<br />
+            <span class="highlight-solution">to Solution<span class="period">.</span>
+              <svg class="curve-underline" viewBox="0 0 240 18" fill="none">
+                <path d="M4 14C65 4 175 3 236 12" stroke="#48b874" stroke-width="4.5" stroke-linecap="round"/>
+              </svg>
+            </span>
           </h1>
 
-          <p>
+          <p class="hero-description">
             ReServe is an AI-powered platform that connects restaurants,
             bakeries, grocery stores, NGOs, and local communities to reduce food
-            waste by making surplus food accessible before it goes to waste.
+            waste by making surplus food accessible, affordable, and useful.
           </p>
 
           <div class="hero-buttons">
-            <a href="#" class="btn btn-primary"> Donate Food </a>
+            <a href="#marketplace" class="btn-primary-explore">
+              <span>Explore Marketplace</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
 
-            <a href="#" class="btn btn-secondary"> Explore Marketplace </a>
+            <a href="#solutions" class="btn-secondary-video">
+              <i class="fa-solid fa-play"></i>
+              <span>How It Works</span>
+            </a>
+          </div>
+
+          <div class="hero-mini-features">
+            <div class="mini-feature">
+              <div class="mini-icon">
+                <i class="fa-solid fa-leaf"></i>
+              </div>
+              <div class="mini-text">
+                <span class="label-top">Reduce</span>
+                <span class="label-sub">Food Waste</span>
+              </div>
+            </div>
+
+            <div class="mini-feature">
+              <div class="mini-icon">
+                <i class="fa-solid fa-users"></i>
+              </div>
+              <div class="mini-text">
+                <span class="label-top">Support</span>
+                <span class="label-sub">Local Communities</span>
+              </div>
+            </div>
+
+            <div class="mini-feature">
+              <div class="mini-icon">
+                <i class="fa-solid fa-globe"></i>
+              </div>
+              <div class="mini-text">
+                <span class="label-top">A Greener</span>
+                <span class="label-sub">Tomorrow</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="hero-visual">
-          <!-- Background Network -->
-          <div class="hero-network">
-            <div class="network-center">
-              <i class="fas fa-microchip"></i>
-            </div>
+        <!-- ================= RIGHT COLUMN (AI ECOSYSTEM) ================= -->
+        <div class="hero-ecosystem">
+          <!-- Background Concentric Circles -->
+          <div class="ecosystem-ripples">
+            <div class="ripple ripple-1"></div>
+            <div class="ripple ripple-2"></div>
+            <div class="ripple ripple-3"></div>
+          </div>
 
-            <div class="network-node restaurant">
-              <i class="fas fa-utensils"></i>
-            </div>
+          <!-- SVG Connector Paths with arrows -->
+          <svg class="ecosystem-svg-connectors" viewBox="0 0 530 430" fill="none">
+            <defs>
+              <marker id="arrow-green" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0 1.5L8 5L0 8.5V1.5Z" fill="#38a169"/>
+              </marker>
+            </defs>
 
-            <div class="network-node grocery">
-              <i class="fas fa-store"></i>
-            </div>
+            <!-- Connector from Top-Left Node to Center -->
+            <path d="M 180 110 C 205 140, 225 165, 240 185" stroke="#38a169" stroke-width="1.6" stroke-dasharray="4 4" marker-end="url(#arrow-green)"/>
+            <!-- Connector from Top-Right Node to Center -->
+            <path d="M 350 110 C 325 140, 305 165, 290 185" stroke="#38a169" stroke-width="1.6" stroke-dasharray="4 4" marker-end="url(#arrow-green)"/>
+            <!-- Connector from Bottom-Left Node to Center -->
+            <path d="M 180 320 C 205 290, 225 265, 240 245" stroke="#38a169" stroke-width="1.6" stroke-dasharray="4 4" marker-end="url(#arrow-green)"/>
+            <!-- Connector from Bottom-Right Node to Center -->
+            <path d="M 350 320 C 325 290, 305 265, 290 245" stroke="#38a169" stroke-width="1.6" stroke-dasharray="4 4" marker-end="url(#arrow-green)"/>
+          </svg>
 
-            <div class="network-node ngo">
-              <i class="fas fa-hand-holding-heart"></i>
-            </div>
-
-            <div class="network-node community">
-              <i class="fas fa-house"></i>
-            </div>
-
-            <div class="network-node family">
-              <i class="fas fa-people-group"></i>
+          <!-- Central AI Core Hub -->
+          <div class="ai-hub-center">
+            <div class="ai-hub-glow"></div>
+            <div class="ai-hub-core">
+              <div class="ai-chip-icon">
+                <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="4" y="4" width="16" height="16" rx="3" fill="#ffffff" fill-opacity="0.15" stroke="#ffffff"/>
+                  <rect x="8" y="8" width="8" height="8" rx="1.5" fill="#ffffff" stroke="none"/>
+                  <path d="M8.5 11h1M14.5 11h1M8.5 13h1M14.5 13h1" stroke="#087a40" stroke-width="1.2"/>
+                  <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3" stroke="#ffffff"/>
+                </svg>
+              </div>
+              <span class="ai-hub-label">AI</span>
             </div>
           </div>
 
-          <!-- Foreground Illustration -->
-          <div class="hero-image">
-            <img
-              src="{{ url_for('static', filename='images/hero.png') }}"
-              alt="Food Waste Reduction"
-            />
+          <!-- NODE 1: Top-Left (Surplus Food) -->
+          <div class="eco-node-wrapper node-surplus">
+            <!-- Floating Photo Card -->
+            <div class="eco-photo-card photo-surplus">
+              <img src="{{ url_for('static', filename='images/hero/fresh-quality-food.jpg') }}" alt="Fresh & Quality Food" />
+              <span class="eco-photo-badge">Fresh & Quality Food</span>
+            </div>
+            <!-- Circular Node -->
+            <div class="eco-circle-node">
+              <div class="node-icon-circle icon-utensils">
+                <i class="fa-solid fa-utensils"></i>
+              </div>
+              <h4 class="node-title">Surplus Food</h4>
+              <p class="node-subtitle">Good food finds<br />a new home</p>
+            </div>
+          </div>
+
+          <!-- NODE 2: Top-Right (Food Partners) -->
+          <div class="eco-node-wrapper node-partners">
+            <!-- Circular Node -->
+            <div class="eco-circle-node">
+              <div class="node-icon-circle icon-store">
+                <i class="fa-solid fa-store"></i>
+              </div>
+              <h4 class="node-title">Food Partners</h4>
+              <p class="node-subtitle">Restaurants, bakeries,<br />grocery stores</p>
+            </div>
+            <!-- Floating Photo Card -->
+            <div class="eco-photo-card photo-partners">
+              <img src="{{ url_for('static', filename='images/hero/food-partners-store.jpg') }}" alt="Food Partners Store" />
+              <span class="eco-photo-badge">Share Surplus<br />Save Resources</span>
+            </div>
+          </div>
+
+          <!-- NODE 3: Bottom-Left (Less Food Waste) -->
+          <div class="eco-node-wrapper node-waste">
+            <!-- Floating Photo Card -->
+            <div class="eco-photo-card photo-waste">
+              <img src="{{ url_for('static', filename='images/hero/less-food-waste-sprout.jpg') }}" alt="Less Food Waste" />
+              <span class="eco-photo-badge">Reduce<br />Reuse<br />ReServe</span>
+            </div>
+            <!-- Circular Node -->
+            <div class="eco-circle-node">
+              <div class="node-icon-circle icon-leaf">
+                <i class="fa-solid fa-seedling"></i>
+              </div>
+              <h4 class="node-title">Less Food Waste</h4>
+              <p class="node-subtitle">A cleaner, greener<br />planet</p>
+            </div>
+          </div>
+
+          <!-- NODE 4: Bottom-Right (Community) -->
+          <div class="eco-node-wrapper node-community">
+            <!-- Circular Node -->
+            <div class="eco-circle-node">
+              <div class="node-icon-circle icon-community">
+                <i class="fa-solid fa-users"></i>
+              </div>
+              <h4 class="node-title">Community</h4>
+              <p class="node-subtitle">Support people,<br />not landfills</p>
+            </div>
+            <!-- Floating Photo Card -->
+            <div class="eco-photo-card photo-community">
+              <img src="{{ url_for('static', filename='images/hero/community-volunteers.jpg') }}?v=2" alt="Community Volunteers" />
+              <span class="eco-photo-badge">Food for<br />Stronger<br />Communities</span>
+            </div>
           </div>
         </div>
       </div>

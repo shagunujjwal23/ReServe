@@ -1,155 +1,164 @@
 /* =========================================
-   Navbar
+   Navbar - ReServe Header (Compact)
 ========================================= */
 
-.navbar{
-    width:100%;
-    position:fixed;
-    top:0;
-    left:0;
-    background:#ffffff;
-    box-shadow:0 2px 15px rgba(0,0,0,.08);
-    z-index:1000;
+body {
+  padding-top: 0 !important;
 }
 
-.nav-container{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    height:80px;
+.navbar {
+  width: 100%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(220, 235, 225, 0.8);
+  box-shadow: 0 2px 10px rgba(18, 45, 28, 0.03);
+  z-index: 1000;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 56px;
+  width: min(1380px, calc(100% - 60px));
+  margin: 0 auto;
 }
 
 /* =========================================
    Logo
 ========================================= */
 
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-
-    font-size:28px;
-    font-weight:700;
-    color:var(--primary-color);
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
 }
 
-.logo i{
-    font-size:30px;
+.logo i {
+  font-size: 22px;
+  color: #087a40;
+}
+
+.logo span {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  font-size: 21px;
+  font-weight: 800;
+  color: #087a40;
+  letter-spacing: -0.4px;
 }
 
 /* =========================================
    Navigation Links
 ========================================= */
 
-.nav-links{
-    display:flex;
-    align-items:center;
-    gap:35px;
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
 }
 
-.nav-links a{
-    font-size:16px;
-    font-weight:500;
-    color:var(--text-color);
-    transition:var(--transition);
-    position:relative;
+.nav-links a {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #2d3b32;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  position: relative;
+  padding: 4px 0;
 }
 
-.nav-links a:hover{
-    color:var(--primary-color);
+.nav-links a:hover {
+  color: #087a40;
 }
 
-/* Underline Animation */
-
-.nav-links a::after{
-
-    content:"";
-
-    position:absolute;
-
-    left:0;
-    bottom:-6px;
-
-    width:0;
-    height:2px;
-
-    background:var(--primary-color);
-
-    transition:var(--transition);
-
+.nav-links a.active {
+  color: #087a40;
 }
 
-.nav-links a:hover::after{
+/* Active Indicator Line */
+.nav-links a.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: #087a40;
+  border-radius: 2px;
+}
 
-    width:100%;
+.nav-links a:not(.active)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 2px;
+  background: #087a40;
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
 
+.nav-links a:hover::after {
+  width: 100%;
 }
 
 /* =========================================
    Buttons
 ========================================= */
 
-.nav-buttons{
-    display:flex;
-    gap:15px;
+.nav-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-.login-btn{
-
-    padding:10px 22px;
-
-    border:2px solid var(--primary-color);
-
-    border-radius:50px;
-
-    color:var(--primary-color);
-
-    font-weight:600;
-
-    transition:var(--transition);
-
+.login-btn {
+  padding: 6px 18px;
+  border: 1.5px solid #087a40;
+  border-radius: 9999px;
+  background: transparent;
+  color: #087a40;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
 }
 
-.login-btn:hover{
-
-    background:var(--primary-color);
-
-    color:#ffffff;
-
+.login-btn:hover {
+  background: #f0faf4;
+  transform: translateY(-1px);
 }
 
-.signup-btn{
-
-    padding:10px 24px;
-
-    border-radius:50px;
-
-    background:var(--primary-color);
-
-    color:#ffffff;
-
-    font-weight:600;
-
-    transition:var(--transition);
-
+.signup-btn {
+  padding: 6px 20px;
+  border-radius: 9999px;
+  background: #087a40;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 3px 10px rgba(8, 122, 64, 0.18);
+  transition: all 0.2s ease;
 }
 
-.signup-btn:hover{
-
-    background:var(--secondary-color);
-
+.signup-btn:hover {
+  background: #066937;
+  transform: translateY(-1px);
+  box-shadow: 0 5px 14px rgba(8, 122, 64, 0.25);
 }
 
 /* =========================================
-   Responsive Placeholder
+   Responsive
 ========================================= */
 
-@media(max-width:992px){
-
-    .nav-links{
-
-        display:none;
-
-    }
-
-}
+@media (max-width: 992px) {
+  .nav-links {
+    display: none;
+  }
+}

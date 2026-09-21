@@ -15,7 +15,10 @@
     <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
 
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -71,11 +74,6 @@
             <span>My Listings</span>
           </a>
 
-          <a href="/provider-donations">
-            <i class="ri-hand-heart-line"></i>
-            <span>Donations</span>
-          </a>
-
           <a href="/requests">
             <i class="ri-file-list-3-line"></i>
             <span>Requests</span>
@@ -109,8 +107,12 @@
               </div>
 
               <div class="profile-info">
-                <strong id="profileName">{{ user.business_name or user.name }}</strong>
-                <span id="profileRole">{{ user.role | replace('_', ' ') | title }}</span>
+                <strong id="profileName"
+                  >{{ user.business_name or user.name }}</strong
+                >
+                <span id="profileRole"
+                  >{{ user.role | replace('_', ' ') | title }}</span
+                >
               </div>
 
               <i class="ri-arrow-down-s-line"></i>
@@ -439,6 +441,149 @@
               </div>
             </article>
           </template>
+
+          <!-- ==================================================
+             SURPLUS DONATIONS PANEL
+        =================================================== -->
+
+          <section class="surplus-section" id="surplusSectionWrapper">
+            <div class="surplus-header">
+              <div class="surplus-header-left">
+                <div class="surplus-icon-wrapper">
+                  <i class="ri-hand-heart-line"></i>
+                </div>
+                <div>
+                  <h2 class="surplus-title">
+                    Surplus Food &amp; NGO Donations
+                  </h2>
+                  <p class="surplus-subtitle">
+                    Food items with ended pickup windows — confirm quantities
+                    and donate surplus to verified NGOs
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="surplus-toggle-btn"
+                id="surplusToggleBtn"
+                aria-label="Toggle surplus panel"
+              >
+                <i class="ri-arrow-down-s-line"></i>
+              </button>
+            </div>
+
+            <div class="surplus-body" id="surplusBody">
+              <div id="surplusListings" class="surplus-grid">
+                <!-- JS loads surplus cards here -->
+              </div>
+
+              <div class="surplus-empty hidden" id="surplusEmpty">
+                <i class="ri-leaf-line"></i>
+                <p>No surplus food awaiting action right now.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ====  SURPLUS CONFIRMATION DIALOG  ==== -->
+
+          <dialog id="surplusDialog" class="surplus-dialog">
+            <div class="surplus-dialog-inner">
+              <div class="surplus-dialog-header">
+                <div class="surplus-dialog-icon">
+                  <i class="ri-hand-heart-line"></i>
+                </div>
+                <h3 id="surplusDialogTitle">Confirm Remaining Food</h3>
+                <button
+                  type="button"
+                  class="surplus-dialog-close"
+                  onclick="this.closest('dialog').close()"
+                  aria-label="Close"
+                >
+                  <i class="ri-close-line"></i>
+                </button>
+              </div>
+
+              <p class="surplus-dialog-help" id="surplusDialogHelp">
+                Confirm the actual surplus quantity to proceed.
+              </p>
+
+              <input type="hidden" id="surplusListingId" />
+
+              <div class="surplus-field">
+                <label for="surplusQuantity">Surplus Quantity</label>
+                <input
+                  type="number"
+                  id="surplusQuantity"
+                  min="0"
+                  step="1"
+                  placeholder="e.g. 5"
+                  class="surplus-input"
+                />
+              </div>
+
+              <div id="donationFields" class="donation-fields" hidden>
+                <div class="surplus-field">
+                  <label for="donationPickupStart">Pickup Start</label>
+                  <input
+                    type="datetime-local"
+                    id="donationPickupStart"
+                    class="surplus-input"
+                  />
+                </div>
+
+                <div class="surplus-field">
+                  <label for="donationPickupEnd">Pickup End</label>
+                  <input
+                    type="datetime-local"
+                    id="donationPickupEnd"
+                    class="surplus-input"
+                  />
+                </div>
+
+                <div class="surplus-field">
+                  <label for="donationInstructions"
+                    >Pickup Instructions (optional)</label
+                  >
+                  <textarea
+                    id="donationInstructions"
+                    rows="3"
+                    class="surplus-input"
+                    placeholder="e.g. Rear entrance, ask for Ravi…"
+                  ></textarea>
+                </div>
+              </div>
+
+              <div class="surplus-dialog-actions">
+                <button
+                  type="button"
+                  class="surplus-btn-secondary"
+                  onclick="this.closest('dialog').close()"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  class="surplus-btn-primary"
+                  id="confirmSurplusBtn"
+                >
+                  <i class="ri-check-line"></i>
+                  Confirm Quantity
+                </button>
+
+                <button
+                  type="button"
+                  class="surplus-btn-donate"
+                  id="publishDonationBtn"
+                  hidden
+                >
+                  <i class="ri-hand-heart-line"></i>
+                  Publish for NGOs
+                </button>
+              </div>
+            </div>
+          </dialog>
 
           <!-- ==================================================
              PAGINATION

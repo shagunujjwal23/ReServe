@@ -1145,6 +1145,24 @@ def reject_donation_claim(claim_id):
         return_document=ReturnDocument.AFTER,
     )
 
+    # The provider listing was reduced when this claim was submitted.
+    # Restore it together with the donation's available quantity.
+    if updated_donation and donation.get("listing_id"):
+        listings_collection = get_collection("food_listings")
+
+        if listings_collection is not None:
+            listings_collection.update_one(
+                {"_id": donation["listing_id"]},
+                {
+                    "$inc": {
+                        "quantity": _quantity(claim.get("quantity")),
+                    },
+                    "$set": {
+                        "updated_at": now,
+                    },
+                },
+            )
+
     if updated_donation is not None:
 
         available_quantity = _quantity(
@@ -1354,9 +1372,14 @@ def claim_donation(donation_id):
         "donation_claims"
     )
 
+    listings_collection = get_collection(
+        "food_listings"
+    )
+
     if (
         donations_collection is None
         or claims_collection is None
+        or listings_collection is None
     ):
         return jsonify(
             success=False,
@@ -1442,6 +1465,52 @@ def claim_donation(donation_id):
                 "are available."
             ),
         ), 409
+
+    # Keep the provider's original listing in sync with the donation.
+    # Provider dashboards and My Listings display food_listings.quantity,
+    # while NGO pages display donations.available_quantity.
+    listing_id = donation.get("listing_id")
+
+    if listing_id:
+        try:
+            updated_listing = listings_collection.find_one_and_update(
+                {
+                    "_id": listing_id,
+                    "quantity": {"$gte": requested_quantity},
+                },
+                {
+                    "$inc": {
+                        "quantity": -requested_quantity,
+                    },
+                    "$set": {
+                        "updated_at": now,
+                    },
+                },
+                return_document=ReturnDocument.AFTER,
+            )
+        except PyMongoError:
+            updated_listing = None
+
+        if updated_listing is None:
+            # Do not leave an NGO reservation in place if the linked
+            # provider listing could not be reduced as well.
+            donations_collection.update_one(
+                {"_id": object_id},
+                {
+                    "$inc": {
+                        "available_quantity": requested_quantity,
+                    },
+                    "$set": {
+                        "status": "available",
+                        "updated_at": now,
+                    },
+                },
+            )
+
+            return jsonify(
+                success=False,
+                message="Unable to update the provider listing quantity.",
+            ), 409
 
     # --------------------------------------------------------
     # Update donation status if all quantity is claimed.
@@ -1529,6 +1598,19 @@ def claim_donation(donation_id):
                 },
             },
         )
+
+        if listing_id:
+            listings_collection.update_one(
+                {"_id": listing_id},
+                {
+                    "$inc": {
+                        "quantity": requested_quantity,
+                    },
+                    "$set": {
+                        "updated_at": now,
+                    },
+                },
+            )
 
         return jsonify(
             success=False,
@@ -2093,6 +2175,24 @@ def cancel_claim(claim_id):
                 },
             },
         )
+
+        # Restore the linked provider listing as well, because it was
+        # reduced at the time the NGO submitted this claim.
+        if donation.get("listing_id"):
+            listings_collection = get_collection("food_listings")
+
+            if listings_collection is not None:
+                listings_collection.update_one(
+                    {"_id": donation["listing_id"]},
+                    {
+                        "$inc": {
+                            "quantity": _quantity(claim.get("quantity")),
+                        },
+                        "$set": {
+                            "updated_at": now,
+                        },
+                    },
+                )
 
     donation = donations_collection.find_one(
         {

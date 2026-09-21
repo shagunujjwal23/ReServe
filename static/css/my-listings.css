@@ -3395,3 +3395,675 @@ body.my-listings-page .hero-message span {
   -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.4) 15%, black 45%);
   mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.4) 15%, black 45%);
 }
+
+/* ==========================================================
+   SURPLUS DONATIONS PANEL
+   Premium glassmorphism section for the NGO donation flow
+========================================================== */
+
+/* ---------- Section container ---------- */
+
+body.my-listings-page .surplus-section {
+  margin: 0 0 28px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 50%, #f0fdfa 100%);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  box-shadow:
+    0 1px 3px rgba(16, 185, 129, 0.06),
+    0 8px 24px rgba(16, 185, 129, 0.05);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+body.my-listings-page .surplus-section:hover {
+  box-shadow:
+    0 2px 6px rgba(16, 185, 129, 0.1),
+    0 12px 32px rgba(16, 185, 129, 0.08);
+}
+
+body.my-listings-page .surplus-section.surplus-empty-state {
+  opacity: 0.7;
+}
+
+/* ---------- Header ---------- */
+
+body.my-listings-page .surplus-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  cursor: default;
+}
+
+body.my-listings-page .surplus-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+body.my-listings-page .surplus-icon-wrapper {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+body.my-listings-page .surplus-icon-wrapper i {
+  font-size: 22px;
+  color: #fff;
+}
+
+body.my-listings-page .surplus-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #064e3b;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+body.my-listings-page .surplus-subtitle {
+  font-size: 13px;
+  color: #6b7280;
+  margin: 3px 0 0;
+  line-height: 1.4;
+}
+
+/* ---------- Toggle button ---------- */
+
+body.my-listings-page .surplus-toggle-btn {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.08);
+  color: #059669;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+body.my-listings-page .surplus-toggle-btn:hover {
+  background: rgba(16, 185, 129, 0.16);
+}
+
+body.my-listings-page .surplus-toggle-btn i {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.my-listings-page .surplus-toggle-btn.rotated i {
+  transform: rotate(180deg);
+}
+
+/* ---------- Collapsible body ---------- */
+
+body.my-listings-page .surplus-body {
+  padding: 0 24px 22px;
+  max-height: 800px;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              padding 0.4s ease,
+              opacity 0.3s ease;
+  opacity: 1;
+}
+
+body.my-listings-page .surplus-body.collapsed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+}
+
+/* ---------- Grid ---------- */
+
+body.my-listings-page .surplus-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+/* ---------- Surplus card ---------- */
+
+body.my-listings-page .surplus-card {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(16, 185, 129, 0.12);
+  border-radius: 14px;
+  padding: 18px 20px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  position: relative;
+}
+
+body.my-listings-page .surplus-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+body.my-listings-page .surplus-card.donated {
+  border-left: 3px solid #10b981;
+}
+
+body.my-listings-page .surplus-card.ready {
+  border-left: 3px solid #6366f1;
+}
+
+body.my-listings-page .surplus-card.awaiting {
+  border-left: 3px solid #f59e0b;
+}
+
+/* ---------- Card top row ---------- */
+
+body.my-listings-page .surplus-card-top {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+/* ---------- Status badge ---------- */
+
+body.my-listings-page .surplus-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+body.my-listings-page .surplus-status-badge.donated {
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+}
+
+body.my-listings-page .surplus-status-badge.ready {
+  background: rgba(99, 102, 241, 0.1);
+  color: #4f46e5;
+}
+
+body.my-listings-page .surplus-status-badge.awaiting {
+  background: rgba(245, 158, 11, 0.1);
+  color: #d97706;
+}
+
+body.my-listings-page .surplus-status-badge i {
+  font-size: 13px;
+}
+
+/* ---------- Food name ---------- */
+
+body.my-listings-page .surplus-food-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 10px;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Meta ---------- */
+
+body.my-listings-page .surplus-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+body.my-listings-page .surplus-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+body.my-listings-page .surplus-meta-item i {
+  font-size: 15px;
+  color: #9ca3af;
+}
+
+body.my-listings-page .surplus-meta-item.confirmed {
+  color: #059669;
+}
+
+body.my-listings-page .surplus-meta-item.confirmed i {
+  color: #10b981;
+}
+
+/* ---------- Published badge ---------- */
+
+body.my-listings-page .surplus-published-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(5, 150, 105, 0.12));
+  color: #059669;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+body.my-listings-page .surplus-published-badge i {
+  font-size: 16px;
+}
+
+/* ---------- Action button ---------- */
+
+body.my-listings-page .surplus-action-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+body.my-listings-page .surplus-action-btn.awaiting {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.25);
+}
+
+body.my-listings-page .surplus-action-btn.awaiting:hover {
+  box-shadow: 0 5px 16px rgba(245, 158, 11, 0.35);
+  transform: translateY(-1px);
+}
+
+body.my-listings-page .surplus-action-btn.ready {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
+}
+
+body.my-listings-page .surplus-action-btn.ready:hover {
+  box-shadow: 0 5px 16px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
+}
+
+body.my-listings-page .surplus-action-btn i {
+  font-size: 16px;
+}
+
+/* ---------- Empty state ---------- */
+
+body.my-listings-page .surplus-empty {
+  text-align: center;
+  padding: 24px 16px;
+  color: #9ca3af;
+}
+
+body.my-listings-page .surplus-empty i {
+  font-size: 36px;
+  color: #d1d5db;
+  margin-bottom: 8px;
+  display: block;
+}
+
+body.my-listings-page .surplus-empty p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ---------- Error ---------- */
+
+body.my-listings-page .surplus-error {
+  text-align: center;
+  padding: 20px 16px;
+  color: #ef4444;
+  font-size: 14px;
+}
+
+body.my-listings-page .surplus-error i {
+  margin-right: 6px;
+}
+
+/* ---------- Shimmer loading ---------- */
+
+body.my-listings-page .surplus-shimmer {
+  overflow: hidden;
+}
+
+body.my-listings-page .shimmer-line {
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(
+    90deg,
+    rgba(16, 185, 129, 0.06) 25%,
+    rgba(16, 185, 129, 0.12) 50%,
+    rgba(16, 185, 129, 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: surplusShimmer 1.5s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+body.my-listings-page .shimmer-line.wide  { width: 80%; }
+body.my-listings-page .shimmer-line.medium { width: 55%; }
+body.my-listings-page .shimmer-line.narrow { width: 35%; }
+
+@keyframes surplusShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* ==========================================================
+   SURPLUS DIALOG (Premium glassmorphism modal)
+========================================================== */
+
+body.my-listings-page .surplus-dialog {
+  max-width: 480px;
+  width: 92%;
+  border: none;
+  border-radius: 20px;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.04),
+    0 20px 50px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+body.my-listings-page .surplus-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+body.my-listings-page .surplus-dialog[open] {
+  animation: surplusDialogIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes surplusDialogIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ---------- Dialog inner ---------- */
+
+body.my-listings-page .surplus-dialog-inner {
+  padding: 28px 28px 24px;
+}
+
+/* ---------- Dialog header ---------- */
+
+body.my-listings-page .surplus-dialog-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+body.my-listings-page .surplus-dialog-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+body.my-listings-page .surplus-dialog-icon i {
+  font-size: 20px;
+  color: #fff;
+}
+
+body.my-listings-page .surplus-dialog-header h3 {
+  flex: 1;
+  font-size: 17px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+body.my-listings-page .surplus-dialog-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
+}
+
+body.my-listings-page .surplus-dialog-close:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+/* ---------- Dialog help ---------- */
+
+body.my-listings-page .surplus-dialog-help {
+  font-size: 13.5px;
+  color: #6b7280;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+/* ---------- Fields ---------- */
+
+body.my-listings-page .surplus-field {
+  margin-bottom: 16px;
+}
+
+body.my-listings-page .surplus-field label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 6px;
+  letter-spacing: 0.01em;
+}
+
+body.my-listings-page .surplus-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #1e293b;
+  background: #fafafa;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  outline: none;
+  box-sizing: border-box;
+}
+
+body.my-listings-page .surplus-input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+  background: #fff;
+}
+
+body.my-listings-page .surplus-input:disabled {
+  background: #f3f4f6;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+body.my-listings-page textarea.surplus-input {
+  resize: vertical;
+  min-height: 70px;
+}
+
+/* ---------- Donation fields wrapper ---------- */
+
+body.my-listings-page .donation-fields {
+  padding: 16px 0 0;
+  border-top: 1px solid #f1f5f9;
+  margin-top: 4px;
+}
+
+/* ---------- Dialog actions ---------- */
+
+body.my-listings-page .surplus-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #f1f5f9;
+}
+
+body.my-listings-page .surplus-btn-secondary {
+  padding: 10px 20px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  color: #6b7280;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+body.my-listings-page .surplus-btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+body.my-listings-page .surplus-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(245, 158, 11, 0.25);
+  transition: all 0.25s ease;
+}
+
+body.my-listings-page .surplus-btn-primary:hover {
+  box-shadow: 0 5px 16px rgba(245, 158, 11, 0.35);
+  transform: translateY(-1px);
+}
+
+body.my-listings-page .surplus-btn-donate {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.25);
+  transition: all 0.25s ease;
+}
+
+body.my-listings-page .surplus-btn-donate:hover {
+  box-shadow: 0 5px 16px rgba(16, 185, 129, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================
+   SURPLUS PANEL - RESPONSIVE
+========================================================== */
+
+@media (max-width: 768px) {
+  body.my-listings-page .surplus-section {
+    margin: 0 -8px 20px;
+    border-radius: 14px;
+  }
+
+  body.my-listings-page .surplus-header {
+    padding: 16px 18px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  body.my-listings-page .surplus-body {
+    padding: 0 18px 18px;
+  }
+
+  body.my-listings-page .surplus-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  body.my-listings-page .surplus-dialog {
+    width: 96%;
+    max-width: none;
+    border-radius: 16px;
+  }
+
+  body.my-listings-page .surplus-dialog-inner {
+    padding: 22px 20px 20px;
+  }
+
+  body.my-listings-page .surplus-dialog-actions {
+    flex-direction: column;
+  }
+
+  body.my-listings-page .surplus-dialog-actions button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  body.my-listings-page .surplus-subtitle {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  body.my-listings-page .surplus-icon-wrapper {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+
+  body.my-listings-page .surplus-icon-wrapper i {
+    font-size: 18px;
+  }
+
+  body.my-listings-page .surplus-title {
+    font-size: 14.5px;
+  }
+}

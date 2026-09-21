@@ -810,6 +810,26 @@ def get_my_listings():
 
     listings_data = []
 
+    # Donation claims reduce donations.available_quantity. Use that value
+    # for a linked provider listing as well, so existing donation records
+    # created before quantity synchronization still display correctly.
+    donation_quantities = {}
+    donations_collection = get_collection("donations")
+
+    if donations_collection is not None:
+        try:
+            donation_quantities = {
+                donation.get("listing_id"): donation.get("available_quantity")
+                for donation in donations_collection.find(
+                    {"provider_id": owner_id},
+                    {"listing_id": 1, "available_quantity": 1},
+                )
+                if donation.get("listing_id") is not None
+                and donation.get("available_quantity") is not None
+            }
+        except PyMongoError:
+            donation_quantities = {}
+
     for listing in user_listings:
 
         created_at = listing.get("created_at")
@@ -823,7 +843,10 @@ def get_my_listings():
                 "category": listing.get("category", ""),
                 "food_type": listing.get("food_type", ""),
                 "listing_type": listing.get("listing_type", ""),
-                "quantity": listing.get("quantity", 0),
+                "quantity": donation_quantities.get(
+                    listing.get("_id"),
+                    listing.get("quantity", 0),
+                ),
                 "unit": listing.get("unit", ""),
                 "original_price": listing.get("original_price", 0),
                 "discounted_price": listing.get("discounted_price", 0),
@@ -904,7 +927,9 @@ def record_listing_view(listing_id):
             {
                 "_id": listing_object_id,
                 "status": "available",
-                "listing_type": "sell",
+                "listing_type": {
+                    "$in": ["sell", "donate"]
+                },
                 "viewed_by": {"$ne": user_id},
             },
             {"$inc": {"views": 1}, "$addToSet": {"viewed_by": user_id}},
@@ -918,7 +943,9 @@ def record_listing_view(listing_id):
                 {
                     "_id": listing_object_id,
                     "status": "available",
-                    "listing_type": "sell",
+                    "listing_type": {
+                        "$in": ["sell", "donate"]
+                    },
                 }
             )
 
@@ -945,7 +972,7 @@ def record_listing_view(listing_id):
 
 
 # ==========================================================
-# GET SINGLE PUBLIC SELL LISTING
+# GET SINGLE PUBLIC LISTING
 # GET /api/listings/<listing_id>
 # ==========================================================
 
@@ -953,7 +980,7 @@ def record_listing_view(listing_id):
 @listings.route("/api/listings/<listing_id>", methods=["GET"])
 def get_listing(listing_id):
     """
-    Return one publicly available Sell listing.
+    Return one publicly available Sell or Donate listing.
 
     This endpoint is used by the customer's
     Food Details page.
@@ -994,7 +1021,13 @@ def get_listing(listing_id):
     try:
 
         listing = listings_collection.find_one_and_update(
-            {"_id": listing_object_id, "status": "available", "listing_type": "sell"},
+            {
+                "_id": listing_object_id,
+                "status": "available",
+                "listing_type": {
+                    "$in": ["sell", "donate"]
+                },
+            },
             {"$inc": {"views": 1}},
             return_document=ReturnDocument.AFTER,
         )

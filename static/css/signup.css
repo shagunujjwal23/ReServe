@@ -1,5 +1,6 @@
 /* ==========================================================
    ReServe - Signup Page
+   signup.css
 ========================================================== */
 
 /* ==========================================================
@@ -52,13 +53,13 @@ button {
 ========================================================== */
 
 .top-bar {
-  height: 46px;
+  height: 32px;
   background: #005d35;
   color: #ffffff;
 }
 
 .top-bar-container {
-  width: min(1440px, calc(100% - 80px));
+  width: min(1200px, calc(100% - 40px));
   height: 100%;
   margin: 0 auto;
 
@@ -70,34 +71,34 @@ button {
 .top-message {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 .top-message i {
   color: #d5f3c9;
-  font-size: 15px;
+  font-size: 13px;
 }
 
 .top-links {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 20px;
 }
 
 .top-links a {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 6px;
 
   color: #ffffff;
 
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
 
-  transition: 0.2s ease;
+  transition: color 0.2s ease;
 }
 
 .top-links a:hover {
@@ -105,7 +106,7 @@ button {
 }
 
 .top-links i {
-  font-size: 15px;
+  font-size: 13px;
 }
 
 /* ==========================================================
@@ -113,7 +114,7 @@ button {
 ========================================================== */
 
 .navbar {
-  height: 78px;
+  height: 54px;
   width: 100%;
 
   background: #ffffff;
@@ -142,26 +143,24 @@ button {
 .logo {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 10px;
 
   flex-shrink: 0;
 }
 
 .logo-icon {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   color: #087a40;
-
-  font-size: 42px;
 }
 
 .logo-icon i {
-  font-size: 36px;
+  font-size: 26px;
 }
 
 .logo-text {
@@ -173,19 +172,14 @@ button {
   color: #087a40;
 
   font-family: "Inter", sans-serif;
-  font-size: 26px;
+  font-size: 20px;
   line-height: 1;
 
   font-weight: 800;
 }
 
 .logo-text small {
-  margin-top: 6px;
-
-  color: #64746a;
-
-  font-size: 12px;
-  font-weight: 500;
+  display: none;
 }
 
 /* ==========================================================
@@ -196,10 +190,10 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 43px;
+  gap: 28px;
 
   margin-left: auto;
-  margin-right: 42px;
+  margin-right: 28px;
 }
 
 .nav-links a {
@@ -207,12 +201,12 @@ button {
 
   color: #142018;
 
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
 
   white-space: nowrap;
 
-  padding: 30px 0 27px;
+  padding: 16px 0;
 
   transition: color 0.2s ease;
 }
@@ -228,13 +222,13 @@ button {
 .nav-buttons {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 16px;
 }
 
 .login-btn {
   color: #142018;
 
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
 
   transition: 0.2s ease;
@@ -245,24 +239,24 @@ button {
 }
 
 .signup-nav-btn {
-  min-width: 136px;
-  height: 46px;
+  min-width: 105px;
+  height: 34px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 0 20px;
+  padding: 0 14px;
 
   background: #087a40;
   color: #ffffff;
 
-  border-radius: 8px;
+  border-radius: 6px;
 
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
 
-  box-shadow: 0 5px 14px rgba(8, 122, 64, 0.15);
+  box-shadow: 0 3px 10px rgba(8, 122, 64, 0.15);
 
   transition: 0.2s ease;
 }
@@ -273,13 +267,17 @@ button {
 }
 
 /* ==========================================================
-   SIGNUP PAGE
+   SIGNUP PAGE - NO DESKTOP SCROLL
 ========================================================== */
 
 .signup-page {
-  min-height: calc(100vh - 144px);
+  min-height: calc(100vh - 86px);
 
-  padding: 46px 0 60px;
+  padding: 10px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background:
     radial-gradient(
@@ -291,30 +289,29 @@ button {
 }
 
 /* ==========================================================
-   SIGNUP CONTAINER
+   SIGNUP CONTAINER - COMPACT & BALANCED
 ========================================================== */
 
 .signup-container {
-  width: min(1370px, calc(100% - 80px));
-
-  min-height: 720px;
+  width: min(980px, calc(100% - 60px));
+  height: 515px;
+  min-height: 515px;
 
   margin: 0 auto;
 
   display: grid;
-  grid-template-columns: 46% 54%;
+  grid-template-columns: 44% 56%;
 
   background: #ffffff;
 
   border: 1px solid #e7ece9;
-
-  border-radius: 22px;
+  border-radius: 14px;
 
   overflow: hidden;
 
   box-shadow:
-    0 10px 35px rgba(29, 63, 42, 0.06),
-    0 2px 8px rgba(29, 63, 42, 0.03);
+    0 8px 25px rgba(29, 63, 42, 0.06),
+    0 2px 6px rgba(29, 63, 42, 0.03);
 }
 
 /* ==========================================================
@@ -323,8 +320,8 @@ button {
 
 .signup-visual {
   position: relative;
-
-  min-height: 720px;
+  height: 100%;
+  min-height: 515px;
 
   overflow: hidden;
 
@@ -345,36 +342,36 @@ button {
   position: relative;
   z-index: 3;
 
-  padding: 82px 68px 0;
+  padding: 24px 26px 0;
 }
 
 .visual-content h1 {
   color: #0b4f35;
 
-  font-size: 45px;
-  line-height: 1.1;
+  font-size: 24px;
+  line-height: 1.15;
 
   font-weight: 800;
 
-  letter-spacing: -1.2px;
+  letter-spacing: -0.6px;
 }
 
 .visual-content h2 {
-  margin-top: 13px;
+  margin-top: 5px;
 
   color: #087a40;
 
-  font-size: 30px;
+  font-size: 16px;
   line-height: 1.2;
 
   font-weight: 700;
 }
 
 .green-line {
-  width: 67px;
+  width: 40px;
   height: 3px;
 
-  margin-top: 25px;
+  margin-top: 8px;
 
   background: #7fbc78;
 
@@ -382,14 +379,14 @@ button {
 }
 
 .visual-content p {
-  max-width: 475px;
+  max-width: 320px;
 
-  margin-top: 30px;
+  margin-top: 9px;
 
   color: #45564c;
 
-  font-size: 18px;
-  line-height: 1.8;
+  font-size: 12px;
+  line-height: 1.5;
 
   font-weight: 400;
 }
@@ -403,11 +400,11 @@ button {
 
   position: absolute;
 
-  width: 170px;
-  height: 170px;
+  width: 120px;
+  height: 120px;
 
-  right: 30px;
-  top: 65px;
+  right: 20px;
+  top: 40px;
 
   background: rgba(204, 230, 201, 0.18);
 
@@ -421,11 +418,11 @@ button {
 
   position: absolute;
 
-  width: 130px;
-  height: 130px;
+  width: 90px;
+  height: 90px;
 
-  right: 20px;
-  top: 170px;
+  right: 15px;
+  top: 120px;
 
   background: rgba(204, 230, 201, 0.16);
 
@@ -445,7 +442,7 @@ button {
   right: 0;
   bottom: 0;
 
-  height: 350px;
+  height: 235px;
 
   display: flex;
   align-items: flex-end;
@@ -463,20 +460,21 @@ button {
   display: block;
 
   object-fit: cover;
-  object-position: center bottom;
+  object-position: center 82%;
 }
 
 /* ==========================================================
-   RIGHT FORM SECTION
+   RIGHT FORM SECTION - SPACIOUS & BALANCED
 ========================================================== */
 
 .signup-form-section {
-  padding: 38px 44px 34px;
+  padding: 20px 32px 18px;
 
   background: #ffffff;
 
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 /* ==========================================================
@@ -487,14 +485,14 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 16px;
+  gap: 12px;
 
-  margin-bottom: 31px;
+  margin-bottom: 8px;
 }
 
 .form-header-icon {
-  width: 64px;
-  height: 64px;
+  width: 38px;
+  height: 38px;
 
   flex-shrink: 0;
 
@@ -510,24 +508,24 @@ button {
 }
 
 .form-header-icon i {
-  font-size: 28px;
+  font-size: 17px;
 }
 
 .form-header h2 {
   color: #101828;
 
-  font-size: 29px;
+  font-size: 19px;
   line-height: 1.2;
 
   font-weight: 800;
 }
 
 .form-header p {
-  margin-top: 5px;
+  margin-top: 2px;
 
   color: #64748b;
 
-  font-size: 15px;
+  font-size: 12px;
 }
 
 /* ==========================================================
@@ -546,9 +544,9 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
 
-  gap: 24px;
+  gap: 16px;
 
-  margin-bottom: 21px;
+  margin-bottom: 8px;
 }
 
 /* ==========================================================
@@ -562,12 +560,12 @@ button {
 .input-group label {
   display: block;
 
-  margin-bottom: 9px;
+  margin-bottom: 3px;
 
   color: #101828;
 
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 /* ==========================================================
@@ -577,14 +575,14 @@ button {
 .input-field {
   position: relative;
 
-  height: 52px;
+  height: 36px;
 
   display: flex;
   align-items: center;
 
   border: 1px solid #d9e0dc;
 
-  border-radius: 8px;
+  border-radius: 7px;
 
   background: #ffffff;
 
@@ -596,11 +594,11 @@ button {
 .input-field:focus-within {
   border-color: #087a40;
 
-  box-shadow: 0 0 0 3px rgba(8, 122, 64, 0.08);
+  box-shadow: 0 0 0 2px rgba(8, 122, 64, 0.08);
 }
 
 .input-field > i:first-child {
-  width: 48px;
+  width: 34px;
 
   display: flex;
   align-items: center;
@@ -610,7 +608,7 @@ button {
 
   color: #738078;
 
-  font-size: 17px;
+  font-size: 13px;
 }
 
 .input-field input,
@@ -625,14 +623,15 @@ button {
 
   color: #1f2937;
 
-  font-size: 14px;
+  font-size: 12.5px;
   font-weight: 500;
 
-  padding: 0 13px 0 0;
+  padding: 0 10px 0 0;
 }
 
 .input-field input::placeholder {
   color: #7b8490;
+  font-size: 12px;
 }
 
 .input-field select {
@@ -641,7 +640,7 @@ button {
 
   cursor: pointer;
 
-  padding-right: 40px;
+  padding-right: 28px;
 }
 
 .input-field select:invalid {
@@ -659,13 +658,13 @@ button {
 .select-arrow {
   position: absolute;
 
-  right: 16px;
+  right: 12px;
 
   width: auto !important;
 
   color: #27352d !important;
 
-  font-size: 12px !important;
+  font-size: 11px !important;
 
   pointer-events: none;
 }
@@ -675,7 +674,7 @@ button {
 ========================================================== */
 
 .toggle-password {
-  width: 42px;
+  width: 32px;
   height: 100%;
 
   display: flex;
@@ -689,7 +688,7 @@ button {
 
   color: #68756d;
 
-  font-size: 16px;
+  font-size: 13px;
 }
 
 .toggle-password:hover {
@@ -703,9 +702,10 @@ button {
 .field-message {
   min-height: 0;
 
-  margin-top: 5px;
+  margin-top: 2px;
 
-  font-size: 11px;
+  font-size: 10px;
+  font-weight: 500;
 }
 
 .field-message:empty {
@@ -717,19 +717,20 @@ button {
 ========================================================== */
 
 .terms-box {
-  min-height: 50px;
+  min-height: 32px;
+  height: 32px;
 
   display: flex;
   align-items: center;
 
-  margin-top: 1px;
-  margin-bottom: 22px;
+  margin-top: 2px;
+  margin-bottom: 9px;
 
-  padding: 0 14px;
+  padding: 0 10px;
 
   border: 1px solid #d9e0dc;
 
-  border-radius: 8px;
+  border-radius: 7px;
 
   background: #ffffff;
 }
@@ -738,19 +739,19 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 11px;
+  gap: 8px;
 
   color: #17231b;
 
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 500;
 
   cursor: pointer;
 }
 
 .terms-box input {
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
 
   flex-shrink: 0;
 
@@ -761,7 +762,7 @@ button {
 
 .terms-box a {
   color: #087a40;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .terms-box a:hover {
@@ -774,7 +775,7 @@ button {
 
 .register-btn {
   width: 100%;
-  height: 58px;
+  height: 37px;
 
   display: flex;
   align-items: center;
@@ -783,39 +784,23 @@ button {
   position: relative;
 
   border: none;
-  border-radius: 9px;
+  border-radius: 7px;
 
   background: linear-gradient(135deg, #07883f 0%, #087a40 100%);
 
   color: #ffffff;
 
-  font-size: 16px;
+  font-size: 13.5px;
   font-weight: 700;
 
-  letter-spacing: 0.1px;
-
   box-shadow:
-    0 6px 16px rgba(8, 122, 64, 0.18),
-    0 2px 5px rgba(8, 122, 64, 0.08);
+    0 3px 10px rgba(8, 122, 64, 0.15),
+    0 1px 3px rgba(8, 122, 64, 0.08);
 
   transition:
     background 0.2s ease,
     transform 0.2s ease,
     box-shadow 0.2s ease;
-}
-
-.register-btn span {
-  margin: 0;
-}
-
-.register-btn i {
-  position: absolute;
-
-  right: 20px;
-
-  margin: 0;
-
-  font-size: 18px;
 }
 
 .register-btn:hover {
@@ -824,8 +809,8 @@ button {
   transform: translateY(-1px);
 
   box-shadow:
-    0 9px 22px rgba(8, 122, 64, 0.24),
-    0 3px 7px rgba(8, 122, 64, 0.1);
+    0 5px 14px rgba(8, 122, 64, 0.2),
+    0 2px 5px rgba(8, 122, 64, 0.1);
 }
 
 .register-btn:active {
@@ -849,15 +834,15 @@ button {
 
   align-items: center;
 
-  gap: 8px;
+  gap: 6px;
 
-  margin-top: 12px;
+  margin-top: 5px;
 
-  padding: 10px 13px;
+  padding: 5px 8px;
 
-  border-radius: 7px;
+  border-radius: 6px;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -873,7 +858,7 @@ button {
 
 .success-message i,
 .error-message i {
-  font-size: 15px;
+  font-size: 13px;
 }
 
 /* ==========================================================
@@ -884,13 +869,13 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 16px;
+  gap: 12px;
 
-  margin: 24px 0 19px;
+  margin: 9px 0 8px;
 
   color: #66736b;
 
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 500;
 }
 
@@ -917,17 +902,17 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
 
-  gap: 22px;
+  gap: 14px;
 }
 
 .social-btn {
-  height: 48px;
+  height: 33px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 12px;
+  gap: 8px;
 
   border: 1px solid #dce3df;
 
@@ -937,27 +922,32 @@ button {
 
   color: #17231b;
 
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
 
-  transition: 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 
 .social-btn:hover {
   border-color: #b9d5c2;
 
   background: #f8fcf9;
+
+  transform: translateY(-1px);
 }
 
 .social-btn img {
-  width: 20px;
-  height: 20px;
+  width: 15px;
+  height: 15px;
 }
 
 .social-btn i {
   color: #1877f2;
 
-  font-size: 21px;
+  font-size: 15px;
 }
 
 /* ==========================================================
@@ -965,13 +955,13 @@ button {
 ========================================================== */
 
 .login-text {
-  margin-top: 25px;
+  margin-top: 8px;
 
   text-align: center;
 
   color: #59665e;
 
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .login-text a {
@@ -985,90 +975,70 @@ button {
 }
 
 /* ==========================================================
-   RESPONSIVE - LAPTOP
-========================================================== */
-
-@media (max-width: 1200px) {
-  .container,
-  .top-bar-container {
-    width: min(100% - 50px, 1400px);
-  }
-
-  .nav-links {
-    gap: 25px;
-    margin-right: 28px;
-  }
-
-  .signup-container {
-    width: min(100% - 50px, 1200px);
-  }
-
-  .signup-form-section {
-    padding: 35px 35px 30px;
-  }
-
-  .visual-content {
-    padding-left: 50px;
-    padding-right: 45px;
-  }
-}
-
-/* ==========================================================
-   RESPONSIVE - TABLET
+   RESPONSIVE - TABLET & SMALL DESKTOPS
 ========================================================== */
 
 @media (max-width: 1000px) {
   .navbar {
     height: auto;
-    min-height: 82px;
+    min-height: 54px;
   }
 
   .nav-container {
-    padding: 15px 0;
+    padding: 10px 0;
     flex-wrap: wrap;
-    gap: 15px;
+    gap: 12px;
   }
 
   .nav-links {
     order: 3;
-
     width: 100%;
-
     justify-content: center;
-
     margin: 0;
-
-    gap: 28px;
+    gap: 20px;
   }
 
   .nav-links a {
-    padding: 8px 0;
+    padding: 6px 0;
   }
 
-  .nav-buttons {
-    margin-left: auto;
+  .signup-page {
+    padding: 20px 0;
+    min-height: auto;
   }
 
   .signup-container {
     grid-template-columns: 1fr;
-
+    width: min(540px, calc(100% - 30px));
+    height: auto;
     min-height: auto;
   }
 
   .signup-visual {
-    min-height: 400px;
+    min-height: 240px;
+    height: auto;
   }
 
   .visual-content {
-    padding-top: 55px;
+    padding: 24px 20px 0;
   }
 
   .signup-illustration {
-    height: 210px;
+    height: 130px;
   }
 
   .signup-form-section {
-    padding: 40px;
+    padding: 22px 20px 18px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .input-field {
+    height: 36px;
   }
 }
 
@@ -1076,28 +1046,9 @@ button {
    RESPONSIVE - MOBILE
 ========================================================== */
 
-@media (max-width: 700px) {
+@media (max-width: 600px) {
   .top-bar {
     display: none;
-  }
-
-  .navbar {
-    position: relative;
-  }
-
-  .container,
-  .top-bar-container {
-    width: calc(100% - 30px);
-  }
-
-  .logo-text span {
-    font-size: 27px;
-  }
-
-  .logo-icon,
-  .logo-icon i {
-    font-size: 36px;
-    width: 45px;
   }
 
   .nav-links {
@@ -1109,127 +1060,20 @@ button {
   }
 
   .signup-nav-btn {
-    min-width: 110px;
-    height: 42px;
-
-    font-size: 13px;
-  }
-
-  .signup-page {
-    padding: 20px 0 35px;
+    min-width: 90px;
+    height: 32px;
+    font-size: 12px;
+    padding: 0 10px;
   }
 
   .signup-container {
-    width: calc(100% - 24px);
-
-    border-radius: 16px;
-  }
-
-  .signup-visual {
-    min-height: 390px;
-  }
-
-  .visual-content {
-    padding: 40px 30px 0;
-  }
-
-  .visual-content h1 {
-    font-size: 34px;
-  }
-
-  .visual-content h2 {
-    font-size: 23px;
-  }
-
-  .visual-content p {
-    font-size: 15px;
-    line-height: 1.6;
-  }
-
-  .signup-illustration {
-    left: 10px;
-    right: 10px;
-    height: 190px;
-  }
-
-  .signup-form-section {
-    padding: 30px 22px;
-  }
-
-  .form-header h2 {
-    font-size: 23px;
-  }
-
-  .form-header p {
-    font-size: 13px;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-
-    gap: 17px;
-
-    margin-bottom: 17px;
+    width: calc(100% - 20px);
+    border-radius: 12px;
   }
 
   .social-buttons {
     grid-template-columns: 1fr;
-  }
-
-  .terms-box {
-    padding: 10px 12px;
-  }
-
-  .terms-box label {
-    align-items: flex-start;
-    line-height: 1.5;
+    gap: 8px;
   }
 }
 
-/* ==========================================================
-   SMALL MOBILE
-========================================================== */
-
-@media (max-width: 430px) {
-  .logo-text small {
-    display: none;
-  }
-
-  .logo-text span {
-    font-size: 24px;
-  }
-
-  .signup-nav-btn {
-    min-width: 95px;
-    padding: 0 12px;
-  }
-
-  .signup-visual {
-    min-height: 360px;
-  }
-
-  .visual-content {
-    padding: 32px 22px 0;
-  }
-
-  .visual-content h1 {
-    font-size: 30px;
-  }
-
-  .visual-content h2 {
-    font-size: 20px;
-  }
-
-  .signup-form-section {
-    padding: 25px 17px;
-  }
-
-  .form-header-icon {
-    width: 52px;
-    height: 52px;
-  }
-
-  .form-header h2 {
-    font-size: 21px;
-  }
-}

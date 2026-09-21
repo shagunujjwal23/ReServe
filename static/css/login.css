@@ -52,13 +52,13 @@ button {
 ========================================================== */
 
 .top-bar {
-  height: 46px;
+  height: 32px;
   background: #005d35;
   color: #ffffff;
 }
 
 .top-bar-container {
-  width: min(1440px, calc(100% - 80px));
+  width: min(1200px, calc(100% - 40px));
   height: 100%;
 
   margin: 0 auto;
@@ -71,31 +71,31 @@ button {
 .top-message {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 .top-message i {
   color: #d5f3c9;
-  font-size: 15px;
+  font-size: 13px;
 }
 
 .top-links {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 20px;
 }
 
 .top-links a {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 6px;
 
   color: #ffffff;
 
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
 
   transition: color 0.2s ease;
@@ -106,7 +106,7 @@ button {
 }
 
 .top-links i {
-  font-size: 15px;
+  font-size: 13px;
 }
 
 /* ==========================================================
@@ -114,7 +114,7 @@ button {
 ========================================================== */
 
 .navbar {
-  height: 78px;
+  height: 54px;
   width: 100%;
 
   background: #ffffff;
@@ -143,26 +143,24 @@ button {
 .logo {
   display: flex;
   align-items: center;
-  gap: 13px;
+  gap: 10px;
 
   flex-shrink: 0;
 }
 
 .logo-icon {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
   color: #087a40;
-
-  font-size: 42px;
 }
 
 .logo-icon i {
-  font-size: 36px;
+  font-size: 26px;
 }
 
 .logo-text {
@@ -174,7 +172,7 @@ button {
   color: #087a40;
 
   font-family: "Inter", sans-serif;
-  font-size: 26px;
+  font-size: 20px;
   line-height: 1;
 
   font-weight: 800;
@@ -188,10 +186,10 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 43px;
+  gap: 28px;
 
   margin-left: auto;
-  margin-right: 42px;
+  margin-right: 28px;
 }
 
 .nav-links a {
@@ -199,12 +197,12 @@ button {
 
   color: #142018;
 
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
 
   white-space: nowrap;
 
-  padding: 30px 0 27px;
+  padding: 16px 0;
 
   transition: color 0.2s ease;
 }
@@ -220,13 +218,13 @@ button {
 .nav-buttons {
   display: flex;
   align-items: center;
-  gap: 25px;
+  gap: 16px;
 }
 
 .login-btn {
   color: #142018;
 
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 600;
 
   transition: 0.2s ease;
@@ -237,24 +235,24 @@ button {
 }
 
 .signup-nav-btn {
-  min-width: 136px;
-  height: 46px;
+  min-width: 105px;
+  height: 34px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  padding: 0 20px;
+  padding: 0 14px;
 
   background: #087a40;
   color: #ffffff;
 
-  border-radius: 8px;
+  border-radius: 6px;
 
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
 
-  box-shadow: 0 5px 14px rgba(8, 122, 64, 0.15);
+  box-shadow: 0 3px 10px rgba(8, 122, 64, 0.15);
 
   transition: 0.2s ease;
 }
@@ -269,9 +267,13 @@ button {
 ========================================================== */
 
 .login-page {
-  min-height: calc(100vh - 124px);
+  min-height: calc(100vh - 86px);
 
-  padding: 28px 0 35px;
+  padding: 12px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background:
     radial-gradient(
@@ -283,15 +285,15 @@ button {
 }
 
 /* ==========================================================
-   LOGIN CONTAINER
+   LOGIN CONTAINER - COMPACT & PROPORTIONAL
 ========================================================== */
 
 .login-container {
-  width: min(1180px, calc(100% - 100px));
-  grid-template-columns: 50% 50%;
+  width: min(780px, calc(100% - 40px));
+  grid-template-columns: 46% 54%;
 
-  height: 620px;
-  min-height: 620px;
+  height: 460px;
+  min-height: 460px;
 
   margin: 0 auto;
 
@@ -301,13 +303,13 @@ button {
 
   border: 1px solid #e7ece9;
 
-  border-radius: 20px;
+  border-radius: 14px;
 
   overflow: hidden;
 
   box-shadow:
-    0 10px 35px rgba(29, 63, 42, 0.06),
-    0 2px 8px rgba(29, 63, 42, 0.03);
+    0 8px 25px rgba(29, 63, 42, 0.06),
+    0 2px 6px rgba(29, 63, 42, 0.03);
 }
 
 /* ==========================================================
@@ -317,7 +319,7 @@ button {
 .login-visual {
   position: relative;
 
-  min-height: 620px;
+  min-height: 460px;
 
   overflow: hidden;
 
@@ -339,36 +341,36 @@ button {
 
   z-index: 3;
 
-  padding: 55px 55px 0;
+  padding: 26px 24px 0;
 }
 
 .visual-content h1 {
   color: #0b4f35;
 
-  font-size: 42px;
-  line-height: 1.1;
+  font-size: 24px;
+  line-height: 1.15;
 
   font-weight: 800;
 
-  letter-spacing: -1.2px;
+  letter-spacing: -0.6px;
 }
 
 .visual-content h2 {
-  margin-top: 13px;
+  margin-top: 6px;
 
   color: #087a40;
 
-  font-size: 27px;
+  font-size: 16px;
   line-height: 1.2;
 
   font-weight: 700;
 }
 
 .green-line {
-  width: 67px;
+  width: 42px;
   height: 3px;
 
-  margin-top: 23px;
+  margin-top: 10px;
 
   background: #7fbc78;
 
@@ -376,14 +378,14 @@ button {
 }
 
 .visual-content p {
-  max-width: 430px;
+  max-width: 300px;
 
-  margin-top: 24px;
+  margin-top: 10px;
 
   color: #45564c;
 
-  font-size: 16px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.5;
 
   font-weight: 400;
 }
@@ -397,11 +399,11 @@ button {
 
   position: absolute;
 
-  width: 170px;
-  height: 170px;
+  width: 120px;
+  height: 120px;
 
-  right: 30px;
-  top: 65px;
+  right: 20px;
+  top: 40px;
 
   background: rgba(204, 230, 201, 0.18);
 
@@ -415,11 +417,11 @@ button {
 
   position: absolute;
 
-  width: 130px;
-  height: 130px;
+  width: 90px;
+  height: 90px;
 
-  right: 20px;
-  top: 170px;
+  right: 15px;
+  top: 120px;
 
   background: rgba(204, 230, 201, 0.16);
 
@@ -439,7 +441,7 @@ button {
   right: 0;
   bottom: 0;
 
-  height: 300px;
+  height: 190px;
 
   display: flex;
   align-items: flex-end;
@@ -465,10 +467,11 @@ button {
 ========================================================== */
 
 .login-form-section {
-  padding: 48px 40px 42px;
+  padding: 22px 30px 20px;
 
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
 
   background: #ffffff;
@@ -477,29 +480,29 @@ button {
 /* Keep the actual form centered and controlled */
 .login-form-section > * {
   width: 100%;
-  max-width: 560px;
+  max-width: 375px;
 }
 
 #loginForm {
   width: 100%;
-  max-width: 560px;
+  max-width: 375px;
 }
 
 /* ==========================================================
    FORM HEADER
-========================================================== */
+========================================================= */
 
 .form-header {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 
-  margin-bottom: 38px;
+  margin-bottom: 14px;
 }
 
 .form-header-icon {
-  width: 64px;
-  height: 64px;
+  width: 40px;
+  height: 40px;
 
   flex-shrink: 0;
 
@@ -514,24 +517,24 @@ button {
 }
 
 .form-header-icon i {
-  font-size: 28px;
+  font-size: 18px;
 }
 
 .form-header h2 {
   color: #101828;
 
-  font-size: 29px;
+  font-size: 20px;
   line-height: 1.2;
 
   font-weight: 800;
 }
 
 .form-header p {
-  margin-top: 7px;
+  margin-top: 3px;
 
   color: #64748b;
 
-  font-size: 15px;
+  font-size: 12.5px;
 }
 
 /* ==========================================================
@@ -547,18 +550,18 @@ button {
 ========================================================== */
 
 .input-group {
-  margin-bottom: 27px;
+  margin-bottom: 12px;
 }
 
 .input-group label {
   display: block;
 
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 
   color: #101828;
 
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 12.5px;
+  font-weight: 600;
 }
 
 /* ==========================================================
@@ -566,7 +569,7 @@ button {
 ========================================================== */
 
 .input-field {
-  height: 55px;
+  height: 40px;
 
   position: relative;
 
@@ -574,7 +577,7 @@ button {
   align-items: center;
 
   border: 1px solid #d9e0dc;
-  border-radius: 9px;
+  border-radius: 7px;
 
   background: #ffffff;
 
@@ -586,11 +589,11 @@ button {
 .input-field:focus-within {
   border-color: #087a40;
 
-  box-shadow: 0 0 0 3px rgba(8, 122, 64, 0.08);
+  box-shadow: 0 0 0 2px rgba(8, 122, 64, 0.08);
 }
 
 .input-field > i:first-child {
-  width: 51px;
+  width: 36px;
 
   display: flex;
   align-items: center;
@@ -600,7 +603,7 @@ button {
 
   color: #738078;
 
-  font-size: 17px;
+  font-size: 14px;
 }
 
 .input-field input {
@@ -614,14 +617,15 @@ button {
 
   color: #1f2937;
 
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 500;
 
-  padding: 0 14px 0 0;
+  padding: 0 10px 0 0;
 }
 
 .input-field input::placeholder {
   color: #7b8490;
+  font-size: 12.5px;
 }
 
 /* ==========================================================
@@ -629,7 +633,7 @@ button {
 ========================================================== */
 
 .toggle-password {
-  width: 48px;
+  width: 36px;
   height: 100%;
 
   display: flex;
@@ -644,7 +648,7 @@ button {
 
   color: #68756d;
 
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .toggle-password:hover {
@@ -658,7 +662,7 @@ button {
 .field-message {
   min-height: 0;
 
-  margin-top: 5px;
+  margin-top: 3px;
 
   font-size: 11px;
   font-weight: 500;
@@ -678,26 +682,26 @@ button {
   justify-content: space-between;
 
   margin-top: 2px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .remember-me {
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 7px;
 
   color: #17231b;
 
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 500;
 
   cursor: pointer;
 }
 
 .remember-me input {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
 
   margin: 0;
 
@@ -709,7 +713,7 @@ button {
 .login-options > a {
   color: #087a40;
 
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
 
   transition: color 0.2s ease;
@@ -727,7 +731,7 @@ button {
 
 .login-submit-btn {
   width: 100%;
-  height: 52px;
+  height: 40px;
 
   position: relative;
 
@@ -735,20 +739,20 @@ button {
   align-items: center;
   justify-content: center;
 
-  gap: 12px;
+  gap: 10px;
 
   border: none;
 
-  border-radius: 8px;
+  border-radius: 7px;
 
   background: #07883f;
 
   color: #ffffff;
 
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
 
-  box-shadow: 0 6px 16px rgba(8, 122, 64, 0.13);
+  box-shadow: 0 4px 12px rgba(8, 122, 64, 0.13);
 
   transition:
     background 0.2s ease,
@@ -757,15 +761,15 @@ button {
 }
 
 .login-submit-btn span {
-  transform: translateX(10px);
+  transform: translateX(6px);
 }
 
 .login-submit-btn i {
   position: absolute;
 
-  right: 18px;
+  right: 14px;
 
-  font-size: 18px;
+  font-size: 15px;
 }
 
 .login-submit-btn:hover {
@@ -773,7 +777,7 @@ button {
 
   transform: translateY(-1px);
 
-  box-shadow: 0 8px 20px rgba(8, 122, 64, 0.2);
+  box-shadow: 0 6px 16px rgba(8, 122, 64, 0.2);
 }
 
 .login-submit-btn:active {
@@ -800,15 +804,15 @@ button {
 
   align-items: center;
 
-  gap: 8px;
+  gap: 6px;
 
-  margin-top: 10px;
+  margin-top: 6px;
 
-  padding: 9px 13px;
+  padding: 6px 10px;
 
-  border-radius: 7px;
+  border-radius: 6px;
 
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -826,7 +830,7 @@ button {
 
 .success-message i,
 .error-message i {
-  font-size: 15px;
+  font-size: 13px;
 }
 
 /* ==========================================================
@@ -837,13 +841,13 @@ button {
   display: flex;
   align-items: center;
 
-  gap: 16px;
+  gap: 12px;
 
-  margin: 20px 0 16px;
+  margin: 12px 0 10px;
 
   color: #66736b;
 
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 500;
 }
 
@@ -871,17 +875,17 @@ button {
 
   grid-template-columns: 1fr 1fr;
 
-  gap: 22px;
+  gap: 12px;
 }
 
 .social-btn {
-  height: 46px;
+  height: 36px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  gap: 12px;
+  gap: 8px;
 
   border: 1px solid #dce3df;
 
@@ -891,7 +895,7 @@ button {
 
   color: #17231b;
 
-  font-size: 14px;
+  font-size: 12.5px;
   font-weight: 600;
 
   transition:
@@ -909,14 +913,14 @@ button {
 }
 
 .social-btn img {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
 }
 
 .social-btn i {
   color: #1877f2;
 
-  font-size: 21px;
+  font-size: 16px;
 }
 
 /* ==========================================================
@@ -924,13 +928,13 @@ button {
 ========================================================== */
 
 .register-text {
-  margin-top: 20px;
+  margin-top: 12px;
 
   text-align: center;
 
   color: #59665e;
 
-  font-size: 14px;
+  font-size: 12.5px;
 }
 
 .register-text a {
@@ -950,34 +954,17 @@ button {
 @media (max-width: 1200px) {
   .container,
   .top-bar-container {
-    width: min(100% - 50px, 1400px);
+    width: min(100% - 40px, 1200px);
   }
 
   .nav-links {
-    gap: 27px;
+    gap: 20px;
 
-    margin-right: 28px;
+    margin-right: 20px;
   }
 
   .login-container {
-    width: min(100% - 50px, 1200px);
-  }
-
-  .login-form-section {
-    padding: 35px 35px 28px;
-  }
-
-  .visual-content {
-    padding-left: 45px;
-    padding-right: 40px;
-  }
-
-  .visual-content h1 {
-    font-size: 39px;
-  }
-
-  .visual-content h2 {
-    font-size: 26px;
+    width: min(100% - 30px, 780px);
   }
 }
 
@@ -1221,3 +1208,6 @@ button {
     font-size: 12px;
   }
 }
+
+
+

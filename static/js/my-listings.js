@@ -9,43 +9,313 @@
 const MY_LISTINGS_API = "/api/listings/my";
 
 /* ==========================================================
-   SURPLUS FOOD / NGO DONATION (V1 additive panel)
+   SURPLUS FOOD / NGO DONATION  (Premium V2)
 ========================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
   const panel = document.getElementById("surplusListings");
   const dialog = document.getElementById("surplusDialog");
+  const sectionWrapper = document.getElementById("surplusSectionWrapper");
+  const surplusEmpty = document.getElementById("surplusEmpty");
+  const surplusBody = document.getElementById("surplusBody");
+  const toggleBtn = document.getElementById("surplusToggleBtn");
+
   if (!panel || !dialog) return;
+
   const $ = (id) => document.getElementById(id);
-  const escapeText = (value) => String(value ?? "").replace(/[&<>'"]/g, (char) => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#039;",'"':"&quot;"}[char]));
+
+  const escapeText = (value) =>
+    String(value ?? "").replace(
+      /[&<>'"]/g,
+      (char) =>
+        ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#039;", '"': "&quot;" }[
+          char
+        ]),
+    );
+
   let active = null;
 
+  /* ---------- Toggle collapse ---------- */
+
+  if (toggleBtn && surplusBody) {
+    toggleBtn.addEventListener("click", () => {
+      const isCollapsed = surplusBody.classList.toggle("collapsed");
+      toggleBtn.classList.toggle("rotated", !isCollapsed);
+    });
+  }
+
+  /* ---------- Load surplus items ---------- */
+
   async function loadSurplus() {
+    /* Shimmer loading */
+    panel.innerHTML = Array.from({ length: 3 })
+      .map(
+        () =>
+          `<div class="surplus-card surplus-shimmer">
+            <div class="shimmer-line wide"></div>
+            <div class="shimmer-line medium"></div>
+            <div class="shimmer-line narrow"></div>
+          </div>`,
+      )
+      .join("");
+
     try {
-      const response = await fetch("/api/provider/surplus", {credentials:"same-origin"});
+      const response = await fetch("/api/provider/surplus", {
+        credentials: "same-origin",
+      });
       const data = await response.json();
       const records = data.surplus || [];
-      panel.innerHTML = records.length ? records.map(item => `<article class="surplus-card"><h3>${escapeText(item.food_title)}</h3><p>${escapeText(item.quantity)} ${escapeText(item.unit)} currently unallocated</p><p>${item.surplus_quantity === null || item.surplus_quantity === undefined ? 'Awaiting provider confirmation' : `${escapeText(item.surplus_quantity)} confirmed for donation`}</p>${item.donation_id ? '<p><strong>Donation published</strong></p>' : `<button class="primary-btn surplus-action" data-id="${item.id}">${item.surplus_quantity === null || item.surplus_quantity === undefined ? 'Confirm Remaining Food' : 'Publish Donation'}</button>`}</article>`).join("") : '<p>No surplus food awaiting action.</p>';
-      panel.querySelectorAll('.surplus-action').forEach(button => button.addEventListener('click', () => open(records.find(item => item.id === button.dataset.id))));
-    } catch (error) { panel.innerHTML = '<p>Unable to load surplus food.</p>'; }
+
+      if (records.length === 0) {
+        panel.innerHTML = "";
+        if (surplusEmpty) surplusEmpty.classList.remove("hidden");
+        if (sectionWrapper) sectionWrapper.classList.add("surplus-empty-state");
+        return;
+      }
+
+      if (surplusEmpty) surplusEmpty.classList.add("hidden");
+      if (sectionWrapper) sectionWrapper.classList.remove("surplus-empty-state");
+
+      panel.innerHTML = records
+        .map((item) => {
+          const awaiting =
+            item.surplus_quantity === null ||
+            item.surplus_quantity === undefined;
+          const published = !!item.donation_id;
+
+          let statusBadge, statusClass;
+          if (published) {
+            statusBadge = "Donated";
+            statusClass = "donated";
+          } else if (!awaiting) {
+            statusBadge = "Ready to Publish";
+            statusClass = "ready";
+          } else {
+            statusBadge = "Awaiting Confirmation";
+            statusClass = "awaiting";
+          }
+
+          const btnLabel = awaiting
+            ? "Confirm Remaining"
+            : "Publish for NGOs";
+          const btnIcon = awaiting
+            ? "ri-check-double-line"
+            : "ri-hand-heart-line";
+
+          return `
+          <article class="surplus-card ${statusClass}">
+            <div class="surplus-card-top">
+              <span class="surplus-status-badge ${statusClass}">
+                <i class="${published ? "ri-checkbox-circle-line" : awaiting ? "ri-time-line" : "ri-rocket-line"}"></i>
+                ${statusBadge}
+              </span>
+            </div>
+
+            <h3 class="surplus-food-name">${escapeText(item.food_title)}</h3>
+
+            <div class="surplus-meta">
+              <div class="surplus-meta-item">
+                <i class="ri-stack-line"></i>
+                <span>${escapeText(item.quantity)} ${escapeText(item.unit)}</span>
+              </div>
+              ${
+                !awaiting
+                  ? `<div class="surplus-meta-item confirmed">
+                      <i class="ri-heart-3-line"></i>
+                      <span>${escapeText(item.surplus_quantity)} confirmed</span>
+                    </div>`
+                  : ""
+              }
+            </div>
+
+            ${
+              published
+                ? `<div class="surplus-published-badge">
+                    <i class="ri-checkbox-circle-fill"></i> Donation live for NGOs
+                  </div>`
+                : `<button class="surplus-action-btn ${statusClass}" data-id="${item.id}">
+                    <i class="${btnIcon}"></i>
+                    ${btnLabel}
+                  </button>`
+            }
+          </article>`;
+        })
+        .join("");
+
+      panel
+        .querySelectorAll(".surplus-action-btn")
+        .forEach((button) =>
+          button.addEventListener("click", () =>
+            openSurplusDialog(
+              records.find((item) => item.id === button.dataset.id),
+            ),
+          ),
+        );
+    } catch (error) {
+      console.error("Surplus load error:", error);
+      panel.innerHTML =
+        '<p class="surplus-error"><i class="ri-error-warning-line"></i> Unable to load surplus food.</p>';
+    }
   }
-  function open(item) {
-    active=item; $('surplusListingId').value=item.id; $('surplusQuantity').max=item.quantity; $('surplusQuantity').value=item.surplus_quantity ?? '';
-    const confirmed=item.surplus_quantity !== null && item.surplus_quantity !== undefined;
-    $('surplusDialogTitle').textContent=confirmed?'Publish NGO Donation':'Confirm Remaining Food';
-    $('surplusDialogHelp').textContent=confirmed?'Set a short pickup window for verified NGOs.':`Confirm the actual surplus, from 0 to ${item.quantity} ${item.unit}.`;
-    $('surplusQuantity').disabled=confirmed; $('donationFields').hidden=!confirmed; $('confirmSurplusBtn').hidden=confirmed; $('publishDonationBtn').hidden=!confirmed; dialog.showModal();
+
+  /* ---------- Open surplus dialog ---------- */
+
+  function openSurplusDialog(item) {
+    active = item;
+    $("surplusListingId").value = item.id;
+    $("surplusQuantity").max = item.quantity;
+    $("surplusQuantity").value = item.surplus_quantity ?? "";
+
+    const confirmed =
+      item.surplus_quantity !== null && item.surplus_quantity !== undefined;
+
+    $("surplusDialogTitle").textContent = confirmed
+      ? "Publish NGO Donation"
+      : "Confirm Remaining Food";
+
+    $("surplusDialogHelp").textContent = confirmed
+      ? "Set a short pickup window for verified NGOs."
+      : `Confirm the actual surplus, from 0 to ${item.quantity} ${item.unit}.`;
+
+    $("surplusQuantity").disabled = confirmed;
+    $("donationFields").hidden = !confirmed;
+    $("confirmSurplusBtn").hidden = confirmed;
+    $("publishDonationBtn").hidden = !confirmed;
+
+    dialog.showModal();
   }
-  $('confirmSurplusBtn').addEventListener('click', async () => {
-    const amount=Number($('surplusQuantity').value); if(!Number.isInteger(amount)||amount<0||amount>Number(active.quantity)) return alert('Enter a valid remaining quantity.');
-    const response=await fetch(`/api/listings/${encodeURIComponent(active.id)}/confirm-surplus`,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({surplus_quantity:amount})}); const data=await response.json(); if(!response.ok)return alert(data.message||'Unable to confirm surplus.'); dialog.close(); loadSurplus(); if(typeof loadListings==='function') loadListings();
+
+  /* ---------- Confirm surplus quantity ---------- */
+
+  $("confirmSurplusBtn").addEventListener("click", async () => {
+    const amount = Number($("surplusQuantity").value);
+
+    if (
+      !Number.isInteger(amount) ||
+      amount < 0 ||
+      amount > Number(active.quantity)
+    ) {
+      if (typeof showToast === "function") {
+        showToast("Enter a valid remaining quantity.", "error", "Invalid Input");
+      } else {
+        alert("Enter a valid remaining quantity.");
+      }
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/listings/${encodeURIComponent(active.id)}/confirm-surplus`,
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ surplus_quantity: amount }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (typeof showToast === "function") {
+          showToast(
+            data.message || "Unable to confirm surplus.",
+            "error",
+            "Error",
+          );
+        } else {
+          alert(data.message || "Unable to confirm surplus.");
+        }
+        return;
+      }
+
+      dialog.close();
+
+      if (typeof showToast === "function") {
+        showToast(
+          `Confirmed ${amount} ${active.unit || "units"} as surplus.`,
+          "success",
+          "Surplus Confirmed",
+        );
+      }
+
+      loadSurplus();
+
+      if (typeof loadListings === "function") loadListings();
+    } catch (error) {
+      console.error("Confirm surplus error:", error);
+    }
   });
-  $('publishDonationBtn').addEventListener('click', async () => {
-    const payload={donation_pickup_start:$('donationPickupStart').value,donation_pickup_end:$('donationPickupEnd').value,donation_instructions:$('donationInstructions').value};
-    const response=await fetch(`/api/listings/${encodeURIComponent(active.id)}/donate`,{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}); const data=await response.json(); if(!response.ok)return alert(data.message||'Unable to publish donation.'); dialog.close(); loadSurplus();
+
+  /* ---------- Publish donation ---------- */
+
+  $("publishDonationBtn").addEventListener("click", async () => {
+    const payload = {
+      donation_pickup_start: $("donationPickupStart").value,
+      donation_pickup_end: $("donationPickupEnd").value,
+      donation_instructions: $("donationInstructions").value,
+    };
+
+    if (!payload.donation_pickup_start || !payload.donation_pickup_end) {
+      if (typeof showToast === "function") {
+        showToast(
+          "Please set both pickup start and end times.",
+          "error",
+          "Missing Pickup Window",
+        );
+      } else {
+        alert("Please set both pickup start and end times.");
+      }
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/listings/${encodeURIComponent(active.id)}/donate`,
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (typeof showToast === "function") {
+          showToast(
+            data.message || "Unable to publish donation.",
+            "error",
+            "Error",
+          );
+        } else {
+          alert(data.message || "Unable to publish donation.");
+        }
+        return;
+      }
+
+      dialog.close();
+
+      if (typeof showToast === "function") {
+        showToast(
+          "Donation is now live for verified NGOs!",
+          "success",
+          "Donation Published 🎉",
+        );
+      }
+
+      loadSurplus();
+    } catch (error) {
+      console.error("Publish donation error:", error);
+    }
   });
+
+  /* ---------- Initial load ---------- */
+
   loadSurplus();
 });
+
 
 /* ==========================================================
    Global State
